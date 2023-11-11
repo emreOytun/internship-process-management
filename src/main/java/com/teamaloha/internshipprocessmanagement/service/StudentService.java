@@ -5,6 +5,7 @@ import com.teamaloha.internshipprocessmanagement.dto.authentication.Authenticati
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AuthenticationResponse;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.StudentRegisterRequest;
 import com.teamaloha.internshipprocessmanagement.dto.user.UserDto;
+import com.teamaloha.internshipprocessmanagement.entity.Department;
 import com.teamaloha.internshipprocessmanagement.entity.Student;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ErrorCodeEnum;
@@ -80,5 +81,12 @@ public class StudentService {
         BeanUtils.copyProperties(student, userDto);
         String jwtToken = authenticationService.createJwtToken(userDto);
         return AuthenticationResponse.builder().token(jwtToken).build();
+    }
+
+    public Student findStudentById(Integer id) {
+        return studentDao.findStudentById(id);
+    }
+    public Student findByMail(String mail) {
+        return studentDao.findByMail(mail);
     }
 }

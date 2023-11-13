@@ -1,12 +1,14 @@
 package com.teamaloha.internshipprocessmanagement.dto.security;
 
 import com.teamaloha.internshipprocessmanagement.dto.user.UserDto;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
+@Data
 public class SecurityUser implements UserDetails {
 
     private UserDto userDto;

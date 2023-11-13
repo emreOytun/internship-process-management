@@ -7,6 +7,7 @@ import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.Internshi
 import com.teamaloha.internshipprocessmanagement.service.InternshipProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,6 +22,7 @@ public class InternshipProcessController {
 
     @PostMapping("/init")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
     public InternshipProcessInitResponse initInternshipProcess() {
         String mail = "Tugay@gtu.edu.tr";
         return internshipProcessService.initInternshipProcess(mail);

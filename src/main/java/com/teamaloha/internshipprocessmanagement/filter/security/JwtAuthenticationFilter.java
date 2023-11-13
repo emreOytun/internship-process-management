@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwtToken = authHeader.substring(7);
 
         try {
-            if (jwtService.isTokenValid(jwtToken) && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (jwtService.isTokenValid(jwtToken)) {
                 // Try to get user from the database in that way we check if there exists such user.
                 // Also check expiration date. (jwtService.isTokenValid does this)
                 String username = jwtService.extractUsername(jwtToken);

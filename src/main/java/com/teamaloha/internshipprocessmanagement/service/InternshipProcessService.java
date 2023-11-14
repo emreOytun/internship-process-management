@@ -97,16 +97,12 @@ public class InternshipProcessService {
 
     public InternshipProcessInitResponse initInternshipProcess(String mail) {
         Student student = studentService.findByMail(mail);
-        if (student != null) {
-            InternshipProcess emptyProcess = new InternshipProcess();
-            emptyProcess.setStudent(student); // Staj sürecini öğrenciye bağlayın
-            InternshipProcess savedProcess = internshipProcessDao.save(emptyProcess);
-            logger.info("Created InternshipProcess with ID: " + savedProcess.getId());
-            return new InternshipProcessInitResponse(savedProcess.getId());
-        } else {
-            // Öğrenci bulunamadı, hata işleme
-            return null;
-        }
+        InternshipProcess emptyProcess = new InternshipProcess();
+        emptyProcess.setStudent(student); // Staj sürecini öğrenciye bağlayın
+        InternshipProcess savedProcess = internshipProcessDao.save(emptyProcess);
+        logger.info("Created InternshipProcess with ID: " + savedProcess.getId());
+        return new InternshipProcessInitResponse(savedProcess.getId());
+
     }
 
     private InternshipProcess mapDtoToEntity(InternshipProcessDto internshipProcessDto, Student student, Department department, Company company) {

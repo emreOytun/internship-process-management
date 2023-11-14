@@ -41,7 +41,9 @@ public class SecurityConfig {
             "/api/academician/auth",
             "/api/academician/auth/**",
             "/api/student/auth",
-            "/api/student/auth/**"
+            "/api/student/auth/**",
+            // dates
+            "/api/holiday/**"
     };
 
     @Autowired

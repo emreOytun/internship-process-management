@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class InternshipProcessDto {
     private Integer id;
-    private LogDates logDates;
     private Integer studentId;
     private String tc;
     private String studentNumber;
@@ -28,7 +27,4 @@ public class InternshipProcessDto {
     private String choiceReason;
     private Boolean sgkEntry;
     private Boolean gssEntry;
-    private String assignerMail;
-    private String mustehaklikBelgesiPath;
-    private String stajYeriFormuPath;
 }

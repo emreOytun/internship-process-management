@@ -31,12 +31,12 @@ public class InternshipProcessController {
     @PostMapping("/update")
     @ResponseStatus(HttpStatus.OK)
     public InternshipProcessUpdateResponse updateIntershipProcess(InternshipProcessDto internshipProcessDto) {
-        return  internshipProcessService.updateInternshipProcess(internshipProcessDto);
+        return internshipProcessService.updateInternshipProcess(internshipProcessDto);
     }
     @DeleteMapping("/delete")
     @ResponseStatus(HttpStatus.OK)
     public InternshipProcessDeleteResponse deleteIntershipProcess(Integer internshipProcessID) {
-        return  internshipProcessService.deleteInternshipProcess(internshipProcessID);
+        return internshipProcessService.deleteInternshipProcess(internshipProcessID);
     }
 
 }

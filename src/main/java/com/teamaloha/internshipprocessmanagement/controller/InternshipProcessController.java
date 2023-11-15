@@ -7,11 +7,11 @@ import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.Internshi
 import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessUpdateResponse;
 import com.teamaloha.internshipprocessmanagement.service.InternshipProcessService;
 import jakarta.validation.Valid;
-import org.apache.catalina.filters.ExpiresFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 @CrossOrigin("http://localhost:4200")
 @RestController
 @RequestMapping("/api/internship-process")

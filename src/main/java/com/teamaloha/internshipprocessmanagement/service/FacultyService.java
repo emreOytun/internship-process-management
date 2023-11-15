@@ -1,9 +1,6 @@
 package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.FacultyDao;
-import com.teamaloha.internshipprocessmanagement.entity.Faculty;
-import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 @CrossOrigin("http://localhost:4200")
 @RestController
 @RequestMapping("/api/holiday")

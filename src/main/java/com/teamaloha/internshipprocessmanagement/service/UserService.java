@@ -1,9 +1,7 @@
 package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.UserDao;
-import com.teamaloha.internshipprocessmanagement.dto.user.UserDto;
 import com.teamaloha.internshipprocessmanagement.entity.User;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

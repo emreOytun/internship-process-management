@@ -6,10 +6,8 @@ import com.teamaloha.internshipprocessmanagement.dto.authentication.StudentRegis
 import com.teamaloha.internshipprocessmanagement.service.StudentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/student")
@@ -22,11 +20,13 @@ public class StudentController {
     }
 
     @PostMapping("/auth/register")
+    @ResponseStatus(HttpStatus.OK)
     public AuthenticationResponse register(@RequestBody @Valid StudentRegisterRequest studentRegisterRequest) {
         return studentService.register(studentRegisterRequest);
     }
 
     @PostMapping("/auth/login")
+    @ResponseStatus(HttpStatus.OK)
     public AuthenticationResponse login(@RequestBody @Valid AuthenticationRequest authenticationRequest) {
         return studentService.login(authenticationRequest);
     }

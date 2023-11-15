@@ -16,14 +16,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.Optional;
 
 @Service
 public class InternshipProcessService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final InternshipProcessDao internshipProcessDao;
-
     private final DepartmentService departmentService;
     private final StudentService studentService;
     private final CompanyService companyService;
@@ -36,104 +34,85 @@ public class InternshipProcessService {
         this.companyService = companyService;
     }
 
-    public InternshipProcess saveInternshipProcess(InternshipProcessDto internshipProcessDto) {
-        Student student = studentService.findStudentById(internshipProcessDto.getStudentId());
-        Department department = departmentService.findDepartmentById(internshipProcessDto.getDepartmentId());
-        Company company = companyService.findCompanyById(internshipProcessDto.getCompanyId());
+ //  public InternshipProcess saveInternshipProcess(InternshipProcessDto internshipProcessDto) {
+ //      Student student = studentService.findStudentById(internshipProcessDto.getStudentId());
+ //      Department department = departmentService.findDepartmentById(internshipProcessDto.getDepartmentId());
+ //      Company company = companyService.findCompanyById(internshipProcessDto.getCompanyId());
 
-        InternshipProcess internshipProcess =  mapDtoToEntity(internshipProcessDto, student, department, company);
-        InternshipProcess savedInternshipProcess = internshipProcessDao.save(internshipProcess);
-        logger.info("Created InternshipProcess with ID: " + savedInternshipProcess.getId());
-        return (savedInternshipProcess);
+ //      InternshipProcess internshipProcess =  mapDtoToEntity(internshipProcessDto, student, department, company);
+ //      InternshipProcess savedInternshipProcess = internshipProcessDao.save(internshipProcess);
+ //      logger.info("Created InternshipProcess with ID: " + savedInternshipProcess.getId());
+ //      return (savedInternshipProcess);
+ //  }
+
+    public InternshipProcessInitResponse initInternshipProcess(Integer userId) {
+        Student student = studentService.findStudentById(userId);
+        InternshipProcess emptyProcess = new InternshipProcess();
+        Date now = new Date();
+        emptyProcess.setStudent(student);
+        emptyProcess.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
+        InternshipProcess savedProcess = internshipProcessDao.save(emptyProcess);
+
+        logger.info("Created InternshipProcess with ID: " + savedProcess.getId());
+        return new InternshipProcessInitResponse(savedProcess.getId());
     }
 
-    public Optional<InternshipProcess> getInternshipProcessById(Integer id) {
-        return internshipProcessDao.findById(id);
-    }
-
-    public InternshipProcessDeleteResponse deleteInternshipProcess(Integer id) {
-        internshipProcessDao.deleteById(id);
-        logger.info("Deleted InternshipProcess with ID: " + id);
-        return new InternshipProcessDeleteResponse("Staj başvurusu başarı ile silinmiştir");
-    }
-
-    public InternshipProcessUpdateResponse updateInternshipProcess(InternshipProcessDto internshipProcessDto) {
+    public InternshipProcessUpdateResponse updateInternshipProcess(InternshipProcessDto internshipProcessDto, Integer userId) {
         Integer id = internshipProcessDto.getId();
-        boolean processExist = internshipProcessDao.existsById(id);
+        InternshipProcess internshipProcess = internshipProcessDao.findInternshipProcessById(id);
 
-        if (!processExist)  {
+        if (internshipProcess == null) {
             logger.error("InternshipProcess with ID " + id + " not found for update.");
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        Student student = studentService.findStudentById(internshipProcessDto.getStudentId());
-        /*
-        if (student == null) {
-            logger.error("Student with given id cannot be found. Student id: "
-                    + internshipProcessDto.getStudentId());
+
+        // TODO: Student-process uyusuyorm u kontrol et
+        Student student = studentService.findStudentById(userId);
+
+        if (student.getId().equals(internshipProcess.getStudent().getId())) {
+            logger.error("The internshipProcess id given does not belong to the student. Student id: "
+                    + student.getId());
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
-         */
         Department department = departmentService.findDepartmentById(internshipProcessDto.getDepartmentId());
-        /*
+
         if (department == null) {
             logger.error("Department with given id cannot be found. Department id: "
                     + internshipProcessDto.getDepartmentId());
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
-         */
+
         Company company = companyService.findCompanyById(internshipProcessDto.getCompanyId());
 
-        InternshipProcess internshipProcess = mapDtoToEntity(internshipProcessDto, student, department, company);
-        internshipProcess.setId(id);
+        moveDtoToEntity(internshipProcess, internshipProcessDto, student, department, company);
         InternshipProcess updatedInternshipProcess = internshipProcessDao.save(internshipProcess);
+
         logger.info("Updated InternshipProcess with ID: " + updatedInternshipProcess.getId());
         return new InternshipProcessUpdateResponse("InternshipProcess updated successfully.");
-
-
-
     }
 
-    public InternshipProcessInitResponse initInternshipProcess(String mail) {
-        Student student = studentService.findByMail(mail);
-        InternshipProcess emptyProcess = new InternshipProcess();
-        emptyProcess.setStudent(student); // Staj sürecini öğrenciye bağlayın
-        InternshipProcess savedProcess = internshipProcessDao.save(emptyProcess);
-        logger.info("Created InternshipProcess with ID: " + savedProcess.getId());
-        return new InternshipProcessInitResponse(savedProcess.getId());
+    public InternshipProcessDeleteResponse deleteInternshipProcess(Integer id) {
+        internshipProcessDao.deleteById(id);
 
+        logger.info("Deleted InternshipProcess with ID: " + id);
+        return new InternshipProcessDeleteResponse("Staj başvurusu başarı ile silinmiştir");
     }
 
-    private InternshipProcess mapDtoToEntity(InternshipProcessDto internshipProcessDto, Student student, Department department, Company company) {
-        InternshipProcess internshipProcess = new InternshipProcess();
+    // TODO: Gereksizleri sil. Ve yeni olusturma entity den gelene kopyala
+    private void moveDtoToEntity(InternshipProcess internshipProcess, InternshipProcessDto internshipProcessDto, Student student, Department department, Company company) {
+
         Date now = new Date();
 
         BeanUtils.copyProperties(internshipProcessDto, internshipProcess);
         // Map individual fields from DTO to entity
-        internshipProcess.setId(internshipProcessDto.getId());
         internshipProcess.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
         internshipProcess.setStudent(student);
-        internshipProcess.setTc(internshipProcessDto.getTc());
-        internshipProcess.setStudentNumber(internshipProcessDto.getStudentNumber());
-        internshipProcess.setTelephoneNumber(internshipProcessDto.getTelephoneNumber());
-        internshipProcess.setClassNumber(internshipProcessDto.getClassNumber());
-        internshipProcess.setPosition(internshipProcessDto.getPosition());
-        internshipProcess.setInternshipType(internshipProcessDto.getInternshipType());
-        internshipProcess.setInternshipNumber(internshipProcessDto.getInternshipNumber());
         internshipProcess.setCompany(company);
         internshipProcess.setDepartment(department);
-        internshipProcess.setEngineerMail(internshipProcessDto.getEngineerMail());
-        internshipProcess.setEngineerName(internshipProcessDto.getEngineerName());
-        internshipProcess.setChoiceReason(internshipProcessDto.getChoiceReason());
-        internshipProcess.setSgkEntry(internshipProcessDto.getSgkEntry());
-        internshipProcess.setGssEntry(internshipProcessDto.getGssEntry());
-        internshipProcess.setAssignerMail(internshipProcessDto.getAssignerMail());
-        internshipProcess.setMustehaklikBelgesiPath(internshipProcessDto.getMustehaklikBelgesiPath());
-        internshipProcess.setStajYeriFormuPath(internshipProcessDto.getStajYeriFormuPath());
+        //internshipProcess.setMustehaklikBelgesiPath(internshipProcessDto.getMustehaklikBelgesiPath());
+        //internshipProcess.setStajYeriFormuPath(internshipProcessDto.getStajYeriFormuPath());
 
-        return internshipProcess;
     }
-
-
 }

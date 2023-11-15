@@ -70,7 +70,7 @@ public class StudentService {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
-        if (StringUtils.equals(student.getPassword(),
+        if (!StringUtils.equals(student.getPassword(),
                 authenticationService.hashPassword(authenticationRequest.getPassword()))) {
             logger.error("Invalid password.");
             throw new CustomException(HttpStatus.BAD_REQUEST);

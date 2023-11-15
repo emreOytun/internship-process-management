@@ -85,8 +85,7 @@ public class AcademicianService {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
-        if (!StringUtils.equals(academician.getPassword(),
-                                authenticationService.hashPassword(authenticationRequest.getPassword()))) {
+        if (!authenticationService.matchesPassword(authenticationRequest.getPassword(), academician.getPassword())) {
             logger.error("Invalid password.");
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }

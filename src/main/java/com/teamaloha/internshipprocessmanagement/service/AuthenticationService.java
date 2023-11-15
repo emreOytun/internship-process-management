@@ -29,4 +29,8 @@ public class AuthenticationService {
     public String createJwtToken(UserDto userDto) {
         return jwtService.generateToken(new SecurityUser(userDto));
     }
+
+    public boolean matchesPassword(String rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
 }

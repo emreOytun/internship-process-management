@@ -16,7 +16,7 @@ public class LoggingAspect {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Pointcut("within(com.teamaloha.internshipprocessmanagement.service..*) || within(com.teamaloha.internshipprocessmanagement.dao..*)")
+    @Pointcut("within(com.teamaloha.internshipprocessmanagement.service..*)")
     public void pointcut() {
     }
 

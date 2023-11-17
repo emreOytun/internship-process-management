@@ -1,7 +1,7 @@
 package com.teamaloha.internshipprocessmanagement.entity;
 
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
-import com.teamaloha.internshipprocessmanagement.enums.InternshipProcessStatusEnum;
+import com.teamaloha.internshipprocessmanagement.enums.ProcessStatusEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -88,5 +88,5 @@ public class InternshipProcess {
 
     @Column(name = "process_status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private InternshipProcessStatusEnum processStatus;
+    private ProcessStatusEnum processStatus;
 }

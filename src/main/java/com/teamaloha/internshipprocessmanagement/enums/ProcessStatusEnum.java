@@ -1,6 +1,6 @@
 package com.teamaloha.internshipprocessmanagement.enums;
 
-public enum InternshipProcessStatusEnum {
+public enum ProcessStatusEnum {
     FORM,
     PRE1,
     PRE2,

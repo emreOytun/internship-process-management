@@ -5,7 +5,7 @@ import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.Internshi
 import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessInitResponse;
 import com.teamaloha.internshipprocessmanagement.entity.*;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
-import com.teamaloha.internshipprocessmanagement.enums.InternshipProcessStatusEnum;
+import com.teamaloha.internshipprocessmanagement.enums.ProcessStatusEnum;
 import com.teamaloha.internshipprocessmanagement.exceptions.CustomException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +41,7 @@ public class InternshipProcessService {
         InternshipProcess emptyProcess = new InternshipProcess();
         emptyProcess.setStudent(student);
         emptyProcess.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
-        emptyProcess.setProcessStatus(InternshipProcessStatusEnum.FORM);
+        emptyProcess.setProcessStatus(ProcessStatusEnum.FORM);
         InternshipProcess savedProcess = internshipProcessDao.save(emptyProcess);
 
         logger.info("Created InternshipProcess with ID: " + savedProcess.getId());
@@ -106,6 +106,6 @@ public class InternshipProcessService {
         internshipProcess.setDepartment(department);
         internshipProcess.setMustehaklikBelgesiPath(internshipProcessUpdateRequest.getMustehaklikBelgesiPath());
         internshipProcess.setStajYeriFormuPath(internshipProcessUpdateRequest.getStajYeriFormuPath());
-        internshipProcess.setProcessStatus(InternshipProcessStatusEnum.FORM);
+        internshipProcess.setProcessStatus(ProcessStatusEnum.FORM);
     }
 }

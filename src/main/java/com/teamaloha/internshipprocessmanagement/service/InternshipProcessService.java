@@ -1,12 +1,11 @@
 package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.InternshipProcessDao;
-import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessDeleteResponse;
-import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessDto;
+import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessUpdateRequest;
 import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessInitResponse;
-import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessUpdateResponse;
 import com.teamaloha.internshipprocessmanagement.entity.*;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
+import com.teamaloha.internshipprocessmanagement.enums.InternshipProcessStatusEnum;
 import com.teamaloha.internshipprocessmanagement.exceptions.CustomException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,31 +22,34 @@ public class InternshipProcessService {
 
     private final InternshipProcessDao internshipProcessDao;
     private final DepartmentService departmentService;
-    private final StudentService studentService;
     private final CompanyService companyService;
 
     @Autowired
-    public InternshipProcessService(InternshipProcessDao internshipProcessDao, DepartmentService departmentService, StudentService studentService, CompanyService companyService) {
+    public InternshipProcessService(InternshipProcessDao internshipProcessDao, DepartmentService departmentService,
+                                    CompanyService companyService) {
         this.internshipProcessDao = internshipProcessDao;
         this.departmentService = departmentService;
-        this.studentService = studentService;
         this.companyService = companyService;
     }
 
     public InternshipProcessInitResponse initInternshipProcess(Integer userId) {
-        Student student = studentService.findStudentById(userId);
-        InternshipProcess emptyProcess = new InternshipProcess();
+        // Only setting the ID of Student entity is enough to insert InternshipProcess entity.
+        Student student = new Student();
+        student.setId(userId);
+
         Date now = new Date();
+        InternshipProcess emptyProcess = new InternshipProcess();
         emptyProcess.setStudent(student);
         emptyProcess.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
+        emptyProcess.setProcessStatus(InternshipProcessStatusEnum.FORM);
         InternshipProcess savedProcess = internshipProcessDao.save(emptyProcess);
 
         logger.info("Created InternshipProcess with ID: " + savedProcess.getId());
         return new InternshipProcessInitResponse(savedProcess.getId());
     }
 
-    public InternshipProcessUpdateResponse updateInternshipProcess(InternshipProcessDto internshipProcessDto, Integer userId) {
-        Integer id = internshipProcessDto.getId();
+    public void updateInternshipProcess(InternshipProcessUpdateRequest internshipProcessUpdateRequest, Integer userId) {
+        Integer id = internshipProcessUpdateRequest.getId();
         InternshipProcess internshipProcess = internshipProcessDao.findInternshipProcessById(id);
 
         if (internshipProcess == null) {
@@ -56,7 +58,6 @@ public class InternshipProcessService {
         }
 
         // Check if the current user id and the student id of the given internship process is matching.
-        logger.info(internshipProcess.getStudent().getMail());
         if (!userId.equals(internshipProcess.getStudent().getId())) {
             logger.error("The internshipProcess id given does not belong to the student. Student id: "
                     + userId);
@@ -65,48 +66,46 @@ public class InternshipProcessService {
 
         // If department id is given, check if there is such department.
         Department department = null;
-        if (internshipProcessDto.getDepartmentId() != null) {
-            department = departmentService.findDepartmentById(internshipProcessDto.getDepartmentId());
+        if (internshipProcessUpdateRequest.getDepartmentId() != null) {
+            department = departmentService.findDepartmentById(internshipProcessUpdateRequest.getDepartmentId());
             if (department == null) {
                 logger.error("Department with given id cannot be found. Department id: "
-                        + internshipProcessDto.getDepartmentId());
+                        + internshipProcessUpdateRequest.getDepartmentId());
                 throw new CustomException(HttpStatus.BAD_REQUEST);
             }
         }
 
         // If company id is given, check if there is such company.
         Company company = null;
-        if (internshipProcessDto.getCompanyId() != null) {
-            company = companyService.findCompanyById(internshipProcessDto.getCompanyId());
+        if (internshipProcessUpdateRequest.getCompanyId() != null) {
+            company = companyService.findCompanyById(internshipProcessUpdateRequest.getCompanyId());
             if (company == null) {
                 logger.error("Company with given id cannot be found. Company id: "
-                        + internshipProcessDto.getCompanyId());
+                        + internshipProcessUpdateRequest.getCompanyId());
                 throw new CustomException(HttpStatus.BAD_REQUEST);
             }
         }
 
-        moveDtoToEntity(internshipProcess, internshipProcessDto, department, company);
+        copyDtoToEntity(internshipProcess, internshipProcessUpdateRequest, department, company);
         InternshipProcess updatedInternshipProcess = internshipProcessDao.save(internshipProcess);
 
         logger.info("Updated InternshipProcess with ID: " + updatedInternshipProcess.getId());
-        return new InternshipProcessUpdateResponse("InternshipProcess updated successfully.");
     }
 
-    public InternshipProcessDeleteResponse deleteInternshipProcess(Integer id) {
+    public void deleteInternshipProcess(Integer id) {
         internshipProcessDao.deleteById(id);
-
         logger.info("Deleted InternshipProcess with ID: " + id);
-        return new InternshipProcessDeleteResponse("Staj başvurusu başarı ile silinmiştir");
     }
 
-    private void moveDtoToEntity(InternshipProcess internshipProcess, InternshipProcessDto internshipProcessDto, Department department, Company company) {
+    private void copyDtoToEntity(InternshipProcess internshipProcess, InternshipProcessUpdateRequest internshipProcessUpdateRequest, Department department, Company company) {
         Date now = new Date();
 
-        BeanUtils.copyProperties(internshipProcessDto, internshipProcess);
+        BeanUtils.copyProperties(internshipProcessUpdateRequest, internshipProcess);
         internshipProcess.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
         internshipProcess.setCompany(company);
         internshipProcess.setDepartment(department);
-        internshipProcess.setMustehaklikBelgesiPath(internshipProcessDto.getMustehaklikBelgesiPath());
-        internshipProcess.setStajYeriFormuPath(internshipProcessDto.getStajYeriFormuPath());
+        internshipProcess.setMustehaklikBelgesiPath(internshipProcessUpdateRequest.getMustehaklikBelgesiPath());
+        internshipProcess.setStajYeriFormuPath(internshipProcessUpdateRequest.getStajYeriFormuPath());
+        internshipProcess.setProcessStatus(InternshipProcessStatusEnum.FORM);
     }
 }

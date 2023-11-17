@@ -1,10 +1,13 @@
 package com.teamaloha.internshipprocessmanagement.entity;
 
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
+import com.teamaloha.internshipprocessmanagement.enums.InternshipProcessStatusEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Date;
 
 @Entity
 @Table(name = "internship_process")
@@ -45,6 +48,12 @@ public class InternshipProcess {
     @Column(name = "internship_number", nullable = true)
     private Integer internshipNumber;
 
+    @Column(name = "start_date", nullable = true)
+    private Date startDate;
+
+    @Column(name = "end_date", nullable = true)
+    private Date endDate;
+
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.DETACH}, fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "company_id")
     private Company company;
@@ -76,4 +85,8 @@ public class InternshipProcess {
 
     @Column(name = "staj_yeri_formu_path", nullable = true)
     private String stajYeriFormuPath;
+
+    @Column(name = "process_status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private InternshipProcessStatusEnum processStatus;
 }

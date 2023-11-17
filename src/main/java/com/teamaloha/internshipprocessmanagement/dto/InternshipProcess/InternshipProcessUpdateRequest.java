@@ -1,19 +1,17 @@
 package com.teamaloha.internshipprocessmanagement.dto.InternshipProcess;
 
-import com.teamaloha.internshipprocessmanagement.entity.InternshipProcess;
-import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class InternshipProcessDto {
+public class InternshipProcessUpdateRequest {
     @NotNull
     private Integer id;
 
@@ -30,6 +28,10 @@ public class InternshipProcessDto {
     private String internshipType;
 
     private Integer internshipNumber;
+
+    private Date startDate;
+
+    private Date endDate;
 
     private Integer companyId;
 

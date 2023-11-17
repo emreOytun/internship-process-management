@@ -6,6 +6,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,8 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     // It's generated using the website; and this key is secret and unique for my application.
     private final String SECRET_KEY;
@@ -48,8 +52,10 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String jwtToken) {
-        if (extractUsername(jwtToken) != null && !isTokenExpired(jwtToken)) {
-            return true;
+        try {
+            return !isTokenExpired(jwtToken) && extractUsername(jwtToken) != null;
+        } catch (Exception e) {
+            logger.error(e.toString());
         }
         return false;
     }

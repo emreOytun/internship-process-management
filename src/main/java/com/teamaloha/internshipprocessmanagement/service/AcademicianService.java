@@ -71,7 +71,10 @@ public class AcademicianService {
         academician.setDepartment(department);
         academician.setRoleEnum(RoleEnum.ACADEMICIAN);
         academician.setPassword(authenticationService.hashPassword(academicianRegisterRequest.getPassword()));
-        academician.setApprovalAuthority(false);
+        academician.setInternshipCommittee(false);
+        academician.setDepartmentChair(false);
+        academician.setExecutive(false);
+        academician.setAcademic(false);
         academician.setValidated(false);
         academician.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
         return academician;

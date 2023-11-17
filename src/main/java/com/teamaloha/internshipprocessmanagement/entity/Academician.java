@@ -15,8 +15,17 @@ public class Academician extends User {
     @JoinColumn(name = "department_id")
     private Department department;
 
-    @Column(name = "approval_authorithy")
-    private Boolean approvalAuthority;
+    @Column(name = "internship_committee")
+    private Boolean internshipCommittee;
+
+    @Column(name = "department_chair")
+    private Boolean departmentChair;
+
+    @Column(name = "executive")
+    private Boolean executive;
+
+    @Column(name = "academic")
+    private Boolean academic;
 
     @Column(name = "validated")
     private Boolean validated;

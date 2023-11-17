@@ -20,9 +20,9 @@ public class ProcessAssignee {
     @Embedded
     LogDates logDates;
 
-    @Column(name = "processId", nullable = false)
+    @Column(name = "process_id", nullable = false)
     private Integer processId;
 
-    @Column(name = "userId", nullable = false)
-    private Integer userId;
+    @Column(name = "assignee_id", nullable = false)
+    private Integer assigneeId;
 }

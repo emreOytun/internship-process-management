@@ -6,5 +6,12 @@ public enum ProcessStatusEnum {
     PRE2,
     PRE3,
     PRE4,
-    IN1
+    IN1;
+
+    public static ProcessStatusEnum findNextStatus(ProcessStatusEnum processStatusEnum) {
+        ProcessStatusEnum[] values = ProcessStatusEnum.values();
+        int currentIndex = processStatusEnum.ordinal();
+        int nextIndex = currentIndex + 1;
+        return values[nextIndex];
+    }
 }

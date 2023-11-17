@@ -1,10 +1,8 @@
 package com.teamaloha.internshipprocessmanagement.controller;
 
 import com.teamaloha.internshipprocessmanagement.annotations.CurrentUserId;
-import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessDeleteResponse;
-import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessDto;
+import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessUpdateRequest;
 import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessInitResponse;
-import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessUpdateResponse;
 import com.teamaloha.internshipprocessmanagement.service.InternshipProcessService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,17 +28,17 @@ public class InternshipProcessController {
         return internshipProcessService.initInternshipProcess(userId);
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
-    public InternshipProcessUpdateResponse updateInternshipProcess(@RequestBody @Valid InternshipProcessDto internshipProcessDto, @CurrentUserId Integer userId) {
-        return internshipProcessService.updateInternshipProcess(internshipProcessDto, userId);
+    public void updateInternshipProcess(@RequestBody @Valid InternshipProcessUpdateRequest internshipProcessUpdateRequest, @CurrentUserId Integer userId) {
+        internshipProcessService.updateInternshipProcess(internshipProcessUpdateRequest, userId);
     }
     @DeleteMapping("/delete")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
-    public InternshipProcessDeleteResponse deleteInternshipProcess(Integer internshipProcessID) {
-        return internshipProcessService.deleteInternshipProcess(internshipProcessID);
+    public void deleteInternshipProcess(Integer internshipProcessID) {
+        internshipProcessService.deleteInternshipProcess(internshipProcessID);
     }
 
 }

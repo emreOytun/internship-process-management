@@ -8,6 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,7 +28,9 @@ public class JpaUserDetailsService implements UserDetailsService {
     }
 
     @Override
+    @Cacheable(value = "users", sync = true)
     public UserDetails loadUserByUsername(String mail) throws UsernameNotFoundException {
+        logger.info("ENTERED LOADUSER METHOD");
         User user = userService.findByMail(mail);
         if (user == null) {
             String errorMessage = "User is not found. Mail: " + mail;
@@ -36,5 +41,11 @@ public class JpaUserDetailsService implements UserDetailsService {
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(user, userDto);
         return new SecurityUser(userDto);
+    }
+
+    @CacheEvict(value = "users", allEntries = true)
+    @Scheduled(fixedDelayString = "${caching.spring.userCacheTTL}")
+    public void emptyUsersCache() {
+        logger.info("Emptying Users cache");
     }
 }

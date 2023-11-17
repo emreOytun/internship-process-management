@@ -27,20 +27,19 @@ public class InternshipProcessController {
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
     public InternshipProcessInitResponse initInternshipProcess(@CurrentUserId Integer userId) {
-        String mail = "Tugay@gtu.edu.tr";
         return internshipProcessService.initInternshipProcess(userId);
     }
 
     @PostMapping("/update")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
-    public InternshipProcessUpdateResponse updateIntershipProcess(@RequestBody @Valid InternshipProcessDto internshipProcessDto, @CurrentUserId Integer userId) {
+    public InternshipProcessUpdateResponse updateInternshipProcess(@RequestBody @Valid InternshipProcessDto internshipProcessDto, @CurrentUserId Integer userId) {
         return internshipProcessService.updateInternshipProcess(internshipProcessDto, userId);
     }
     @DeleteMapping("/delete")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
-    public InternshipProcessDeleteResponse deleteIntershipProcess(Integer internshipProcessID) {
+    public InternshipProcessDeleteResponse deleteInternshipProcess(Integer internshipProcessID) {
         return internshipProcessService.deleteInternshipProcess(internshipProcessID);
     }
 

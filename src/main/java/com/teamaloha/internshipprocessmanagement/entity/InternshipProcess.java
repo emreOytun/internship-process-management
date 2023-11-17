@@ -6,8 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/* TODO: AD-SOYAD bilgisi student'tan gelecegi icin eklenmedi. */
-
 @Entity
 @Table(name = "internship_process")
 @Data

@@ -34,17 +34,6 @@ public class InternshipProcessService {
         this.companyService = companyService;
     }
 
- //  public InternshipProcess saveInternshipProcess(InternshipProcessDto internshipProcessDto) {
- //      Student student = studentService.findStudentById(internshipProcessDto.getStudentId());
- //      Department department = departmentService.findDepartmentById(internshipProcessDto.getDepartmentId());
- //      Company company = companyService.findCompanyById(internshipProcessDto.getCompanyId());
-
- //      InternshipProcess internshipProcess =  mapDtoToEntity(internshipProcessDto, student, department, company);
- //      InternshipProcess savedInternshipProcess = internshipProcessDao.save(internshipProcess);
- //      logger.info("Created InternshipProcess with ID: " + savedInternshipProcess.getId());
- //      return (savedInternshipProcess);
- //  }
-
     public InternshipProcessInitResponse initInternshipProcess(Integer userId) {
         Student student = studentService.findStudentById(userId);
         InternshipProcess emptyProcess = new InternshipProcess();
@@ -66,27 +55,37 @@ public class InternshipProcessService {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
-        // TODO: Student-process uyusuyorm u kontrol et
-        Student student = studentService.findStudentById(userId);
-
-        if (student.getId().equals(internshipProcess.getStudent().getId())) {
+        // Check if the current user id and the student id of the given internship process is matching.
+        logger.info(internshipProcess.getStudent().getMail());
+        if (!userId.equals(internshipProcess.getStudent().getId())) {
             logger.error("The internshipProcess id given does not belong to the student. Student id: "
-                    + student.getId());
+                    + userId);
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
-        Department department = departmentService.findDepartmentById(internshipProcessDto.getDepartmentId());
-
-        if (department == null) {
-            logger.error("Department with given id cannot be found. Department id: "
-                    + internshipProcessDto.getDepartmentId());
-            throw new CustomException(HttpStatus.BAD_REQUEST);
+        // If department id is given, check if there is such department.
+        Department department = null;
+        if (internshipProcessDto.getDepartmentId() != null) {
+            department = departmentService.findDepartmentById(internshipProcessDto.getDepartmentId());
+            if (department == null) {
+                logger.error("Department with given id cannot be found. Department id: "
+                        + internshipProcessDto.getDepartmentId());
+                throw new CustomException(HttpStatus.BAD_REQUEST);
+            }
         }
 
+        // If company id is given, check if there is such company.
+        Company company = null;
+        if (internshipProcessDto.getCompanyId() != null) {
+            company = companyService.findCompanyById(internshipProcessDto.getCompanyId());
+            if (company == null) {
+                logger.error("Company with given id cannot be found. Company id: "
+                        + internshipProcessDto.getCompanyId());
+                throw new CustomException(HttpStatus.BAD_REQUEST);
+            }
+        }
 
-        Company company = companyService.findCompanyById(internshipProcessDto.getCompanyId());
-
-        moveDtoToEntity(internshipProcess, internshipProcessDto, student, department, company);
+        moveDtoToEntity(internshipProcess, internshipProcessDto, department, company);
         InternshipProcess updatedInternshipProcess = internshipProcessDao.save(internshipProcess);
 
         logger.info("Updated InternshipProcess with ID: " + updatedInternshipProcess.getId());
@@ -100,19 +99,14 @@ public class InternshipProcessService {
         return new InternshipProcessDeleteResponse("Staj başvurusu başarı ile silinmiştir");
     }
 
-    // TODO: Gereksizleri sil. Ve yeni olusturma entity den gelene kopyala
-    private void moveDtoToEntity(InternshipProcess internshipProcess, InternshipProcessDto internshipProcessDto, Student student, Department department, Company company) {
-
+    private void moveDtoToEntity(InternshipProcess internshipProcess, InternshipProcessDto internshipProcessDto, Department department, Company company) {
         Date now = new Date();
 
         BeanUtils.copyProperties(internshipProcessDto, internshipProcess);
-        // Map individual fields from DTO to entity
         internshipProcess.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
-        internshipProcess.setStudent(student);
         internshipProcess.setCompany(company);
         internshipProcess.setDepartment(department);
-        //internshipProcess.setMustehaklikBelgesiPath(internshipProcessDto.getMustehaklikBelgesiPath());
-        //internshipProcess.setStajYeriFormuPath(internshipProcessDto.getStajYeriFormuPath());
-
+        internshipProcess.setMustehaklikBelgesiPath(internshipProcessDto.getMustehaklikBelgesiPath());
+        internshipProcess.setStajYeriFormuPath(internshipProcessDto.getStajYeriFormuPath());
     }
 }

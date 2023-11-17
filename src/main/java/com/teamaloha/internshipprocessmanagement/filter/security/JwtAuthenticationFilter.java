@@ -24,7 +24,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
-//    private final CacheService cacheService;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -46,13 +45,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Try to get user from the database in that way we check if there exists such user.
                 // Also check expiration date. (jwtService.isTokenValid does this)
                 String username = jwtService.extractUsername(jwtToken);
-
-                // TODO: Cache servisi ekle.
-//                UserDetails userDetails = (UserDetails) cacheService.getCacheValue(username);
-//                if (userDetails == null) {
-//                    userDetails = userDetailsService.loadUserByUsername(username);
-//                }
-//                cacheService.cacheValueWithTTL(username, userDetails, CustomerManagementConstants.USER_EXPIRE_TIME_IN_SECONDS);
 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 

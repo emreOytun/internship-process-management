@@ -17,10 +17,10 @@ public interface InternshipProcessDao extends JpaRepository<InternshipProcess, I
     InternshipProcess findInternshipProcessById(Integer id);
 
     @EntityGraph(type = EntityGraph.EntityGraphType.FETCH,
-            attributePaths = {
-                    "student",
-                    "company",
-                    "department"
-            })
+    attributePaths = {
+            "student",
+            "company",
+            "department"
+    })
     List<InternshipProcess> findAll();
 }

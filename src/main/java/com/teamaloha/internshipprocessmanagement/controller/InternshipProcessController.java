@@ -41,4 +41,11 @@ public class InternshipProcessController {
         internshipProcessService.deleteInternshipProcess(internshipProcessID);
     }
 
+    @PostMapping("/start-internship-process-approval")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
+    public void startInternshipApprovalProcess(@RequestParam("processId") Integer internshipProcessID, @CurrentUserId Integer userId) {
+        internshipProcessService.startInternshipApprovalProcess(internshipProcessID, userId);
+    }
+
 }

@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 
 @Service
@@ -97,4 +98,21 @@ public class AcademicianService {
         String jwtToken = authenticationService.createJwtToken(userDto);
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
+
+    public List<Integer> findAcademicianIdsByInternshipCommitteeAndDepartment(Boolean internshipCommittee,  Integer departmentId) {
+        return academicianDao.findAcademicianIdsByInternshipCommitteeAndDepartment(internshipCommittee, departmentId);
+    }
+
+    public List<Integer> findAcademicianIdsByDepartmentChairAndDepartment(Boolean departmentChair, Integer departmentId) {
+        return academicianDao.findAcademicianIdsByDepartmentChairAndDepartment(departmentChair, departmentId);
+    }
+
+    public List<Integer> findAcademicianIdsByExecutiveAndDepartment(Boolean executive, Integer departmentId) {
+        return academicianDao.findAcademicianIdsByExecutiveAndDepartment(executive, departmentId);
+    }
+
+    public List<Integer> findAcademicianIdsByAcademicAndDepartment(Boolean academic, Integer departmentId) {
+        return academicianDao.findAcademicianIdsByAcademicAndDepartment(academic, departmentId);
+    }
+
 }

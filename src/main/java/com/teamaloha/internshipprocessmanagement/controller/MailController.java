@@ -1,15 +1,10 @@
 package com.teamaloha.internshipprocessmanagement.controller;
 
-import com.teamaloha.internshipprocessmanagement.annotations.CurrentUserId;
-import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessUpdateRequest;
-import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessInitResponse;
 import com.teamaloha.internshipprocessmanagement.dto.mail.SendMailRequest;
-import com.teamaloha.internshipprocessmanagement.service.InternshipProcessService;
 import com.teamaloha.internshipprocessmanagement.service.MailService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

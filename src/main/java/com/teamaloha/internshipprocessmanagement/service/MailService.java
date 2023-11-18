@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.List;
 
-@Service(value = "MailService")
+@Service
 public class MailService {
     private final Environment environment;
 
@@ -47,10 +47,9 @@ public class MailService {
         message.setSubject(subject);
         message.setText(text);
 
-        String fromAddress = environment.getProperty("mail.from.address", "noreply@example.com");
+        String fromAddress = environment.getProperty("mail.from.address");
         message.setFrom(fromAddress);
 
-        // Send the email
         emailSender.send(message);
 
         logger.info("Mail sent to: " + to);

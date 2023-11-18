@@ -195,7 +195,7 @@ public class InternshipProcessService {
     }
 
     @Transactional
-    protected void insertProcessAssigneesAndUpdateProcessStatus(List<ProcessAssignee> processAssigneeList,
+    public void insertProcessAssigneesAndUpdateProcessStatus(List<ProcessAssignee> processAssigneeList,
                                                                 InternshipProcess internshipProcess) {
         processAssigneeService.saveAll(processAssigneeList);
         internshipProcessDao.save(internshipProcess);
@@ -219,8 +219,6 @@ public class InternshipProcessService {
         internshipProcess.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
         internshipProcess.setCompany(company);
         internshipProcess.setDepartment(department);
-        internshipProcess.setMustehaklikBelgesiPath(internshipProcessUpdateRequest.getMustehaklikBelgesiPath());
-        internshipProcess.setStajYeriFormuPath(internshipProcessUpdateRequest.getStajYeriFormuPath());
         internshipProcess.setProcessStatus(ProcessStatusEnum.FORM);
     }
 }

@@ -50,7 +50,10 @@ public class SecurityConfig {
             "/api/student/auth",
             "/api/student/auth/**",
             // dates
-            "/api/holiday/**"
+            "/api/holiday/**",
+            // Mail for test ***DELETE IN LIVE***
+            "/api/mail/**"
+
     };
 
     @Autowired

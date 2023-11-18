@@ -19,11 +19,12 @@ public class MailService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
-    private JavaMailSender emailSender;
+    private final JavaMailSender emailSender;
 
     @Autowired
-    public MailService(Environment environment) {
+    public MailService(Environment environment, JavaMailSender emailSender) {
         this.environment = environment;
+        this.emailSender = emailSender;
     }
 
     public void sendMail(SendMailRequest sendMailRequest) {

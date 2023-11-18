@@ -28,21 +28,21 @@ public class MailService {
     }
 
     public void sendMail(SendMailRequest sendMailRequest) {
-        String to = sendMailRequest.getTo();
-        String cc = sendMailRequest.getCc();
+        List<String> to = sendMailRequest.getTo();
+        List<String> cc = sendMailRequest.getCc();
         String subject = sendMailRequest.getSubject();
         String text = sendMailRequest.getText();
 
-        sendMail(Collections.singletonList(to), cc, subject, text);
+        sendMail(to, cc, subject, text);
     }
 
-    public void sendMail(List<String> to, String cc, String subject, String text) {
+    public void sendMail(List<String> to, List<String> cc, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setTo(to.toArray(new String[0]));
 
         if (cc != null && !cc.isEmpty()) {
-            message.setCc(cc);
+            message.setCc(cc.toArray(new String[0]));
         }
 
         message.setSubject(subject);

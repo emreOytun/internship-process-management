@@ -132,7 +132,6 @@ public class InternshipProcessService {
 
     private InternshipProcess getInternshipProcessIfExistsOrThrowException(Integer processId) {
         InternshipProcess internshipProcess = internshipProcessDao.findInternshipProcessById(processId);
-
         if (internshipProcess == null) {
             logger.error("InternshipProcess with ID " + processId + " not found for update.");
             throw new CustomException(HttpStatus.BAD_REQUEST);
@@ -183,19 +182,14 @@ public class InternshipProcessService {
     private List<Integer> findAssigneeIdList(ProcessStatusEnum processStatusEnum, Department department, Integer studentId) {
         return switch (processStatusEnum) {
             case FORM -> academicianService.findAcademicianIdsByInternshipCommitteeAndDepartment(true, department.getId());
-
             case PRE1 -> academicianService.findAcademicianIdsByDepartmentChairAndDepartment(true, department.getId());
-
             case PRE2 -> academicianService.findAcademicianIdsByExecutiveAndDepartment(true, department.getId());
-
             case PRE3 -> academicianService.findAcademicianIdsByAcademicAndDepartment(true, department.getId());
-
             case PRE4 -> {
                 List<Integer> assigneIdList = new ArrayList<>();
                 assigneIdList.add(studentId);
                 yield assigneIdList;
             }
-
             default -> throw new IllegalStateException("Unexpected value: " + processStatusEnum);
         };
     }
@@ -221,7 +215,6 @@ public class InternshipProcessService {
 
     private void copyDtoToEntity(InternshipProcess internshipProcess, InternshipProcessUpdateRequest internshipProcessUpdateRequest, Department department, Company company) {
         Date now = new Date();
-
         BeanUtils.copyProperties(internshipProcessUpdateRequest, internshipProcess);
         internshipProcess.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
         internshipProcess.setCompany(company);

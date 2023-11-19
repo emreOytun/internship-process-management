@@ -1,9 +1,6 @@
 package com.teamaloha.internshipprocessmanagement.controller;
 
-import com.teamaloha.internshipprocessmanagement.dto.company.CompanyAddRequest;
-import com.teamaloha.internshipprocessmanagement.dto.company.CompanyAddResponse;
-import com.teamaloha.internshipprocessmanagement.dto.company.CompanyUpdateRequest;
-import com.teamaloha.internshipprocessmanagement.dto.company.CompanyUpdateResponse;
+import com.teamaloha.internshipprocessmanagement.dto.company.*;
 import com.teamaloha.internshipprocessmanagement.service.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,5 +31,13 @@ public class CompanyController {
     // @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name()) || hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
     public CompanyUpdateResponse updateCompany(@RequestBody CompanyUpdateRequest companyUpdateRequest) {
         return companyService.update(companyUpdateRequest);
+    }
+
+    @GetMapping("/getCompany")
+    @ResponseStatus(HttpStatus.OK)
+    // test ten sonra ekleyelim
+    // @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name()) || hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
+    public CompanyGetResponse updateCompany(@RequestBody CompanyGetRequest companyGetRequest) {
+        return companyService.get(companyGetRequest);
     }
 }

@@ -52,7 +52,9 @@ public class SecurityConfig {
             // dates
             "/api/holiday/**",
             // company
-            "/api/company/**"
+            "/api/company/**",
+            // company staff
+            "/api/staff/**"
     };
 
     @Autowired

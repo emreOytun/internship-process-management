@@ -3,15 +3,13 @@ package com.teamaloha.internshipprocessmanagement.service;
 import com.teamaloha.internshipprocessmanagement.dao.CompanyDao;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AuthenticationResponse;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.StudentRegisterRequest;
-import com.teamaloha.internshipprocessmanagement.dto.company.CompanyAddRequest;
-import com.teamaloha.internshipprocessmanagement.dto.company.CompanyAddResponse;
-import com.teamaloha.internshipprocessmanagement.dto.company.CompanyUpdateRequest;
-import com.teamaloha.internshipprocessmanagement.dto.company.CompanyUpdateResponse;
+import com.teamaloha.internshipprocessmanagement.dto.company.*;
 import com.teamaloha.internshipprocessmanagement.dto.holiday.HolidayAddRequest;
 import com.teamaloha.internshipprocessmanagement.dto.user.UserDto;
 import com.teamaloha.internshipprocessmanagement.entity.Company;
 import com.teamaloha.internshipprocessmanagement.entity.Holiday;
 import com.teamaloha.internshipprocessmanagement.entity.Student;
+import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ErrorCodeEnum;
 import com.teamaloha.internshipprocessmanagement.exceptions.CustomException;
 import org.slf4j.Logger;
@@ -69,8 +67,24 @@ public class CompanyService {
         return new CompanyUpdateResponse(id);
     }
 
+    public CompanyGetResponse get(CompanyGetRequest companyGetRequest) {
+        boolean isCompanyExists = companyDao.existsById(companyGetRequest.getId());
+
+        if (!isCompanyExists) {
+            logger.error("Given company not exists before. Company: " + companyGetRequest.getId());
+            throw new CustomException(ErrorCodeEnum.COMPANY_NOT_EXISTS_BEFORE.getErrorCode(), HttpStatus.BAD_REQUEST);
+        }
+        Company company = companyDao.findCompanyById(companyGetRequest.getId());
+        CompanyGetResponse companyGetResponse = new CompanyGetResponse();
+        BeanUtils.copyProperties(company, companyGetResponse);
+
+        return companyGetResponse;
+    }
+
     private Company convertDtoToEntity(CompanyAddRequest companyAddRequest) {
         Company company = new Company();
+        Date now = new Date();
+        company.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
         BeanUtils.copyProperties(companyAddRequest, company);
 
         return company;

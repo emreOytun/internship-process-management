@@ -54,7 +54,7 @@ public class SecurityConfig {
             // company
             "/api/company/**",
             // company staff
-            "/api/staff/**"
+            "/api/staff/**",
             // Mail for test ***DELETE IN LIVE***
             "/api/mail/**"
     };

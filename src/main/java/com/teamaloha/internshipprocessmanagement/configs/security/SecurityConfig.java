@@ -51,8 +51,15 @@ public class SecurityConfig {
             "/api/student/auth/**",
             // dates
             "/api/holiday/**",
+
+            // company
+            "/api/company/**",
+            // company staff
+            "/api/staff/**"
+
             // Mail for test ***DELETE IN LIVE***
             "/api/mail/**"
+
 
     };
 

@@ -1,7 +1,7 @@
 package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.HolidayDao;
-import com.teamaloha.internshipprocessmanagement.dto.authentication.HolidayAddRequest;
+import com.teamaloha.internshipprocessmanagement.dto.holiday.HolidayAddRequest;
 import com.teamaloha.internshipprocessmanagement.dto.holiday.HolidayDto;
 import com.teamaloha.internshipprocessmanagement.entity.Holiday;
 import com.teamaloha.internshipprocessmanagement.enums.ErrorCodeEnum;

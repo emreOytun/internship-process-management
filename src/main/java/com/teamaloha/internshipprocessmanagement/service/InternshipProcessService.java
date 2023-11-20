@@ -1,6 +1,8 @@
 package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.InternshipProcessDao;
+import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessGetAllResponse;
+import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessGetResponse;
 import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessUpdateRequest;
 import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessInitResponse;
 import com.teamaloha.internshipprocessmanagement.entity.*;
@@ -40,6 +42,7 @@ public class InternshipProcessService {
         this.processAssigneeService = processAssigneeService;
     }
 
+
     public InternshipProcessInitResponse initInternshipProcess(Integer userId) {
         // Only setting the ID of Student entity is enough to insert InternshipProcess entity.
         Student student = new Student();
@@ -54,6 +57,30 @@ public class InternshipProcessService {
 
         logger.info("Created InternshipProcess with ID: " + savedProcess.getId());
         return new InternshipProcessInitResponse(savedProcess.getId());
+    }
+
+    public InternshipProcessGetAllResponse getAllInternshipProcess(Integer userId) {
+        Student student = new Student();
+        student.setId(userId);
+
+        List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllByStudent(student);
+
+        return new InternshipProcessGetAllResponse(internshipProcessList);
+    }
+
+    public InternshipProcessGetResponse getInternshipProcess(Integer internshipProcessID, Integer userId) {
+        // Check if the process exists
+        InternshipProcess internshipProcess = getInternshipProcessIfExistsOrThrowException(internshipProcessID);
+
+        // Check if the current user id and the student id of the given internship process is matching.
+        checkIfStudentIdAndInternshipProcessMatchesOrThrowException(userId, internshipProcess.getStudent().getId());
+
+        InternshipProcessGetResponse internshipProcessGetResponse = new InternshipProcessGetResponse();
+
+        copyEntityToDto(internshipProcess, internshipProcessGetResponse);
+
+        return internshipProcessGetResponse;
+
     }
 
     public void updateInternshipProcess(InternshipProcessUpdateRequest internshipProcessUpdateRequest, Integer userId) {
@@ -151,15 +178,15 @@ public class InternshipProcessService {
                                                              ProcessStatusEnum processStatus) {
         if (expectedStatus != processStatus) {
             logger.info("Process status is not matched with the expected status. Process status: " + processStatus
-                        + " Expected status: " + expectedStatus);
+                    + " Expected status: " + expectedStatus);
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
     }
 
     private List<ProcessAssignee> prepareProcessAssigneeList(InternshipProcess internshipProcess, Date now) {
         List<Integer> assigneeIdList = findAssigneeIdList(internshipProcess.getProcessStatus(),
-                                                            internshipProcess.getDepartment(),
-                                                            internshipProcess.getStudent().getId());
+                internshipProcess.getDepartment(),
+                internshipProcess.getStudent().getId());
         if (assigneeIdList == null || assigneeIdList.isEmpty()) {
             logger.info("There is no assignee found to continues the process.");
             throw new CustomException(HttpStatus.BAD_REQUEST);
@@ -181,7 +208,8 @@ public class InternshipProcessService {
 
     private List<Integer> findAssigneeIdList(ProcessStatusEnum processStatusEnum, Department department, Integer studentId) {
         return switch (processStatusEnum) {
-            case FORM -> academicianService.findAcademicianIdsByInternshipCommitteeAndDepartment(true, department.getId());
+            case FORM ->
+                    academicianService.findAcademicianIdsByInternshipCommitteeAndDepartment(true, department.getId());
             case PRE1 -> academicianService.findAcademicianIdsByDepartmentChairAndDepartment(true, department.getId());
             case PRE2 -> academicianService.findAcademicianIdsByExecutiveAndDepartment(true, department.getId());
             case PRE3 -> academicianService.findAcademicianIdsByAcademicAndDepartment(true, department.getId());
@@ -196,7 +224,7 @@ public class InternshipProcessService {
 
     @Transactional
     public void insertProcessAssigneesAndUpdateProcessStatus(List<ProcessAssignee> processAssigneeList,
-                                                                InternshipProcess internshipProcess) {
+                                                             InternshipProcess internshipProcess) {
         processAssigneeService.saveAll(processAssigneeList);
         internshipProcessDao.save(internshipProcess);
     }
@@ -215,10 +243,18 @@ public class InternshipProcessService {
 
     private void copyDtoToEntity(InternshipProcess internshipProcess, InternshipProcessUpdateRequest internshipProcessUpdateRequest, Department department, Company company) {
         Date now = new Date();
+
         BeanUtils.copyProperties(internshipProcessUpdateRequest, internshipProcess);
         internshipProcess.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
         internshipProcess.setCompany(company);
         internshipProcess.setDepartment(department);
         internshipProcess.setProcessStatus(ProcessStatusEnum.FORM);
     }
+
+    private void copyEntityToDto(InternshipProcess internshipProcess, InternshipProcessGetResponse internshipProcessGetResponse) {
+        BeanUtils.copyProperties(internshipProcess, internshipProcessGetResponse);
+        internshipProcessGetResponse.setCompanyId(internshipProcess.getCompany().getId());
+        internshipProcessGetResponse.setDepartmentId(internshipProcess.getDepartment().getId());
+    }
+
 }

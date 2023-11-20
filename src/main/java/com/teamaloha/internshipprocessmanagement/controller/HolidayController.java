@@ -1,6 +1,6 @@
 package com.teamaloha.internshipprocessmanagement.controller;
 
-import com.teamaloha.internshipprocessmanagement.dto.authentication.HolidayAddRequest;
+import com.teamaloha.internshipprocessmanagement.dto.holiday.HolidayAddRequest;
 import com.teamaloha.internshipprocessmanagement.service.HolidayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

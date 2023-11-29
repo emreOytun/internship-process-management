@@ -57,6 +57,7 @@ public class SecurityConfig {
             "/api/staff/**",
             // Mail for test ***DELETE IN LIVE***
             "/api/mail/**"
+
     };
 
     @Autowired

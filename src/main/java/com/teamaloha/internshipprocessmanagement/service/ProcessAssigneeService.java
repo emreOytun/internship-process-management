@@ -23,4 +23,8 @@ public class ProcessAssigneeService {
     public void saveAll(List<ProcessAssignee> processAssigneeList) {
         processAssigneeDao.saveAll(processAssigneeList);
     }
+
+    public void deleteByProcessId(Integer processId) {
+        processAssigneeDao.deleteByProcessId(processId);
+    }
 }

@@ -43,10 +43,10 @@ public class InternshipProcessService {
     }
 
 
-    public InternshipProcessInitResponse initInternshipProcess(Integer userId) {
+    public InternshipProcessInitResponse initInternshipProcess(Integer studentId) {
         // Only setting the ID of Student entity is enough to insert InternshipProcess entity.
         Student student = new Student();
-        student.setId(userId);
+        student.setId(studentId);
 
         Date now = new Date();
         InternshipProcess emptyProcess = new InternshipProcess();
@@ -69,12 +69,12 @@ public class InternshipProcessService {
         return new InternshipProcessGetAllResponse(internshipProcessList);
     }
 
-    public InternshipProcessGetResponse getInternshipProcess(Integer internshipProcessID, Integer userId) {
+    public InternshipProcessGetResponse getInternshipProcess(Integer internshipProcessID, Integer studentId) {
         // Check if the process exists
         InternshipProcess internshipProcess = getInternshipProcessIfExistsOrThrowException(internshipProcessID);
 
         // Check if the current user id and the student id of the given internship process is matching.
-        checkIfStudentIdAndInternshipProcessMatchesOrThrowException(userId, internshipProcess.getStudent().getId());
+        checkIfStudentIdAndInternshipProcessMatchesOrThrowException(studentId, internshipProcess.getStudent().getId());
 
         InternshipProcessGetResponse internshipProcessGetResponse = new InternshipProcessGetResponse();
 
@@ -84,7 +84,7 @@ public class InternshipProcessService {
 
     }
 
-    public void updateInternshipProcess(InternshipProcessUpdateRequest internshipProcessUpdateRequest, Integer userId) {
+    public void updateInternshipProcess(InternshipProcessUpdateRequest internshipProcessUpdateRequest, Integer studentId) {
         Integer processId = internshipProcessUpdateRequest.getId();
 
         // Check if the process exists
@@ -95,7 +95,7 @@ public class InternshipProcessService {
         }
 
         // Check if the current user id and the student id of the given internship process is matching.
-        checkIfStudentIdAndInternshipProcessMatchesOrThrowException(userId, internshipProcess.getStudent().getId());
+        checkIfStudentIdAndInternshipProcessMatchesOrThrowException(studentId, internshipProcess.getStudent().getId());
 
         // If department id is given, check if there is such department.
         Department department = null;
@@ -131,12 +131,12 @@ public class InternshipProcessService {
         logger.info("Deleted InternshipProcess with ID: " + processId);
     }
 
-    public void startInternshipApprovalProcess(Integer processId, Integer userId) {
+    public void startInternshipApprovalProcess(Integer processId, Integer studentId) {
         // Check if the process exists
         InternshipProcess internshipProcess = getInternshipProcessIfExistsOrThrowException(processId);
 
         // Check if the current user id and the student id of the given internship process is matching.
-        checkIfStudentIdAndInternshipProcessMatchesOrThrowException(userId, internshipProcess.getStudent().getId());
+        checkIfStudentIdAndInternshipProcessMatchesOrThrowException(studentId, internshipProcess.getStudent().getId());
 
         // Check if the process status is correct for this method.
         checkIfProcessStatusMatchesOrThrowException(ProcessStatusEnum.FORM, internshipProcess.getProcessStatus());

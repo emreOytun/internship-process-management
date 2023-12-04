@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,11 +22,17 @@ public class ProcessAssigneeService {
         this.processAssigneeDao = processAssigneeDao;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     public void saveAll(List<ProcessAssignee> processAssigneeList) {
         processAssigneeDao.saveAll(processAssigneeList);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     public void deleteByProcessId(Integer processId) {
         processAssigneeDao.deleteByProcessId(processId);
+    }
+
+    boolean existsByProcessIdAndAssigneeId(Integer processId, Integer assigneeId) {
+        return processAssigneeDao.existsByProcessIdAndAssigneeId(processId, assigneeId);
     }
 }

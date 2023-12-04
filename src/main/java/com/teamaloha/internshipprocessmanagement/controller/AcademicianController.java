@@ -2,6 +2,7 @@ package com.teamaloha.internshipprocessmanagement.controller;
 
 import com.teamaloha.internshipprocessmanagement.annotations.CurrentUserId;
 import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetAllResponse;
+import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetStudentAllProcessResponse;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AcademicianRegisterRequest;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AuthenticationRequest;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AuthenticationResponse;
@@ -9,12 +10,13 @@ import com.teamaloha.internshipprocessmanagement.service.AcademicianService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/academician")
 public class AcademicianController {
-    private AcademicianService academicianService;
+    private final AcademicianService academicianService;
 
     @Autowired
     public AcademicianController(AcademicianService academicianService) {
@@ -35,19 +37,33 @@ public class AcademicianController {
 
     @GetMapping("/get-all")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
     public AcademicsGetAllResponse getAllAcademics(@CurrentUserId Integer adminId) {
         return academicianService.getAllAcademics(adminId);
     }
 
-    @PutMapping("/validate")
+    @GetMapping("/get-student-all-processes")
     @ResponseStatus(HttpStatus.OK)
-    public void validateAcademecian(Integer academecianID, @CurrentUserId Integer adminID) {
-        academicianService.validateAcademecian(academecianID, adminID);
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
+    public AcademicsGetStudentAllProcessResponse getStudentAllProcess(Integer studentId, @CurrentUserId Integer academicianId) {
+        return academicianService.getStudentAllProcess(studentId, academicianId);
     }
 
+    // TODO : change Authority to admin if it is possible
+    @PutMapping("/validate")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
+    public void validateAcademician(Integer academicianId, @CurrentUserId Integer adminId) {
+        academicianService.validateAcademician(academicianId, adminId);
+    }
+
+    // TODO : change Authority to admin if it is possible
     @PutMapping("/assign-department")
     @ResponseStatus(HttpStatus.OK)
-    public void assignDepartmentToAcademician(Integer academecianId,Integer departmentId, @CurrentUserId Integer adminId) {
-        academicianService.assignDepartmentToAcademician(academecianId, departmentId, adminId);
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
+    public void assignDepartmentToAcademician(Integer academicianId, Integer departmentId, @CurrentUserId Integer adminId) {
+        academicianService.assignDepartmentToAcademician(academicianId, departmentId, adminId);
     }
+
+
 }

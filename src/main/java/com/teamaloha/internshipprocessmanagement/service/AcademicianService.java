@@ -2,12 +2,14 @@ package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.AcademicianDao;
 import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetAllResponse;
+import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetStudentAllProcessResponse;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AcademicianRegisterRequest;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AuthenticationRequest;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AuthenticationResponse;
 import com.teamaloha.internshipprocessmanagement.dto.user.UserDto;
 import com.teamaloha.internshipprocessmanagement.entity.Academician;
 import com.teamaloha.internshipprocessmanagement.entity.Department;
+import com.teamaloha.internshipprocessmanagement.entity.InternshipProcess;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ErrorCodeEnum;
 import com.teamaloha.internshipprocessmanagement.enums.RoleEnum;
@@ -31,14 +33,16 @@ public class AcademicianService {
     private final UserService userService;
     private final AuthenticationService authenticationService;
     private final DepartmentService departmentService;
+    private final InternshipProcessService internshipProcessService;
 
     @Autowired
     public AcademicianService(AcademicianDao academicianDao, UserService userService,
-                              DepartmentService departmentService, AuthenticationService authenticationService) {
+                              DepartmentService departmentService, AuthenticationService authenticationService, InternshipProcessService internshipProcessService) {
         this.academicianDao = academicianDao;
         this.userService = userService;
         this.departmentService = departmentService;
         this.authenticationService = authenticationService;
+        this.internshipProcessService = internshipProcessService;
     }
 
     public AuthenticationResponse register(AcademicianRegisterRequest academicianRegisterRequest) {
@@ -100,7 +104,7 @@ public class AcademicianService {
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
 
-    public List<Integer> findAcademicianIdsByInternshipCommitteeAndDepartment(Boolean internshipCommittee,  Integer departmentId) {
+    public List<Integer> findAcademicianIdsByInternshipCommitteeAndDepartment(Boolean internshipCommittee, Integer departmentId) {
         return academicianDao.findAcademicianIdsByInternshipCommitteeAndDepartment(internshipCommittee, departmentId);
     }
 
@@ -119,12 +123,12 @@ public class AcademicianService {
     public AcademicsGetAllResponse getAllAcademics(Integer adminId) {
         // TODO : Add if user is admin if not throw expection
 
-        List<Academician> academicianList=  academicianDao.findAll();
+        List<Academician> academicianList = academicianDao.findAll();
 
         return new AcademicsGetAllResponse(academicianList);
     }
 
-    public void validateAcademecian(Integer academecianId, Integer adminId) {
+    public void validateAcademician(Integer academecianId, Integer adminId) {
         // TODO : Add if user is admin if not throw expection
 
         Academician academician = getAcademicianIfExistsOrThrowException(academecianId);
@@ -133,6 +137,7 @@ public class AcademicianService {
 
         logger.info("Academician validated with ID: " + academecianId);
     }
+
     public void assignDepartmentToAcademician(Integer academicianId, Integer departmentId, Integer adminId) {
         // TODO : Add if user is admin if not throw expection
 
@@ -142,6 +147,13 @@ public class AcademicianService {
         academicianDao.save(academician);
 
         logger.info("Academician's department updated. Academician ID: " + academicianId);
+    }
+
+    public AcademicsGetStudentAllProcessResponse getStudentAllProcess(Integer studentId, Integer academicianId) {
+        getAcademicianIfExistsOrThrowException(academicianId);
+        List<InternshipProcess> processList = internshipProcessService.getAllInternshipProcess(studentId).getInternshipProcessList();
+
+        return new AcademicsGetStudentAllProcessResponse(processList);
     }
 
     public Academician getAcademicianIfExistsOrThrowException(Integer academicianId) {

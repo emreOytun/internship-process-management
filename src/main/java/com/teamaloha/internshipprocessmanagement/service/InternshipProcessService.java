@@ -81,9 +81,9 @@ public class InternshipProcessService {
         return new InternshipProcessInitResponse(savedProcess.getId());
     }
 
-    public InternshipProcessGetAllResponse getAllInternshipProcess(Integer userId) {
+    public InternshipProcessGetAllResponse getAllInternshipProcess(Integer studentId) {
         Student student = new Student();
-        student.setId(userId);
+        student.setId(studentId);
 
         List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllByStudent(student);
 

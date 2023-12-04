@@ -1,6 +1,7 @@
 package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.AcademicianDao;
+import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetAllResponse;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AcademicianRegisterRequest;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AuthenticationRequest;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AuthenticationResponse;
@@ -115,4 +116,11 @@ public class AcademicianService {
         return academicianDao.findAcademicianIdsByAcademicAndDepartment(academic, departmentId);
     }
 
+    public AcademicsGetAllResponse getAllAcademics(Integer adminID) {
+        // TODO : Add if user is admin
+
+        List<Academician> academicianList=  academicianDao.findAll();
+
+        return new AcademicsGetAllResponse(academicianList);
+    }
 }

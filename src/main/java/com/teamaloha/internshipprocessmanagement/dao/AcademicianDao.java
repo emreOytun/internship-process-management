@@ -1,6 +1,7 @@
 package com.teamaloha.internshipprocessmanagement.dao;
 
 import com.teamaloha.internshipprocessmanagement.entity.Academician;
+import com.teamaloha.internshipprocessmanagement.entity.InternshipProcess;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,12 @@ public interface AcademicianDao extends JpaRepository<Academician, Integer> {
             "department"
     })
     Academician findByMail(String mail);
+
+    @EntityGraph(type = EntityGraph.EntityGraphType.FETCH,
+            attributePaths = {
+                    "department"
+            })
+    List<Academician> findAll();
 
     @Query("SELECT a.id FROM Academician a WHERE a.internshipCommittee = :internshipCommittee AND a.department.id = :departmentId")
     List<Integer> findAcademicianIdsByInternshipCommitteeAndDepartment(

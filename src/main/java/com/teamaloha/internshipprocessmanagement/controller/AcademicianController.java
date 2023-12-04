@@ -1,5 +1,8 @@
 package com.teamaloha.internshipprocessmanagement.controller;
 
+import com.teamaloha.internshipprocessmanagement.annotations.CurrentUserId;
+import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessGetAllResponse;
+import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetAllResponse;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AcademicianRegisterRequest;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AuthenticationRequest;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AuthenticationResponse;
@@ -29,5 +32,11 @@ public class AcademicianController {
     @ResponseStatus(HttpStatus.OK)
     public AuthenticationResponse login(@RequestBody @Valid AuthenticationRequest authenticationRequest) {
         return academicianService.login(authenticationRequest);
+    }
+
+    @GetMapping("/get-all")
+    @ResponseStatus(HttpStatus.OK)
+    public AcademicsGetAllResponse getAllAcademics(@CurrentUserId Integer adminID) {
+        return academicianService.getAllAcademics(adminID);
     }
 }

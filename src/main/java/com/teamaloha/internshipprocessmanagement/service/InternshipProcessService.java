@@ -43,16 +43,17 @@ public class InternshipProcessService {
     }
 
 
-    public InternshipProcessInitResponse initInternshipProcess(Integer userId) {
+    public InternshipProcessInitResponse initInternshipProcess(Integer studentId) {
         // Only setting the ID of Student entity is enough to insert InternshipProcess entity.
         Student student = new Student();
-        student.setId(userId);
+        student.setId(studentId);
 
         Date now = new Date();
         InternshipProcess emptyProcess = new InternshipProcess();
         emptyProcess.setStudent(student);
         emptyProcess.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
         emptyProcess.setProcessStatus(ProcessStatusEnum.FORM);
+        emptyProcess.setEditable(true);
         InternshipProcess savedProcess = internshipProcessDao.save(emptyProcess);
 
         logger.info("Created InternshipProcess with ID: " + savedProcess.getId());
@@ -68,12 +69,12 @@ public class InternshipProcessService {
         return new InternshipProcessGetAllResponse(internshipProcessList);
     }
 
-    public InternshipProcessGetResponse getInternshipProcess(Integer internshipProcessID, Integer userId) {
+    public InternshipProcessGetResponse getInternshipProcess(Integer internshipProcessID, Integer studentId) {
         // Check if the process exists
         InternshipProcess internshipProcess = getInternshipProcessIfExistsOrThrowException(internshipProcessID);
 
         // Check if the current user id and the student id of the given internship process is matching.
-        checkIfStudentIdAndInternshipProcessMatchesOrThrowException(userId, internshipProcess.getStudent().getId());
+        checkIfStudentIdAndInternshipProcessMatchesOrThrowException(studentId, internshipProcess.getStudent().getId());
 
         InternshipProcessGetResponse internshipProcessGetResponse = new InternshipProcessGetResponse();
 
@@ -83,14 +84,18 @@ public class InternshipProcessService {
 
     }
 
-    public void updateInternshipProcess(InternshipProcessUpdateRequest internshipProcessUpdateRequest, Integer userId) {
+    public void updateInternshipProcess(InternshipProcessUpdateRequest internshipProcessUpdateRequest, Integer studentId) {
         Integer processId = internshipProcessUpdateRequest.getId();
 
         // Check if the process exists
         InternshipProcess internshipProcess = getInternshipProcessIfExistsOrThrowException(processId);
+        if (!internshipProcess.getEditable()) {
+            logger.error("Internship process is not editable. Process id: " + processId);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
 
         // Check if the current user id and the student id of the given internship process is matching.
-        checkIfStudentIdAndInternshipProcessMatchesOrThrowException(userId, internshipProcess.getStudent().getId());
+        checkIfStudentIdAndInternshipProcessMatchesOrThrowException(studentId, internshipProcess.getStudent().getId());
 
         // If department id is given, check if there is such department.
         Department department = null;
@@ -120,17 +125,18 @@ public class InternshipProcessService {
         logger.info("Updated InternshipProcess with ID: " + updatedInternshipProcess.getId());
     }
 
+    // TODO: Ne zaman silebilir? Ornegin staj sureci baslamissa silinemez gibi bir kontrol eklenebilir.
     public void deleteInternshipProcess(Integer processId) {
         internshipProcessDao.deleteById(processId);
         logger.info("Deleted InternshipProcess with ID: " + processId);
     }
 
-    public void startInternshipApprovalProcess(Integer processId, Integer userId) {
+    public void startInternshipApprovalProcess(Integer processId, Integer studentId) {
         // Check if the process exists
         InternshipProcess internshipProcess = getInternshipProcessIfExistsOrThrowException(processId);
 
         // Check if the current user id and the student id of the given internship process is matching.
-        checkIfStudentIdAndInternshipProcessMatchesOrThrowException(userId, internshipProcess.getStudent().getId());
+        checkIfStudentIdAndInternshipProcessMatchesOrThrowException(studentId, internshipProcess.getStudent().getId());
 
         // Check if the process status is correct for this method.
         checkIfProcessStatusMatchesOrThrowException(ProcessStatusEnum.FORM, internshipProcess.getProcessStatus());
@@ -151,6 +157,7 @@ public class InternshipProcessService {
         // Set updated process status field
         ProcessStatusEnum newProcessStatus = ProcessStatusEnum.findNextStatus(internshipProcess.getProcessStatus());
         internshipProcess.setProcessStatus(newProcessStatus);
+        internshipProcess.setEditable(false);
         internshipProcess.setAssignerMail(internshipProcess.getStudent().getMail());
         internshipProcess.getLogDates().setUpdateDate(now);
 
@@ -208,8 +215,7 @@ public class InternshipProcessService {
 
     private List<Integer> findAssigneeIdList(ProcessStatusEnum processStatusEnum, Department department, Integer studentId) {
         return switch (processStatusEnum) {
-            case FORM ->
-                    academicianService.findAcademicianIdsByInternshipCommitteeAndDepartment(true, department.getId());
+            case FORM -> academicianService.findAcademicianIdsByInternshipCommitteeAndDepartment(true, department.getId());
             case PRE1 -> academicianService.findAcademicianIdsByDepartmentChairAndDepartment(true, department.getId());
             case PRE2 -> academicianService.findAcademicianIdsByExecutiveAndDepartment(true, department.getId());
             case PRE3 -> academicianService.findAcademicianIdsByAcademicAndDepartment(true, department.getId());
@@ -225,6 +231,7 @@ public class InternshipProcessService {
     @Transactional
     public void insertProcessAssigneesAndUpdateProcessStatus(List<ProcessAssignee> processAssigneeList,
                                                              InternshipProcess internshipProcess) {
+        processAssigneeService.deleteByProcessId(internshipProcess.getId());
         processAssigneeService.saveAll(processAssigneeList);
         internshipProcessDao.save(internshipProcess);
     }

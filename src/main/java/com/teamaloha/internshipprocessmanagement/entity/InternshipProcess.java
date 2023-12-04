@@ -89,4 +89,7 @@ public class InternshipProcess {
     @Column(name = "process_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ProcessStatusEnum processStatus;
+
+    @Column(name = "editable", nullable = false)
+    private Boolean editable;
 }

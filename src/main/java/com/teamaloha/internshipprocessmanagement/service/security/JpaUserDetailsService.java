@@ -30,7 +30,6 @@ public class JpaUserDetailsService implements UserDetailsService {
     @Override
     @Cacheable(value = "users", sync = true)
     public UserDetails loadUserByUsername(String mail) throws UsernameNotFoundException {
-        logger.info("ENTERED LOADUSER METHOD");
         User user = userService.findByMail(mail);
         if (user == null) {
             String errorMessage = "User is not found. Mail: " + mail;

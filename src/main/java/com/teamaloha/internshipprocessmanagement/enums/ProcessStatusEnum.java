@@ -6,7 +6,8 @@ public enum ProcessStatusEnum {
     PRE2,
     PRE3,
     PRE4,
-    IN1;
+    IN1,
+    REJECTED;
 
     public static ProcessStatusEnum findNextStatus(ProcessStatusEnum processStatusEnum) {
         ProcessStatusEnum[] values = ProcessStatusEnum.values();

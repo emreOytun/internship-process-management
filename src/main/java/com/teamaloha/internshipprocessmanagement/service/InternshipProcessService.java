@@ -1,18 +1,18 @@
 package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.InternshipProcessDao;
-import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessGetAllResponse;
-import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessGetResponse;
-import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessUpdateRequest;
-import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessInitResponse;
+import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.*;
 import com.teamaloha.internshipprocessmanagement.entity.*;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ProcessStatusEnum;
 import com.teamaloha.internshipprocessmanagement.exceptions.CustomException;
+import jakarta.annotation.PostConstruct;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,16 +30,25 @@ public class InternshipProcessService {
     private final CompanyService companyService;
     private final AcademicianService academicianService;
     private final ProcessAssigneeService processAssigneeService;
+    private InternshipProcessService self ;
+    private final ApplicationContext applicationContext;
 
     @Autowired
     public InternshipProcessService(InternshipProcessDao internshipProcessDao, DepartmentService departmentService,
                                     CompanyService companyService, AcademicianService academicianService,
-                                    ProcessAssigneeService processAssigneeService) {
+                                    ProcessAssigneeService processAssigneeService,
+                                    ApplicationContext applicationContext) {
         this.internshipProcessDao = internshipProcessDao;
         this.departmentService = departmentService;
         this.companyService = companyService;
         this.academicianService = academicianService;
         this.processAssigneeService = processAssigneeService;
+        this.applicationContext = applicationContext;
+    }
+
+    @PostConstruct
+    private void init() {
+        self = applicationContext.getBean(InternshipProcessService.class);
     }
 
 
@@ -87,14 +96,12 @@ public class InternshipProcessService {
     public void updateInternshipProcess(InternshipProcessUpdateRequest internshipProcessUpdateRequest, Integer studentId) {
         Integer processId = internshipProcessUpdateRequest.getId();
 
-        // Check if the process exists
         InternshipProcess internshipProcess = getInternshipProcessIfExistsOrThrowException(processId);
         if (!internshipProcess.getEditable()) {
             logger.error("Internship process is not editable. Process id: " + processId);
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
-        // Check if the current user id and the student id of the given internship process is matching.
         checkIfStudentIdAndInternshipProcessMatchesOrThrowException(studentId, internshipProcess.getStudent().getId());
 
         // If department id is given, check if there is such department.
@@ -132,36 +139,69 @@ public class InternshipProcessService {
     }
 
     public void startInternshipApprovalProcess(Integer processId, Integer studentId) {
-        // Check if the process exists
         InternshipProcess internshipProcess = getInternshipProcessIfExistsOrThrowException(processId);
-
-        // Check if the current user id and the student id of the given internship process is matching.
         checkIfStudentIdAndInternshipProcessMatchesOrThrowException(studentId, internshipProcess.getStudent().getId());
-
-        // Check if the process status is correct for this method.
         checkIfProcessStatusMatchesOrThrowException(ProcessStatusEnum.FORM, internshipProcess.getProcessStatus());
 
-        // Check if necessary form fields are entered
         if (!areFormFieldsEntered(internshipProcess)) {
             logger.error("The form fields are not completed properly to start internship approval process.");
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
-        // Create a current Date object to provide consistency since this date is used in ProcessAssignee entities
-        // and in InternshipProcess entity.
         Date now = new Date();
 
         // Assign the process to assignees
         List<ProcessAssignee> assigneeList = prepareProcessAssigneeList(internshipProcess, now);
 
         // Set updated process status field
-        ProcessStatusEnum newProcessStatus = ProcessStatusEnum.findNextStatus(internshipProcess.getProcessStatus());
-        internshipProcess.setProcessStatus(newProcessStatus);
+        ProcessStatusEnum nextStatus = ProcessStatusEnum.findNextStatus(internshipProcess.getProcessStatus());
+        internshipProcess.setProcessStatus(nextStatus);
         internshipProcess.setEditable(false);
-        internshipProcess.setAssignerMail(internshipProcess.getStudent().getMail());
+        internshipProcess.setAssignerId(studentId);
         internshipProcess.getLogDates().setUpdateDate(now);
 
-        insertProcessAssigneesAndUpdateProcessStatus(assigneeList, internshipProcess);
+        self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, internshipProcess);
+    }
+
+    public void evaluateInternshipProcess(InternshipProcessEvaluateRequest internshipProcessEvaluateRequest,
+                                          Integer academicianId) {
+        Integer processId = internshipProcessEvaluateRequest.getProcessId();
+
+        if (!internshipProcessEvaluateRequest.getApprove() &&
+                StringUtils.isBlank(internshipProcessEvaluateRequest.getComment())) {
+            logger.error("Rejection without comment. AcademicianId: " + academicianId + " ProcessId: " + processId);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+
+        boolean isAssignee = processAssigneeService.existsByProcessIdAndAssigneeId(processId, academicianId);
+        if (!isAssignee) {
+            logger.error("Internship process evaluation tried without being a real assignee for the process.");
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+
+        InternshipProcess internshipProcess = getInternshipProcessIfExistsOrThrowException(processId);
+
+        Date now = new Date();
+        ProcessStatusEnum nextStatus = null;
+        List<ProcessAssignee> assigneeList = null;
+        if (!internshipProcessEvaluateRequest.getApprove()) {
+            // Rejection
+            assigneeList = new ArrayList<>();
+            internshipProcess.setAssignerId(academicianId);
+            internshipProcess.getLogDates().setUpdateDate(now);
+            nextStatus = ProcessStatusEnum.REJECTED;
+        }
+        else {
+            // Approval
+            assigneeList = prepareProcessAssigneeList(internshipProcess, now);
+            internshipProcess.setAssignerId(academicianId);
+            internshipProcess.getLogDates().setUpdateDate(now);
+            nextStatus = ProcessStatusEnum.findNextStatus(internshipProcess.getProcessStatus());
+        }
+
+        internshipProcess.setProcessStatus(nextStatus);
+        internshipProcess.setEditable(isNextStatusEditable(nextStatus));
+        self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, internshipProcess);
     }
 
     private InternshipProcess getInternshipProcessIfExistsOrThrowException(Integer processId) {
@@ -246,6 +286,10 @@ public class InternshipProcessService {
                 internshipProcess.getEngineerName() == null || internshipProcess.getChoiceReason() == null ||
                 internshipProcess.getSgkEntry() == null || internshipProcess.getGssEntry() == null ||
                 internshipProcess.getMustehaklikBelgesiPath() == null || internshipProcess.getStajYeriFormuPath() == null);
+    }
+
+    private boolean isNextStatusEditable(ProcessStatusEnum nextStatus) {
+        return nextStatus == ProcessStatusEnum.FORM || nextStatus == ProcessStatusEnum.REJECTED;
     }
 
     private void copyDtoToEntity(InternshipProcess internshipProcess, InternshipProcessUpdateRequest internshipProcessUpdateRequest, Department department, Company company) {

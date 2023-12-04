@@ -22,19 +22,19 @@ public interface AcademicianDao extends JpaRepository<Academician, Integer> {
             @Param("departmentId") Integer departmentId
     );
 
-    @Query("SELECT a.id FROM Academician a WHERE a.internshipCommittee = :departmentChair AND a.department.id = :departmentId")
+    @Query("SELECT a.id FROM Academician a WHERE a.departmentChair = :departmentChair AND a.department.id = :departmentId")
     List<Integer> findAcademicianIdsByDepartmentChairAndDepartment(
             @Param("departmentChair") Boolean departmentChair,
             @Param("departmentId") Integer departmentId
     );
 
-    @Query("SELECT a.id FROM Academician a WHERE a.internshipCommittee = :executive AND a.department.id = :departmentId")
+    @Query("SELECT a.id FROM Academician a WHERE a.executive = :executive AND a.department.id = :departmentId")
     List<Integer> findAcademicianIdsByExecutiveAndDepartment(
             @Param("executive") Boolean executive,
             @Param("departmentId") Integer departmentId
     );
 
-    @Query("SELECT a.id FROM Academician a WHERE a.internshipCommittee = :academic AND a.department.id = :departmentId")
+    @Query("SELECT a.id FROM Academician a WHERE a.academic = :academic AND a.department.id = :departmentId")
     List<Integer> findAcademicianIdsByAcademicAndDepartment(
             @Param("academic") Boolean academic,
             @Param("departmentId") Integer departmentId

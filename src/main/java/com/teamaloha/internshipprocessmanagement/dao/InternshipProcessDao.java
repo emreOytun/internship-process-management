@@ -1,6 +1,5 @@
 package com.teamaloha.internshipprocessmanagement.dao;
 
-import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessGetResponse;
 import com.teamaloha.internshipprocessmanagement.entity.InternshipProcess;
 import com.teamaloha.internshipprocessmanagement.entity.Student;
 import org.springframework.data.jpa.repository.EntityGraph;

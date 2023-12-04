@@ -1,10 +1,7 @@
 package com.teamaloha.internshipprocessmanagement.controller;
 
 import com.teamaloha.internshipprocessmanagement.annotations.CurrentUserId;
-import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessGetAllResponse;
-import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessGetResponse;
-import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessUpdateRequest;
-import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessInitResponse;
+import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.*;
 import com.teamaloha.internshipprocessmanagement.service.InternshipProcessService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,14 +37,16 @@ public class InternshipProcessController {
     @GetMapping("/get")
     @ResponseStatus
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
-    public InternshipProcessGetResponse getInternshipProcess(@RequestParam("processId") Integer internshipProcessID, @CurrentUserId Integer userId) {
+    public InternshipProcessGetResponse getInternshipProcess(@RequestParam("processId") Integer internshipProcessID,
+                                                             @CurrentUserId Integer userId) {
         return internshipProcessService.getInternshipProcess(internshipProcessID, userId);
     }
 
     @PutMapping("/update")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
-    public void updateInternshipProcess(@RequestBody @Valid InternshipProcessUpdateRequest internshipProcessUpdateRequest, @CurrentUserId Integer userId) {
+    public void updateInternshipProcess(@RequestBody @Valid InternshipProcessUpdateRequest internshipProcessUpdateRequest,
+                                        @CurrentUserId Integer userId) {
         internshipProcessService.updateInternshipProcess(internshipProcessUpdateRequest, userId);
     }
 
@@ -58,7 +57,7 @@ public class InternshipProcessController {
         internshipProcessService.deleteInternshipProcess(internshipProcessID);
     }
 
-    @PostMapping("/start-internship-process-approval")
+    @PostMapping("/start")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
     public void startInternshipApprovalProcess(@RequestParam("processId") Integer internshipProcessID, @CurrentUserId Integer userId) {
@@ -66,6 +65,12 @@ public class InternshipProcessController {
     }
 
 
-
+    @PostMapping("/evaluate")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
+    public void evaluateInternshipProcess(@RequestBody @Valid InternshipProcessEvaluateRequest internshipProcessEvaluateRequest,
+                                          @CurrentUserId Integer userId) {
+        internshipProcessService.evaluateInternshipProcess(internshipProcessEvaluateRequest, userId);
+    }
 
 }

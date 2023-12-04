@@ -77,8 +77,8 @@ public class InternshipProcess {
     @Column(name = "gss_entry", nullable = true)
     private Boolean gssEntry;
 
-    @Column(name = "assigner_mail", nullable = true)
-    private String assignerMail;
+    @Column(name = "assigner_id", nullable = true)
+    private Integer assignerId;
 
     @Column(name = "mustehaklik_belgesi_path", nullable = true)
     private String mustehaklikBelgesiPath;
@@ -90,6 +90,7 @@ public class InternshipProcess {
     @Enumerated(EnumType.STRING)
     private ProcessStatusEnum processStatus;
 
-    @Column(name = "editable", nullable = false)
+    // TODO: Nullable = false yap
+    @Column(name = "editable")
     private Boolean editable;
 }

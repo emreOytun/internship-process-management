@@ -17,11 +17,19 @@ public interface AcademicianDao extends JpaRepository<Academician, Integer> {
     })
     Academician findByMail(String mail);
 
+    @Override
     @EntityGraph(type = EntityGraph.EntityGraphType.FETCH,
             attributePaths = {
                     "department"
             })
     List<Academician> findAll();
+
+    @EntityGraph(type = EntityGraph.EntityGraphType.FETCH,
+            attributePaths = {
+                    "department"
+            })
+    Academician findAcademicianById(Integer id);
+
 
     @Query("SELECT a.id FROM Academician a WHERE a.internshipCommittee = :internshipCommittee AND a.department.id = :departmentId")
     List<Integer> findAcademicianIdsByInternshipCommitteeAndDepartment(

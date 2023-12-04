@@ -249,6 +249,7 @@ public class InternshipProcessService {
         ) {
             if (statusEnum == processStatus) {
                 match = true;
+                break;
             }
 
         }

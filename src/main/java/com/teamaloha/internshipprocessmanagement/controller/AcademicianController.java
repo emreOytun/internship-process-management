@@ -1,7 +1,6 @@
 package com.teamaloha.internshipprocessmanagement.controller;
 
 import com.teamaloha.internshipprocessmanagement.annotations.CurrentUserId;
-import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessGetAllResponse;
 import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetAllResponse;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AcademicianRegisterRequest;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AuthenticationRequest;
@@ -36,7 +35,19 @@ public class AcademicianController {
 
     @GetMapping("/get-all")
     @ResponseStatus(HttpStatus.OK)
-    public AcademicsGetAllResponse getAllAcademics(@CurrentUserId Integer adminID) {
-        return academicianService.getAllAcademics(adminID);
+    public AcademicsGetAllResponse getAllAcademics(@CurrentUserId Integer adminId) {
+        return academicianService.getAllAcademics(adminId);
+    }
+
+    @PutMapping("/validate")
+    @ResponseStatus(HttpStatus.OK)
+    public void validateAcademecian(Integer academecianID, @CurrentUserId Integer adminID) {
+        academicianService.validateAcademecian(academecianID, adminID);
+    }
+
+    @PutMapping("/assign-department")
+    @ResponseStatus(HttpStatus.OK)
+    public void assignDepartmentToAcademician(Integer academecianId,Integer departmentId, @CurrentUserId Integer adminId) {
+        academicianService.assignDepartmentToAcademician(academecianId, departmentId, adminId);
     }
 }

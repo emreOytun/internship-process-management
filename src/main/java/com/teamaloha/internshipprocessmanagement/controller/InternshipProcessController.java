@@ -28,14 +28,14 @@ public class InternshipProcessController {
     }
 
     @GetMapping("/get-all")
-    @ResponseStatus
+    @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
     public InternshipProcessGetAllResponse getAllInternshipProcess(@CurrentUserId Integer userId) {
         return internshipProcessService.getAllInternshipProcess(userId);
     }
 
     @GetMapping("/get")
-    @ResponseStatus
+    @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
     public InternshipProcessGetResponse getInternshipProcess(@RequestParam("processId") Integer internshipProcessID,
                                                              @CurrentUserId Integer userId) {

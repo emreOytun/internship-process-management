@@ -30,7 +30,7 @@ public class InternshipProcessService {
     private final CompanyService companyService;
     private final AcademicianService academicianService;
     private final ProcessAssigneeService processAssigneeService;
-    private InternshipProcessService self ;
+    private InternshipProcessService self;
     private final ApplicationContext applicationContext;
 
     @Autowired
@@ -56,6 +56,18 @@ public class InternshipProcessService {
         // Only setting the ID of Student entity is enough to insert InternshipProcess entity.
         Student student = new Student();
         student.setId(studentId);
+
+        // Check if there is more than 2 active process
+        int count = 0;
+        for (InternshipProcess internshipProcess : getAllInternshipProcess(studentId).getInternshipProcessList()
+        ) {
+            if (internshipProcess.getProcessStatus() != ProcessStatusEnum.REJECTED)
+                count += 1;
+        }
+        if (count >= 2) {
+            logger.error("Process cannot creatable for this student (2 or more active process). Student id: " + studentId);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
 
         Date now = new Date();
         InternshipProcess emptyProcess = new InternshipProcess();
@@ -134,14 +146,24 @@ public class InternshipProcessService {
 
     // TODO: Ne zaman silebilir? Ornegin staj sureci baslamissa silinemez gibi bir kontrol eklenebilir.
     public void deleteInternshipProcess(Integer processId) {
-        internshipProcessDao.deleteById(processId);
-        logger.info("Deleted InternshipProcess with ID: " + processId);
+
+        InternshipProcess internshipProcess = internshipProcessDao.findInternshipProcessById(processId);
+        if (internshipProcess.getEditable()) {
+            internshipProcessDao.deleteById(processId);
+            logger.info("Deleted InternshipProcess with ID: " + processId);
+        } else {
+            logger.error("InternshipProcess not deletable. InternshipProcess ID:" + processId);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
     }
 
     public void startInternshipApprovalProcess(Integer processId, Integer studentId) {
         InternshipProcess internshipProcess = getInternshipProcessIfExistsOrThrowException(processId);
         checkIfStudentIdAndInternshipProcessMatchesOrThrowException(studentId, internshipProcess.getStudent().getId());
-        checkIfProcessStatusMatchesOrThrowException(ProcessStatusEnum.FORM, internshipProcess.getProcessStatus());
+        ArrayList<ProcessStatusEnum> expectedStatuses = new ArrayList<>();
+        expectedStatuses.add(ProcessStatusEnum.FORM);
+        expectedStatuses.add(ProcessStatusEnum.REJECTED);
+        checkIfProcessStatusesMatchesOrThrowException(expectedStatuses, internshipProcess.getProcessStatus());
 
         if (!areFormFieldsEntered(internshipProcess)) {
             logger.error("The form fields are not completed properly to start internship approval process.");
@@ -190,8 +212,7 @@ public class InternshipProcessService {
             internshipProcess.setAssignerId(academicianId);
             internshipProcess.getLogDates().setUpdateDate(now);
             nextStatus = ProcessStatusEnum.REJECTED;
-        }
-        else {
+        } else {
             // Approval
             assigneeList = prepareProcessAssigneeList(internshipProcess, now);
             internshipProcess.setAssignerId(academicianId);
@@ -221,11 +242,20 @@ public class InternshipProcessService {
         }
     }
 
-    private void checkIfProcessStatusMatchesOrThrowException(ProcessStatusEnum expectedStatus,
-                                                             ProcessStatusEnum processStatus) {
-        if (expectedStatus != processStatus) {
+    private void checkIfProcessStatusesMatchesOrThrowException(List<ProcessStatusEnum> expectedStatuses,
+                                                               ProcessStatusEnum processStatus) {
+        boolean match = false;
+        for (ProcessStatusEnum statusEnum : expectedStatuses
+        ) {
+            if (statusEnum == processStatus) {
+                match = true;
+                break;
+            }
+
+        }
+        if(!match) {
             logger.info("Process status is not matched with the expected status. Process status: " + processStatus
-                    + " Expected status: " + expectedStatus);
+                    + " Expected statuses: " + expectedStatuses);
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
     }
@@ -255,7 +285,8 @@ public class InternshipProcessService {
 
     private List<Integer> findAssigneeIdList(ProcessStatusEnum processStatusEnum, Department department, Integer studentId) {
         return switch (processStatusEnum) {
-            case FORM -> academicianService.findAcademicianIdsByInternshipCommitteeAndDepartment(true, department.getId());
+            case FORM ->
+                    academicianService.findAcademicianIdsByInternshipCommitteeAndDepartment(true, department.getId());
             case PRE1 -> academicianService.findAcademicianIdsByDepartmentChairAndDepartment(true, department.getId());
             case PRE2 -> academicianService.findAcademicianIdsByExecutiveAndDepartment(true, department.getId());
             case PRE3 -> academicianService.findAcademicianIdsByAcademicAndDepartment(true, department.getId());

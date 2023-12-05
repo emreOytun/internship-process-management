@@ -45,7 +45,7 @@ public class AcademicianController {
     @GetMapping("/get-student-all-processes")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
-    public AcademicsGetStudentAllProcessResponse getStudentAllProcess(Integer studentId, @CurrentUserId Integer academicianId) {
+    public AcademicsGetStudentAllProcessResponse getStudentAllProcess(@RequestParam("studentId") Integer studentId, @CurrentUserId Integer academicianId) {
         return academicianService.getStudentAllProcess(studentId, academicianId);
     }
 
@@ -53,7 +53,7 @@ public class AcademicianController {
     @PutMapping("/validate")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
-    public void validateAcademician(Integer academicianId, @CurrentUserId Integer adminId) {
+    public void validateAcademician(@RequestParam("academicianId") Integer academicianId, @CurrentUserId Integer adminId) {
         academicianService.validateAcademician(academicianId, adminId);
     }
 
@@ -61,7 +61,7 @@ public class AcademicianController {
     @PutMapping("/assign-department")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
-    public void assignDepartmentToAcademician(Integer academicianId, Integer departmentId, @CurrentUserId Integer adminId) {
+    public void assignDepartmentToAcademician(@RequestParam("academicianId") Integer academicianId, @RequestParam("departmentId") Integer departmentId, @CurrentUserId Integer adminId) {
         academicianService.assignDepartmentToAcademician(academicianId, departmentId, adminId);
     }
 

@@ -11,5 +11,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class InternshipProcessGetAllResponse {
-    List<InternshipProcess> internshipProcessList;
+    List<InternshipProcessGetResponse> internshipProcessList;
 }

@@ -1,6 +1,7 @@
 package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.AcademicianDao;
+import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessGetResponse;
 import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetAllResponse;
 import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetStudentAllProcessResponse;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AcademicianRegisterRequest;
@@ -151,7 +152,8 @@ public class AcademicianService {
 
     public AcademicsGetStudentAllProcessResponse getStudentAllProcess(Integer studentId, Integer academicianId) {
         getAcademicianIfExistsOrThrowException(academicianId);
-        List<InternshipProcess> processList = internshipProcessService.getAllInternshipProcess(studentId).getInternshipProcessList();
+        List<InternshipProcessGetResponse> processList = internshipProcessService.getAllInternshipProcess(studentId).getInternshipProcessList();
+
 
         return new AcademicsGetStudentAllProcessResponse(processList);
     }

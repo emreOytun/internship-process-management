@@ -81,8 +81,15 @@ public class InternshipProcessService {
         student.setId(studentId);
 
         List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllByStudent(student);
+        List<InternshipProcessGetResponse> internshipProcessGetResponseList = new ArrayList<>();
+        for (InternshipProcess internshipProcess: internshipProcessList
+             ) {
+            InternshipProcessGetResponse internshipProcessGetResponse =new InternshipProcessGetResponse();
+            copyEntityToDto(internshipProcess, internshipProcessGetResponse);
+            internshipProcessGetResponseList.add(internshipProcessGetResponse);
+        }
 
-        return new InternshipProcessGetAllResponse(internshipProcessList);
+        return new InternshipProcessGetAllResponse(internshipProcessGetResponseList);
     }
 
     public InternshipProcessGetResponse getInternshipProcess(Integer internshipProcessID, Integer studentId) {

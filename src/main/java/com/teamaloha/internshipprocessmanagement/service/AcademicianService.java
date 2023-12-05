@@ -37,7 +37,7 @@ public class AcademicianService {
 
     @Autowired
     public AcademicianService(AcademicianDao academicianDao, UserService userService,
-                              DepartmentService departmentService, AuthenticationService authenticationService, InternshipProcessService internshipProcessService) {
+                              DepartmentService departmentService, AuthenticationService authenticationService) {
         this.academicianDao = academicianDao;
         this.userService = userService;
         this.departmentService = departmentService;

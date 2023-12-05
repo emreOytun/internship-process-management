@@ -81,4 +81,11 @@ public class InternshipProcessController {
         internshipProcessService.evaluateInternshipProcess(internshipProcessEvaluateRequest, userId);
     }
 
+    @PostMapping("/cancel")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
+    public void internshipCancellationRequest(@RequestParam("processId") Integer internshipProcessID, @CurrentUserId Integer userId) {
+        internshipProcessService.internshipCancellationRequest(internshipProcessID, userId);
+    }
+
 }

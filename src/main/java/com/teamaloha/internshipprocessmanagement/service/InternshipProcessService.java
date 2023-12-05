@@ -58,12 +58,7 @@ public class InternshipProcessService {
         student.setId(studentId);
 
         // Check if there is more than 2 active process
-        int count = 0;
-        for (InternshipProcess internshipProcess : getAllInternshipProcess(studentId).getInternshipProcessList()
-        ) {
-            if (internshipProcess.getProcessStatus() != ProcessStatusEnum.REJECTED)
-                count += 1;
-        }
+        Integer count = internshipProcessDao.countByStudentId(studentId);
         if (count >= 2) {
             logger.error("Process cannot creatable for this student (2 or more active process). Student id: " + studentId);
             throw new CustomException(HttpStatus.BAD_REQUEST);

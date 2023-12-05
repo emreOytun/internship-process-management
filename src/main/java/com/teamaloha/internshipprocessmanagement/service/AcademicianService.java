@@ -34,7 +34,6 @@ public class AcademicianService {
     private final UserService userService;
     private final AuthenticationService authenticationService;
     private final DepartmentService departmentService;
-    private final InternshipProcessService internshipProcessService;
 
     @Autowired
     public AcademicianService(AcademicianDao academicianDao, UserService userService,
@@ -43,7 +42,6 @@ public class AcademicianService {
         this.userService = userService;
         this.departmentService = departmentService;
         this.authenticationService = authenticationService;
-        this.internshipProcessService = internshipProcessService;
     }
 
     public AuthenticationResponse register(AcademicianRegisterRequest academicianRegisterRequest) {
@@ -148,14 +146,6 @@ public class AcademicianService {
         academicianDao.save(academician);
 
         logger.info("Academician's department updated. Academician ID: " + academicianId);
-    }
-
-    public AcademicsGetStudentAllProcessResponse getStudentAllProcess(Integer studentId, Integer academicianId) {
-        getAcademicianIfExistsOrThrowException(academicianId);
-        List<InternshipProcessGetResponse> processList = internshipProcessService.getAllInternshipProcess(studentId).getInternshipProcessList();
-
-
-        return new AcademicsGetStudentAllProcessResponse(processList);
     }
 
     public Academician getAcademicianIfExistsOrThrowException(Integer academicianId) {

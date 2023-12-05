@@ -42,13 +42,6 @@ public class AcademicianController {
         return academicianService.getAllAcademics(adminId);
     }
 
-    @GetMapping("/get-student-all-processes")
-    @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
-    public AcademicsGetStudentAllProcessResponse getStudentAllProcess(@RequestParam("studentId") Integer studentId, @CurrentUserId Integer academicianId) {
-        return academicianService.getStudentAllProcess(studentId, academicianId);
-    }
-
     // TODO : change Authority to admin if it is possible
     @PutMapping("/validate")
     @ResponseStatus(HttpStatus.OK)

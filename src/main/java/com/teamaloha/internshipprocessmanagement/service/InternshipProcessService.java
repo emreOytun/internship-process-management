@@ -2,6 +2,7 @@ package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.InternshipProcessDao;
 import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.*;
+import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetStudentAllProcessResponse;
 import com.teamaloha.internshipprocessmanagement.entity.*;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ProcessStatusEnum;
@@ -105,6 +106,14 @@ public class InternshipProcessService {
 
         return internshipProcessGetResponse;
 
+    }
+
+    public AcademicsGetStudentAllProcessResponse getStudentAllProcess(Integer studentId, Integer academicianId) {
+        academicianService.getAcademicianIfExistsOrThrowException(academicianId);
+        List<InternshipProcessGetResponse> processList = getAllInternshipProcess(studentId).getInternshipProcessList();
+
+
+        return new AcademicsGetStudentAllProcessResponse(processList);
     }
 
     public void updateInternshipProcess(InternshipProcessUpdateRequest internshipProcessUpdateRequest, Integer studentId) {

@@ -2,6 +2,7 @@ package com.teamaloha.internshipprocessmanagement.controller;
 
 import com.teamaloha.internshipprocessmanagement.annotations.CurrentUserId;
 import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.*;
+import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetStudentAllProcessResponse;
 import com.teamaloha.internshipprocessmanagement.service.InternshipProcessService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,13 @@ public class InternshipProcessController {
     public InternshipProcessGetResponse getInternshipProcess(@RequestParam("processId") Integer internshipProcessID,
                                                              @CurrentUserId Integer userId) {
         return internshipProcessService.getInternshipProcess(internshipProcessID, userId);
+    }
+
+    @GetMapping("/get-student-all-processes")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
+    public AcademicsGetStudentAllProcessResponse getStudentAllProcess(@RequestParam("studentId") Integer studentId, @CurrentUserId Integer academicianId) {
+        return internshipProcessService.getStudentAllProcess(studentId, academicianId);
     }
 
     @PutMapping("/update")

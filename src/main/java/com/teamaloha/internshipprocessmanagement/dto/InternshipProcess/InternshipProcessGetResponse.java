@@ -15,7 +15,6 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class InternshipProcessGetResponse {
-    @NotNull
     private Integer id;
 
     private String tc;
@@ -40,7 +39,6 @@ public class InternshipProcessGetResponse {
 
     private Integer departmentId;
 
-    @Email
     private String engineerMail;
 
     private String engineerName;
@@ -55,6 +53,6 @@ public class InternshipProcessGetResponse {
 
     private String stajYeriFormuPath;
 
-    @Enumerated(EnumType.STRING)
+    // @Enumerated(EnumType.STRING)
     private ProcessStatusEnum processStatus;
 }

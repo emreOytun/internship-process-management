@@ -58,12 +58,7 @@ public class InternshipProcessService {
         student.setId(studentId);
 
         // Check if there is more than 2 active process
-        int count = 0;
-        for (InternshipProcess internshipProcess : getAllInternshipProcess(studentId).getInternshipProcessList()
-        ) {
-            if (internshipProcess.getProcessStatus() != ProcessStatusEnum.REJECTED)
-                count += 1;
-        }
+        Integer count = internshipProcessDao.countByStudentId(studentId);
         if (count >= 2) {
             logger.error("Process cannot creatable for this student (2 or more active process). Student id: " + studentId);
             throw new CustomException(HttpStatus.BAD_REQUEST);
@@ -81,13 +76,20 @@ public class InternshipProcessService {
         return new InternshipProcessInitResponse(savedProcess.getId());
     }
 
-    public InternshipProcessGetAllResponse getAllInternshipProcess(Integer userId) {
+    public InternshipProcessGetAllResponse getAllInternshipProcess(Integer studentId) {
         Student student = new Student();
-        student.setId(userId);
+        student.setId(studentId);
 
         List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllByStudent(student);
+        List<InternshipProcessGetResponse> internshipProcessGetResponseList = new ArrayList<>();
+        for (InternshipProcess internshipProcess: internshipProcessList
+             ) {
+            InternshipProcessGetResponse internshipProcessGetResponse =new InternshipProcessGetResponse();
+            copyEntityToDto(internshipProcess, internshipProcessGetResponse);
+            internshipProcessGetResponseList.add(internshipProcessGetResponse);
+        }
 
-        return new InternshipProcessGetAllResponse(internshipProcessList);
+        return new InternshipProcessGetAllResponse(internshipProcessGetResponseList);
     }
 
     public InternshipProcessGetResponse getInternshipProcess(Integer internshipProcessID, Integer studentId) {

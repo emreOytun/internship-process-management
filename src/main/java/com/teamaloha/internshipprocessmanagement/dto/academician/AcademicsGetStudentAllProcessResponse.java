@@ -1,5 +1,6 @@
-package com.teamaloha.internshipprocessmanagement.dto.InternshipProcess;
+package com.teamaloha.internshipprocessmanagement.dto.academician;
 
+import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessGetResponse;
 import com.teamaloha.internshipprocessmanagement.entity.InternshipProcess;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,6 +11,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class InternshipProcessGetAllResponse {
+public class AcademicsGetStudentAllProcessResponse {
     List<InternshipProcessGetResponse> internshipProcessList;
 }

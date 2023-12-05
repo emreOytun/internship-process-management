@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class InternshipProcessService {
@@ -83,9 +84,9 @@ public class InternshipProcessService {
 
         List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllByStudent(student);
         List<InternshipProcessGetResponse> internshipProcessGetResponseList = new ArrayList<>();
-        for (InternshipProcess internshipProcess: internshipProcessList
-             ) {
-            InternshipProcessGetResponse internshipProcessGetResponse =new InternshipProcessGetResponse();
+        for (InternshipProcess internshipProcess : internshipProcessList
+        ) {
+            InternshipProcessGetResponse internshipProcessGetResponse = new InternshipProcessGetResponse();
             copyEntityToDto(internshipProcess, internshipProcessGetResponse);
             internshipProcessGetResponseList.add(internshipProcessGetResponse);
         }
@@ -170,6 +171,27 @@ public class InternshipProcessService {
         }
     }
 
+    public void internshipCancellationRequest(Integer internshipProcessID, Integer studentId) {
+        InternshipProcess internshipProcess = getInternshipProcessIfExistsOrThrowException(internshipProcessID);
+        Date now = new Date();
+        Integer dayNumber = 3;
+
+        checkIfStudentIdAndInternshipProcessMatchesOrThrowException(studentId, internshipProcess.getStudent().getId());
+
+        // Check if the 3 days passed from the internship start date
+        checkIfDiffSmallerOrThrowException(internshipProcess.getStartDate(), now, dayNumber);
+
+        // Check if the process is approved
+        checkIfProcessStatusesMatchesOrThrowException(List.of(ProcessStatusEnum.IN1), internshipProcess.getProcessStatus());
+
+        // Set updated process status to CANCEL
+        internshipProcess.setProcessStatus(ProcessStatusEnum.CANCEL);
+        internshipProcess.getLogDates().setUpdateDate(now);
+
+        // Save the process
+        internshipProcessDao.save(internshipProcess);
+    }
+
     public void startInternshipApprovalProcess(Integer processId, Integer studentId) {
         InternshipProcess internshipProcess = getInternshipProcessIfExistsOrThrowException(processId);
         checkIfStudentIdAndInternshipProcessMatchesOrThrowException(studentId, internshipProcess.getStudent().getId());
@@ -224,18 +246,30 @@ public class InternshipProcessService {
             assigneeList = new ArrayList<>();
             internshipProcess.setAssignerId(academicianId);
             internshipProcess.getLogDates().setUpdateDate(now);
-            nextStatus = ProcessStatusEnum.REJECTED;
+            if (internshipProcess.getProcessStatus() == ProcessStatusEnum.CANCEL) {
+                nextStatus = ProcessStatusEnum.IN1;
+            } else {
+                nextStatus = ProcessStatusEnum.REJECTED;
+            }
         } else {
             // Approval
             assigneeList = prepareProcessAssigneeList(internshipProcess, now);
             internshipProcess.setAssignerId(academicianId);
             internshipProcess.getLogDates().setUpdateDate(now);
-            nextStatus = ProcessStatusEnum.findNextStatus(internshipProcess.getProcessStatus());
+            if (internshipProcess.getProcessStatus() == ProcessStatusEnum.CANCEL) {
+                // If the process is cancelled, delete the process
+                deleteInternshipProcess(processId);
+            } else {
+                nextStatus = ProcessStatusEnum.findNextStatus(internshipProcess.getProcessStatus());
+            }
         }
 
-        internshipProcess.setProcessStatus(nextStatus);
-        internshipProcess.setEditable(isNextStatusEditable(nextStatus));
-        self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, internshipProcess);
+        // If the process is not cancelled, update the process status
+        if (internshipProcess.getProcessStatus() != ProcessStatusEnum.CANCEL) {
+            internshipProcess.setProcessStatus(nextStatus);
+            internshipProcess.setEditable(isNextStatusEditable(nextStatus));
+            self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, internshipProcess);
+        }
     }
 
     private InternshipProcess getInternshipProcessIfExistsOrThrowException(Integer processId) {
@@ -245,6 +279,16 @@ public class InternshipProcessService {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
         return internshipProcess;
+    }
+
+    private void checkIfDiffSmallerOrThrowException(Date startDate, Date now, Integer dayNumber) {
+        long diffInMillies = Math.abs(now.getTime() - startDate.getTime());
+        long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+
+        if (diff > dayNumber) {
+            logger.error("The expected date is passed. Start Date: " + startDate + " End Date" + now + " Expected İnterval: " + dayNumber);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
     }
 
     private void checkIfStudentIdAndInternshipProcessMatchesOrThrowException(Integer userId, Integer processId) {
@@ -266,7 +310,7 @@ public class InternshipProcessService {
             }
 
         }
-        if(!match) {
+        if (!match) {
             logger.info("Process status is not matched with the expected status. Process status: " + processStatus
                     + " Expected statuses: " + expectedStatuses);
             throw new CustomException(HttpStatus.BAD_REQUEST);

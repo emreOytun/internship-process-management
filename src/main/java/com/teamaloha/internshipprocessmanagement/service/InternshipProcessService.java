@@ -116,6 +116,8 @@ public class InternshipProcessService {
         return new AcademicsGetStudentAllProcessResponse(processList);
     }
 
+
+
     public void updateInternshipProcess(InternshipProcessUpdateRequest internshipProcessUpdateRequest, Integer studentId) {
         Integer processId = internshipProcessUpdateRequest.getId();
 
@@ -282,7 +284,7 @@ public class InternshipProcessService {
 
         ProcessAssignee baseProcessAssignee = new ProcessAssignee();
         baseProcessAssignee.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
-        baseProcessAssignee.setProcessId(internshipProcess.getId());
+        baseProcessAssignee.setInternshipProcess(internshipProcess  );
 
         List<ProcessAssignee> processAssignees = new ArrayList<>();
         for (Integer assigneeId : assigneeIdList) {

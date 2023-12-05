@@ -20,8 +20,9 @@ public class ProcessAssignee {
     @Embedded
     LogDates logDates;
 
-    @Column(name = "process_id", nullable = false)
-    private Integer processId;
+    @ManyToOne
+    @JoinColumn(name = "process_id")
+    private InternshipProcess internshipProcess;
 
     @Column(name = "assignee_id", nullable = false)
     private Integer assigneeId;

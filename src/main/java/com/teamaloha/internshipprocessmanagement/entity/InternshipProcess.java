@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "internship_process")
@@ -93,4 +94,7 @@ public class InternshipProcess {
     // TODO: Nullable = false yap
     @Column(name = "editable")
     private Boolean editable;
+
+    @OneToMany(mappedBy = "internshipProcess", cascade = {CascadeType.DETACH, CascadeType.REFRESH}, fetch = FetchType.LAZY)
+    private Set<ProcessAssignee> processAssignees;
 }

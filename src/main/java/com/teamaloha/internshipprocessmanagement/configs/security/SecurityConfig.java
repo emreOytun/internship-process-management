@@ -56,8 +56,11 @@ public class SecurityConfig {
             // company staff
             "/api/staff/**",
             // Mail for test ***DELETE IN LIVE***
-            "/api/mail/**"
-
+            "/api/mail/**",
+            // department
+            "/api/department/**",
+            // faculty
+            "/api/faculty/**",
     };
 
     @Autowired

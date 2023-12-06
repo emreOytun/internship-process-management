@@ -1,6 +1,7 @@
 package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.ProcessAssigneeDao;
+import com.teamaloha.internshipprocessmanagement.entity.InternshipProcess;
 import com.teamaloha.internshipprocessmanagement.entity.ProcessAssignee;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,10 +30,14 @@ public class ProcessAssigneeService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void deleteByProcessId(Integer processId) {
-        processAssigneeDao.deleteByProcessId(processId);
+        InternshipProcess process = new InternshipProcess();
+        process.setId(processId);
+        processAssigneeDao.deleteByInternshipProcess(process);
     }
 
     boolean existsByProcessIdAndAssigneeId(Integer processId, Integer assigneeId) {
-        return processAssigneeDao.existsByProcessIdAndAssigneeId(processId, assigneeId);
+        InternshipProcess process = new InternshipProcess();
+        process.setId(processId);
+        return processAssigneeDao.existsByInternshipProcessAndAssigneeId(process, assigneeId);
     }
 }

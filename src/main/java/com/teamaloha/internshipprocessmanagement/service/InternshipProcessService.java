@@ -328,7 +328,7 @@ public class InternshipProcessService {
 
         ProcessAssignee baseProcessAssignee = new ProcessAssignee();
         baseProcessAssignee.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
-        baseProcessAssignee.setInternshipProcess(internshipProcess  );
+        baseProcessAssignee.setInternshipProcess(internshipProcess);
 
         List<ProcessAssignee> processAssignees = new ArrayList<>();
         for (Integer assigneeId : assigneeIdList) {

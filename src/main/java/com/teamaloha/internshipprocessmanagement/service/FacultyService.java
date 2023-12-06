@@ -3,13 +3,8 @@ package com.teamaloha.internshipprocessmanagement.service;
 import com.teamaloha.internshipprocessmanagement.dao.FacultyDao;
 import com.teamaloha.internshipprocessmanagement.dto.faculty.FacultyUpdateRequest;
 import com.teamaloha.internshipprocessmanagement.dto.faculty.FacultyUpdateResponse;
-import com.teamaloha.internshipprocessmanagement.dto.department.DepartmentAddRequest;
-import com.teamaloha.internshipprocessmanagement.dto.department.DepartmentDto;
 import com.teamaloha.internshipprocessmanagement.dto.faculty.FacultyAddRequest;
 import com.teamaloha.internshipprocessmanagement.dto.faculty.FacultyDto;
-import com.teamaloha.internshipprocessmanagement.dto.faculty.FacultyUpdateRequest;
-import com.teamaloha.internshipprocessmanagement.entity.Faculty;
-import com.teamaloha.internshipprocessmanagement.entity.Department;
 import com.teamaloha.internshipprocessmanagement.entity.Faculty;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ErrorCodeEnum;
@@ -21,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 public class FacultyService {

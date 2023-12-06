@@ -63,6 +63,7 @@ public class CompanyStaffService {
         }
 
         BeanUtils.copyProperties(companyStaffUpdateRequest, companyStaff);
+        companyStaff.setLogDates(LogDates.builder().createDate(companyStaff.getLogDates().getCreateDate()).updateDate(new Date()).build());
         companyStaffDao.save(companyStaff);
 
         Integer id = companyStaff.getId();

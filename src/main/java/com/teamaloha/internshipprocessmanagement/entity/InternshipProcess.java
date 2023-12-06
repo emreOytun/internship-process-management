@@ -87,6 +87,18 @@ public class InternshipProcess {
     @Column(name = "staj_yeri_formu_path", nullable = true)
     private String stajYeriFormuPath;
 
+    @Column(name = "donem_ici", nullable = true)
+    private Boolean donem_ici;
+
+    @Column(name = "mufredat_durumu_path", nullable = true)
+    private String mufredatDurumuPath;
+
+    @Column(name = "transkript_path", nullable = true)
+    private String transkriptPath;
+
+    @Column(name = "ders_programı_path", nullable = true)
+    private String dersProgramıPath;
+
     @Column(name = "process_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ProcessStatusEnum processStatus;

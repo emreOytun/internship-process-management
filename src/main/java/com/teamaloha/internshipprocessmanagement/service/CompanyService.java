@@ -55,6 +55,8 @@ public class CompanyService {
         }
         Company company = companyDao.findCompanyById(companyUpdateRequest.getId());
         BeanUtils.copyProperties(companyUpdateRequest, company);
+
+        company.setLogDates(LogDates.builder().createDate(company.getLogDates().getCreateDate()).updateDate(new Date()).build());
         companyDao.save(company);
 
         Integer id = company.getId();

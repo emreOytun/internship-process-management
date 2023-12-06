@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -48,8 +47,9 @@ public class MailService {
         message.setSubject(subject);
         message.setText(text);
 
-        String fromAddress = environment.getProperty("mail.from.address");
+        String fromAddress = environment.getProperty("spring.mail.username");
         message.setFrom(fromAddress);
+
 
         emailSender.send(message);
 

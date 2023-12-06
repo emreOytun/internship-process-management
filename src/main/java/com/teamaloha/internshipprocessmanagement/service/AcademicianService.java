@@ -1,12 +1,16 @@
 package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.AcademicianDao;
+import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessGetResponse;
+import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetAllResponse;
+import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetStudentAllProcessResponse;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AcademicianRegisterRequest;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AuthenticationRequest;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AuthenticationResponse;
 import com.teamaloha.internshipprocessmanagement.dto.user.UserDto;
 import com.teamaloha.internshipprocessmanagement.entity.Academician;
 import com.teamaloha.internshipprocessmanagement.entity.Department;
+import com.teamaloha.internshipprocessmanagement.entity.InternshipProcess;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ErrorCodeEnum;
 import com.teamaloha.internshipprocessmanagement.enums.RoleEnum;
@@ -99,7 +103,7 @@ public class AcademicianService {
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
 
-    public List<Integer> findAcademicianIdsByInternshipCommitteeAndDepartment(Boolean internshipCommittee,  Integer departmentId) {
+    public List<Integer> findAcademicianIdsByInternshipCommitteeAndDepartment(Boolean internshipCommittee, Integer departmentId) {
         return academicianDao.findAcademicianIdsByInternshipCommitteeAndDepartment(internshipCommittee, departmentId);
     }
 
@@ -113,6 +117,45 @@ public class AcademicianService {
 
     public List<Integer> findAcademicianIdsByAcademicAndDepartment(Boolean academic, Integer departmentId) {
         return academicianDao.findAcademicianIdsByAcademicAndDepartment(academic, departmentId);
+    }
+
+    public AcademicsGetAllResponse getAllAcademics(Integer adminId) {
+        // TODO : Add if user is admin if not throw expection
+
+        List<Academician> academicianList = academicianDao.findAll();
+
+        return new AcademicsGetAllResponse(academicianList);
+    }
+
+    public void validateAcademician(Integer academecianId, Integer adminId) {
+        // TODO : Add if user is admin if not throw expection
+
+        Academician academician = getAcademicianIfExistsOrThrowException(academecianId);
+        academician.setValidated(true);
+        academicianDao.save(academician);
+
+        logger.info("Academician validated with ID: " + academecianId);
+    }
+
+    public void assignDepartmentToAcademician(Integer academicianId, Integer departmentId, Integer adminId) {
+        // TODO : Add if user is admin if not throw expection
+
+        Academician academician = getAcademicianIfExistsOrThrowException(academicianId);
+        Department department = departmentService.getDepartmentIfExistsOrThrowException(departmentId);
+        academician.setDepartment(department);
+        academicianDao.save(academician);
+
+        logger.info("Academician's department updated. Academician ID: " + academicianId);
+    }
+
+    public Academician getAcademicianIfExistsOrThrowException(Integer academicianId) {
+        Academician academician = academicianDao.findAcademicianById(academicianId);
+        if (academician == null) {
+            logger.error("The academician id given does not exist. Academician id: "
+                    + academicianId);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        return academician;
     }
 
 }

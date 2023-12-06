@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "internship_process")
@@ -77,8 +78,8 @@ public class InternshipProcess {
     @Column(name = "gss_entry", nullable = true)
     private Boolean gssEntry;
 
-    @Column(name = "assigner_mail", nullable = true)
-    private String assignerMail;
+    @Column(name = "assigner_id", nullable = true)
+    private Integer assignerId;
 
     @Column(name = "mustehaklik_belgesi_path", nullable = true)
     private String mustehaklikBelgesiPath;
@@ -89,4 +90,11 @@ public class InternshipProcess {
     @Column(name = "process_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ProcessStatusEnum processStatus;
+
+    // TODO: Nullable = false yap
+    @Column(name = "editable")
+    private Boolean editable;
+
+    @OneToMany(mappedBy = "internshipProcess", cascade = {CascadeType.DETACH, CascadeType.REFRESH}, fetch = FetchType.LAZY)
+    private Set<ProcessAssignee> processAssignees;
 }

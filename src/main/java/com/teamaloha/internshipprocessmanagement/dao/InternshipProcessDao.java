@@ -1,14 +1,15 @@
 package com.teamaloha.internshipprocessmanagement.dao;
 
-import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessGetResponse;
 import com.teamaloha.internshipprocessmanagement.entity.InternshipProcess;
 import com.teamaloha.internshipprocessmanagement.entity.Student;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.List;
 
-public interface InternshipProcessDao extends JpaRepository<InternshipProcess, Integer> {
+public interface InternshipProcessDao extends JpaRepository<InternshipProcess, Integer>,
+                                                JpaSpecificationExecutor<InternshipProcess> {
 
     @EntityGraph(type = EntityGraph.EntityGraphType.FETCH,
             attributePaths = {
@@ -34,4 +35,8 @@ public interface InternshipProcessDao extends JpaRepository<InternshipProcess, I
             })
     List<InternshipProcess> findAllByStudent(Student student);
 
+    Integer countByStudentId(Integer studentId);
+
+    // If there are special Specifications needed for Internship process add here.
+//    interface Specs { }
 }

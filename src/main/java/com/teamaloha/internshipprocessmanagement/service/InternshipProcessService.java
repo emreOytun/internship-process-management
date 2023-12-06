@@ -2,6 +2,9 @@ package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.InternshipProcessDao;
 import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.*;
+import com.teamaloha.internshipprocessmanagement.dto.SearchByPageDto;
+import com.teamaloha.internshipprocessmanagement.dto.SearchCriteria;
+import com.teamaloha.internshipprocessmanagement.dto.SearchDto;
 import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetStudentAllProcessResponse;
 import com.teamaloha.internshipprocessmanagement.entity.*;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
@@ -14,13 +17,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -34,18 +36,21 @@ public class InternshipProcessService {
     private final ProcessAssigneeService processAssigneeService;
     private InternshipProcessService self;
     private final ApplicationContext applicationContext;
+    private final FiltersSpecification<InternshipProcess> filtersSpecification;
 
     @Autowired
     public InternshipProcessService(InternshipProcessDao internshipProcessDao, DepartmentService departmentService,
                                     CompanyService companyService, AcademicianService academicianService,
                                     ProcessAssigneeService processAssigneeService,
-                                    ApplicationContext applicationContext) {
+                                    ApplicationContext applicationContext,
+                                    FiltersSpecification<InternshipProcess> filtersSpecification) {
         this.internshipProcessDao = internshipProcessDao;
         this.departmentService = departmentService;
         this.companyService = companyService;
         this.academicianService = academicianService;
         this.processAssigneeService = processAssigneeService;
         this.applicationContext = applicationContext;
+        this.filtersSpecification = filtersSpecification;
     }
 
     @PostConstruct
@@ -83,15 +88,7 @@ public class InternshipProcessService {
         student.setId(studentId);
 
         List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllByStudent(student);
-        List<InternshipProcessGetResponse> internshipProcessGetResponseList = new ArrayList<>();
-        for (InternshipProcess internshipProcess : internshipProcessList
-        ) {
-            InternshipProcessGetResponse internshipProcessGetResponse = new InternshipProcessGetResponse();
-            copyEntityToDto(internshipProcess, internshipProcessGetResponse);
-            internshipProcessGetResponseList.add(internshipProcessGetResponse);
-        }
-
-        return new InternshipProcessGetAllResponse(internshipProcessGetResponseList);
+        return getInternshipProcessGetAllResponse(internshipProcessList);
     }
 
     public InternshipProcessGetResponse getInternshipProcess(Integer internshipProcessID, Integer studentId) {
@@ -117,7 +114,22 @@ public class InternshipProcessService {
         return new AcademicsGetStudentAllProcessResponse(processList);
     }
 
+    public InternshipProcessGetAllResponse getAssignedInternshipProcess(Integer assigneeId,
+                                                                           InternshipProcessSearchDto internshipProcessSearchDto) {
+        List<InternshipProcess> internshipProcessList = internshipProcessDao.findAll(prepereInternshipProcessSearchSpecification(assigneeId, internshipProcessSearchDto),
+                SearchByPageDto.getPageable(internshipProcessSearchDto.getSearchByPageDto())).toList();
+        return getInternshipProcessGetAllResponse(internshipProcessList);
+    }
 
+    private InternshipProcessGetAllResponse getInternshipProcessGetAllResponse(List<InternshipProcess> internshipProcessList) {
+        List<InternshipProcessGetResponse> internshipProcessGetResponseList = new ArrayList<>();
+        for (InternshipProcess internshipProcess : internshipProcessList) {
+            InternshipProcessGetResponse internshipProcessGetResponse = new InternshipProcessGetResponse();
+            copyEntityToDto(internshipProcess, internshipProcessGetResponse);
+            internshipProcessGetResponseList.add(internshipProcessGetResponse);
+        }
+        return new InternshipProcessGetAllResponse(internshipProcessGetResponseList);
+    }
 
     public void updateInternshipProcess(InternshipProcessUpdateRequest internshipProcessUpdateRequest, Integer studentId) {
         Integer processId = internshipProcessUpdateRequest.getId();
@@ -301,16 +313,7 @@ public class InternshipProcessService {
 
     private void checkIfProcessStatusesMatchesOrThrowException(List<ProcessStatusEnum> expectedStatuses,
                                                                ProcessStatusEnum processStatus) {
-        boolean match = false;
-        for (ProcessStatusEnum statusEnum : expectedStatuses
-        ) {
-            if (statusEnum == processStatus) {
-                match = true;
-                break;
-            }
-
-        }
-        if (!match) {
+        if (!expectedStatuses.contains(processStatus)) {
             logger.info("Process status is not matched with the expected status. Process status: " + processStatus
                     + " Expected statuses: " + expectedStatuses);
             throw new CustomException(HttpStatus.BAD_REQUEST);
@@ -380,6 +383,60 @@ public class InternshipProcessService {
         return nextStatus == ProcessStatusEnum.FORM || nextStatus == ProcessStatusEnum.REJECTED;
     }
 
+    private Specification<InternshipProcess> prepereInternshipProcessSearchSpecification(Integer assigneeId,
+                                                                InternshipProcessSearchDto internshipProcessSearchDto) {
+        Map<String, Comparable[]> criteriaMap = new HashMap<>();
+
+        if (internshipProcessSearchDto.getStartDate() != null) {
+            criteriaMap.put("startDate", new Comparable[]{internshipProcessSearchDto.getStartDate(), SearchCriteria.Operation.GREATER_THAN_OR_EQUAL_TO});
+        }
+
+        if (internshipProcessSearchDto.getEndDate() != null) {
+            criteriaMap.put("endDate", new Comparable[]{internshipProcessSearchDto.getEndDate(), SearchCriteria.Operation.LESS_THAN_OR_EQUAL_TO});
+        }
+
+        if (internshipProcessSearchDto.getInternshipType() != null) {
+            criteriaMap.put("internshipType", new Comparable[]{internshipProcessSearchDto.getInternshipType(), SearchCriteria.Operation.EQUAL});
+        }
+
+        if (internshipProcessSearchDto.getInternshipNumber() != null) {
+            criteriaMap.put("internshipNumber", new Comparable[]{internshipProcessSearchDto.getInternshipNumber(), SearchCriteria.Operation.EQUAL});
+        }
+
+        List<SearchCriteria> searchCriteriaList = convertMapToSearchCriteriaList(criteriaMap);
+
+        // Write Join criteria separate to the dynamic SearchCriteria generator.
+        if (assigneeId != null) {
+            SearchCriteria criteriaJoin = new SearchCriteria();
+            criteriaJoin.setJoinAttribute("processAssignees");
+            String[] rootPathJoin = {"assigneeId"};
+            criteriaJoin.setRootPath(rootPathJoin);
+            Integer[] valuesJoin = {assigneeId};
+            criteriaJoin.setValues(valuesJoin);
+            criteriaJoin.setOperation(SearchCriteria.Operation.JOIN);
+            searchCriteriaList.add(criteriaJoin);
+        }
+
+        return filtersSpecification.getSearchSpecification(searchCriteriaList, SearchDto.LogicOperator.AND);
+    }
+
+    private List<SearchCriteria> convertMapToSearchCriteriaList(Map<String, Comparable[]> criteriaMap) {
+        List<SearchCriteria> searchCriteriaList = new ArrayList<>();
+
+        for (Map.Entry<String, Comparable[]> entry : criteriaMap.entrySet()) {
+            String rootPath = entry.getKey();
+            Comparable[] valuesAndOperation = entry.getValue();
+
+            SearchCriteria searchCriteria = new SearchCriteria();
+            searchCriteria.setRootPath(rootPath.split("\\."));
+            searchCriteria.setValues(Arrays.copyOf(valuesAndOperation, valuesAndOperation.length - 1));
+            searchCriteria.setOperation((SearchCriteria.Operation) valuesAndOperation[valuesAndOperation.length - 1]);
+
+            searchCriteriaList.add(searchCriteria);
+        }
+        return searchCriteriaList;
+    }
+
     private void copyDtoToEntity(InternshipProcess internshipProcess, InternshipProcessUpdateRequest internshipProcessUpdateRequest, Department department, Company company) {
         Date now = new Date();
 
@@ -392,8 +449,14 @@ public class InternshipProcessService {
 
     private void copyEntityToDto(InternshipProcess internshipProcess, InternshipProcessGetResponse internshipProcessGetResponse) {
         BeanUtils.copyProperties(internshipProcess, internshipProcessGetResponse);
-        internshipProcessGetResponse.setCompanyId(internshipProcess.getCompany().getId());
-        internshipProcessGetResponse.setDepartmentId(internshipProcess.getDepartment().getId());
+
+        if (internshipProcess.getCompany() != null) {
+            internshipProcessGetResponse.setCompanyId(internshipProcess.getCompany().getId());
+        }
+
+        if (internshipProcess.getDepartment() != null) {
+            internshipProcessGetResponse.setDepartmentId(internshipProcess.getDepartment().getId());
+        }
     }
 
 }

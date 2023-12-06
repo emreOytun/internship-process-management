@@ -2,75 +2,44 @@ package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dto.SearchCriteria;
 import com.teamaloha.internshipprocessmanagement.dto.SearchDto;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class FiltersSpecification<T> {
 
-    public Specification<T> getSearchSpecification(SearchCriteria searchCriteria) {
-        return new Specification<T>() {
-            @Override
-            public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                return criteriaBuilder.equal(root.get(searchCriteria.getColumn()), searchCriteria.getValue());
-            }
-        };
-    }
-
     public Specification<T> getSearchSpecification(List<SearchCriteria> searchCriteriaList,
-                                                   SearchDto.LogicOperator logicOperator) throws ParseException {
+                                                   SearchDto.LogicOperator logicOperator) {
         return ((root, query, criteriaBuilder) -> {
            List<Predicate> predicateList = new ArrayList<>();
 
            for (SearchCriteria searchCriteria : searchCriteriaList) {
+               Comparable[] values = searchCriteria.getValues();
+               Path path = null;
+               if (searchCriteria.getOperation() != SearchCriteria.Operation.JOIN) {
+                   path = root.get(searchCriteria.getRootPath()[0]);
+                   for (int i = 1; i < searchCriteria.getRootPath().length; ++i) {
+                       path = path.get(searchCriteria.getRootPath()[i]);
+                   }
+               }
+
                Predicate predicate = switch (searchCriteria.getOperation()) {
-                   case EQUAL -> criteriaBuilder.equal(root.get(searchCriteria.getColumn()), searchCriteria.getValue());
-                   case LIKE -> criteriaBuilder.like(root.get(searchCriteria.getColumn()), searchCriteria.getValue());
-                   case IN -> {
-                       String[] valueList = searchCriteria.getValue().split(",");
-                       yield root.get(searchCriteria.getColumn()).in(valueList);
-                   }
-                   case LESS_THAN -> criteriaBuilder.lessThan(root.get(searchCriteria.getColumn()), searchCriteria.getValue());
-                   case GREATER_THAN -> criteriaBuilder.greaterThan(root.get(searchCriteria.getColumn()), searchCriteria.getValue());
-                   case BETWEEN -> {
-                       String[] valueList = searchCriteria.getValue().split(",");
-                       try {
-                           if (searchCriteria.getDataType() == SearchCriteria.DataType.DATE) {
-                               SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-                               yield criteriaBuilder.between(root.get(searchCriteria.getColumn()),
-                                       sdf.parse(valueList[0]),
-                                       sdf.parse(valueList[1]));
-                           }
-                           else if (searchCriteria.getDataType() == SearchCriteria.DataType.INTEGER) {
-                               yield criteriaBuilder.between(root.get(searchCriteria.getColumn()),
-                                       Integer.valueOf(valueList[0]),
-                                       Integer.valueOf(valueList[1]));
-                           }
-                           else if (searchCriteria.getDataType() == SearchCriteria.DataType.LONG) {
-                               yield criteriaBuilder.between(root.get(searchCriteria.getColumn()),
-                                       Long.valueOf(valueList[0]),
-                                       Long.valueOf(valueList[1]));
-                           }
-                           else {
-                               yield criteriaBuilder.between(root.get(searchCriteria.getColumn()),
-                                       valueList[0],
-                                       valueList[1]);
-                           }
-                       } catch (ParseException e) {
-                           throw new RuntimeException(e);
-                       }
-                   }
-                   case JOIN -> criteriaBuilder.equal(root.join(searchCriteria.getJoinAttribute()).get(searchCriteria.getColumn()),
-                                                        searchCriteria.getValue());
+                   case EQUAL -> criteriaBuilder.equal(path, values[0]);
+                   case LIKE -> criteriaBuilder.like(path, values[0].toString());
+                   case IN -> path.in(values);
+                   case LESS_THAN -> criteriaBuilder.lessThan(path, values[0]);
+                   case GREATER_THAN -> criteriaBuilder.greaterThan(path, values[0]);
+                   case GREATER_THAN_OR_EQUAL_TO -> criteriaBuilder.greaterThanOrEqualTo(path, values[0]);
+                   case LESS_THAN_OR_EQUAL_TO -> criteriaBuilder.lessThanOrEqualTo(path, values[0]);
+                   case BETWEEN -> criteriaBuilder.between(path, values[0], values[1]);
+                   case JOIN -> criteriaBuilder.equal(
+                           root.join(searchCriteria.getJoinAttribute()).get(searchCriteria.getRootPath()[0]),
+                           values[0]);
                };
                predicateList.add(predicate);
            }

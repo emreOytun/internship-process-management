@@ -12,16 +12,16 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 public class SearchByPageDto {
-    private Integer pageNo = 0;
-    private Integer pageSize = 0;
-    private Sort.Direction sort = Sort.Direction.ASC;
-    private String sortByColumn = "updateDate";
+    private Integer pageNo;
+    private Integer pageSize;
+    private Sort.Direction sort;
+    private String sortByColumn;
 
-    public Pageable getPageable(SearchByPageDto dto) {
-        Integer page = Objects.nonNull(dto.getPageNo()) ? dto.getPageNo() : this.getPageNo();
-        Integer size = Objects.nonNull(dto.getPageSize()) ? dto.getPageSize() : this.getPageSize();
-        Sort.Direction sort = Objects.nonNull(dto.getSort()) ? dto.getSort() : this.sort;
-        String sortByColumn = Objects.nonNull(dto.getSortByColumn()) ? dto.getSortByColumn() : this.sortByColumn;
+    public static Pageable getPageable(SearchByPageDto dto) {
+        Integer page = Objects.nonNull(dto.getPageNo()) ? dto.getPageNo() : 0;
+        Integer size = Objects.nonNull(dto.getPageSize()) ? dto.getPageSize() : 10;
+        Sort.Direction sort = Objects.nonNull(dto.getSort()) ? dto.getSort() : Sort.Direction.ASC;
+        String sortByColumn = Objects.nonNull(dto.getSortByColumn()) ? dto.getSortByColumn() : "logDates.updateDate";
         return PageRequest.of(page, size, sort, sortByColumn);
     }
 }

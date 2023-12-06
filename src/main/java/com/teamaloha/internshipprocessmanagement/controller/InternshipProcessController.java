@@ -88,4 +88,11 @@ public class InternshipProcessController {
         internshipProcessService.internshipCancellationRequest(internshipProcessID, userId);
     }
 
+    @PostMapping("/get-assigned-process")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
+    public InternshipProcessGetAllResponse getAssignedInternshipProcess(@RequestBody InternshipProcessSearchDto searchDto, @CurrentUserId Integer academicianId) {
+        return internshipProcessService.getAssignedInternshipProcess(academicianId, searchDto);
+    }
+
 }

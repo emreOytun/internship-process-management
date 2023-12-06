@@ -7,7 +7,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class FiltersSpecification<T> {
@@ -48,5 +50,22 @@ public class FiltersSpecification<T> {
            }
            return criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
         });
+    }
+
+    public List<SearchCriteria> convertMapToSearchCriteriaList(Map<String, Comparable[]> criteriaMap) {
+        List<SearchCriteria> searchCriteriaList = new ArrayList<>();
+
+        for (Map.Entry<String, Comparable[]> entry : criteriaMap.entrySet()) {
+            String rootPath = entry.getKey();
+            Comparable[] valuesAndOperation = entry.getValue();
+
+            SearchCriteria searchCriteria = new SearchCriteria();
+            searchCriteria.setRootPath(rootPath.split("\\."));
+            searchCriteria.setValues(Arrays.copyOf(valuesAndOperation, valuesAndOperation.length - 1));
+            searchCriteria.setOperation((SearchCriteria.Operation) valuesAndOperation[valuesAndOperation.length - 1]);
+
+            searchCriteriaList.add(searchCriteria);
+        }
+        return searchCriteriaList;
     }
 }

@@ -416,7 +416,7 @@ public class InternshipProcessService {
             criteriaMap.put("internshipNumber", new Comparable[]{internshipProcessSearchDto.getInternshipNumber(), SearchCriteria.Operation.EQUAL});
         }
 
-        List<SearchCriteria> searchCriteriaList = convertMapToSearchCriteriaList(criteriaMap);
+        List<SearchCriteria> searchCriteriaList = filtersSpecification.convertMapToSearchCriteriaList(criteriaMap);
 
         // Write Join criteria separate to the dynamic SearchCriteria generator.
         if (assigneeId != null) {
@@ -431,23 +431,6 @@ public class InternshipProcessService {
         }
 
         return filtersSpecification.getSearchSpecification(searchCriteriaList, SearchDto.LogicOperator.AND);
-    }
-
-    private List<SearchCriteria> convertMapToSearchCriteriaList(Map<String, Comparable[]> criteriaMap) {
-        List<SearchCriteria> searchCriteriaList = new ArrayList<>();
-
-        for (Map.Entry<String, Comparable[]> entry : criteriaMap.entrySet()) {
-            String rootPath = entry.getKey();
-            Comparable[] valuesAndOperation = entry.getValue();
-
-            SearchCriteria searchCriteria = new SearchCriteria();
-            searchCriteria.setRootPath(rootPath.split("\\."));
-            searchCriteria.setValues(Arrays.copyOf(valuesAndOperation, valuesAndOperation.length - 1));
-            searchCriteria.setOperation((SearchCriteria.Operation) valuesAndOperation[valuesAndOperation.length - 1]);
-
-            searchCriteriaList.add(searchCriteria);
-        }
-        return searchCriteriaList;
     }
 
     private void copyDtoToEntity(InternshipProcess internshipProcess, InternshipProcessUpdateRequest internshipProcessUpdateRequest, Department department, Company company) {

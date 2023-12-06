@@ -61,6 +61,8 @@ public class SecurityConfig {
             "/api/department/**",
             // faculty
             "/api/faculty/**",
+            // internship types
+            "/api/internshipTypes/**",
     };
 
     @Autowired

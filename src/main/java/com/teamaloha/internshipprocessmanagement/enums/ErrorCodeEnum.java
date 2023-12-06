@@ -9,7 +9,9 @@ public enum ErrorCodeEnum {
     FACULTY_EXIST_BEFORE("15"),
 
     Faculty_NOT_EXISTS_BEFORE("16"),
-    DEPARTMENT_NOT_EXISTS_BEFORE("17");
+    DEPARTMENT_NOT_EXISTS_BEFORE("17"),
+    INTERNSHIP_EXISTS_BEFORE("18"),
+    INTERNSHIP_DOES_NOT_EXISTS_BEFORE("19");
 
     private String errorCode;
 

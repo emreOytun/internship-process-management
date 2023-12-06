@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-    private UserDao userDao;
+    private final UserDao userDao;
 
     @Autowired
     public UserService(UserDao userDao) {
@@ -15,8 +15,7 @@ public class UserService {
     }
 
     public User findByMail(String mail) {
-        User user = userDao.findByMail(mail);
-        return user;
+        return userDao.findByMail(mail);
     }
 
     public boolean existsByMail(String mail) {

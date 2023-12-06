@@ -18,7 +18,7 @@ import java.util.Date;
 
 @Service
 public class HolidayService {
-    private HolidayDao holidayDao;
+    private final HolidayDao holidayDao;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired

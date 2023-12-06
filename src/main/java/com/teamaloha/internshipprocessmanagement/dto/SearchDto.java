@@ -15,6 +15,6 @@ public class SearchDto {
     private SearchByPageDto searchByPageDto;
 
     public enum LogicOperator {
-        AND, OR;
+        AND, OR
     }
 }

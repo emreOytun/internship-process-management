@@ -2,7 +2,6 @@ package com.teamaloha.internshipprocessmanagement.controller;
 
 import com.teamaloha.internshipprocessmanagement.annotations.CurrentUserId;
 import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetAllResponse;
-import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetStudentAllProcessResponse;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AcademicianRegisterRequest;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AuthenticationRequest;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AuthenticationResponse;

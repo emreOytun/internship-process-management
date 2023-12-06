@@ -1,6 +1,5 @@
 package com.teamaloha.internshipprocessmanagement.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.PageRequest;

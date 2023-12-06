@@ -1,12 +1,10 @@
 package com.teamaloha.internshipprocessmanagement.controller;
 
 
-import com.teamaloha.internshipprocessmanagement.dto.company.*;
 import com.teamaloha.internshipprocessmanagement.dto.companyStaff.CompanyStaffAddRequest;
 import com.teamaloha.internshipprocessmanagement.dto.companyStaff.CompanyStaffAddResponse;
 import com.teamaloha.internshipprocessmanagement.dto.companyStaff.CompanyStaffUpdateRequest;
 import com.teamaloha.internshipprocessmanagement.dto.companyStaff.CompanyStaffUpdateResponse;
-import com.teamaloha.internshipprocessmanagement.service.CompanyService;
 import com.teamaloha.internshipprocessmanagement.service.CompanyStaffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

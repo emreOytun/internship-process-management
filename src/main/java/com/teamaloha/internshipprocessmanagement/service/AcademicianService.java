@@ -1,16 +1,13 @@
 package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.AcademicianDao;
-import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessGetResponse;
 import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetAllResponse;
-import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetStudentAllProcessResponse;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AcademicianRegisterRequest;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AuthenticationRequest;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AuthenticationResponse;
 import com.teamaloha.internshipprocessmanagement.dto.user.UserDto;
 import com.teamaloha.internshipprocessmanagement.entity.Academician;
 import com.teamaloha.internshipprocessmanagement.entity.Department;
-import com.teamaloha.internshipprocessmanagement.entity.InternshipProcess;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ErrorCodeEnum;
 import com.teamaloha.internshipprocessmanagement.enums.RoleEnum;

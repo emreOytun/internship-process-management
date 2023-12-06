@@ -1,7 +1,6 @@
 package com.teamaloha.internshipprocessmanagement.dto.user;
 
 import com.teamaloha.internshipprocessmanagement.enums.RoleEnum;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

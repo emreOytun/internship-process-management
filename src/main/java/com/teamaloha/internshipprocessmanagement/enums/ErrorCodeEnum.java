@@ -6,9 +6,9 @@ public enum ErrorCodeEnum {
     COMPANY_NOT_EXISTS_BEFORE("12"),
     COMPANY_STAFF_NOT_EXISTS_BEFORE("13");
 
-    private String errorCode;
+    private final String errorCode;
 
-    private ErrorCodeEnum(String errorCode) {
+    ErrorCodeEnum(String errorCode) {
         this.errorCode = errorCode;
     }
 

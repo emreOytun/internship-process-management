@@ -1,7 +1,6 @@
 package com.teamaloha.internshipprocessmanagement.dto.academician;
 
 import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessGetResponse;
-import com.teamaloha.internshipprocessmanagement.entity.InternshipProcess;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

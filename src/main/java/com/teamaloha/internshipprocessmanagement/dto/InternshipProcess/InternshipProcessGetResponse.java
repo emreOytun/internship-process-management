@@ -1,10 +1,6 @@
 package com.teamaloha.internshipprocessmanagement.dto.InternshipProcess;
 
 import com.teamaloha.internshipprocessmanagement.enums.ProcessStatusEnum;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

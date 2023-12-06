@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -368,15 +369,27 @@ public class InternshipProcessService {
     }
 
     private boolean areFormFieldsEntered(InternshipProcess internshipProcess) {
-        return !(internshipProcess.getTc() == null || internshipProcess.getStudentNumber() == null ||
-                internshipProcess.getTelephoneNumber() == null || internshipProcess.getClassNumber() == null ||
-                internshipProcess.getPosition() == null || internshipProcess.getInternshipType() == null ||
-                internshipProcess.getInternshipNumber() == null || internshipProcess.getStartDate() == null ||
-                internshipProcess.getEndDate() == null || internshipProcess.getCompany() == null ||
-                internshipProcess.getDepartment() == null || internshipProcess.getEngineerMail() == null ||
-                internshipProcess.getEngineerName() == null || internshipProcess.getChoiceReason() == null ||
-                internshipProcess.getSgkEntry() == null || internshipProcess.getGssEntry() == null ||
-                internshipProcess.getMustehaklikBelgesiPath() == null || internshipProcess.getStajYeriFormuPath() == null);
+        Set<String> excludedFields = new HashSet<>();
+        excludedFields.add("assignerId");
+        excludedFields.add("processAssignees");
+
+        Field[] fields = InternshipProcess.class.getDeclaredFields();
+
+        for (Field field : fields) {
+            String fieldName = field.getName();
+            if (!excludedFields.contains(fieldName)) {
+                field.setAccessible(true);
+                try {
+                    if (field.get(internshipProcess) == null) {
+                        return false;  // If any non-excluded field is null, return false
+                    }
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();  // Handle exception according to your needs
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private boolean isNextStatusEditable(ProcessStatusEnum nextStatus) {

@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 // Custom exception for customer business operations.
 public class CustomException extends RuntimeException {
 
-    private HttpStatus httpStatus;
+    private final HttpStatus httpStatus;
 
     public CustomException(String message) {
         super(message);

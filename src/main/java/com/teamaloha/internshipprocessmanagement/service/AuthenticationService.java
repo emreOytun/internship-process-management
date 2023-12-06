@@ -12,14 +12,12 @@ import org.springframework.stereotype.Service;
 public class AuthenticationService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
 
     @Autowired
     public AuthenticationService(JwtService jwtService, PasswordEncoder passwordEncoder,
                                  AuthenticationManager authenticationManager) {
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
-        this.authenticationManager = authenticationManager;
     }
 
     public String hashPassword(String password) {

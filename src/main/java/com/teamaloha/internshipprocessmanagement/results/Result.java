@@ -1,8 +1,8 @@
 package com.teamaloha.internshipprocessmanagement.results;
 
 public abstract class Result {
-    private boolean success;
-    private String message;
+    private final boolean success;
+    private final String message;
 
     public Result(boolean success, String message) {
         this.success = success;

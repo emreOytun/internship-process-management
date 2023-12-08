@@ -55,6 +55,9 @@ public class InternshipProcess {
     @Column(name = "end_date", nullable = true)
     private Date endDate;
 
+    @Column(name = "requested_end_date", nullable = true)
+    private Date requestedEndDate;
+
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.DETACH}, fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "company_id")
     private Company company;

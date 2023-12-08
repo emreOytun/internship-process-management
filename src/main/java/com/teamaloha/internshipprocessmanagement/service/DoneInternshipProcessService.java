@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,8 +26,8 @@ public class DoneInternshipProcessService {
     }
 
 
-    Set<Company> findCompainesByDateRange(String startDate, String endDate) {
-        Set<DoneInternshipProcess> doneInternshipProcesses = doneInternshipProcessDao.findDoneInternshipProcessesBetweenDates(startDate, endDate);
+    Set<Company> findCompainesByDateRange(Date startDate, Date endDate) {
+        Set<DoneInternshipProcess> doneInternshipProcesses = doneInternshipProcessDao.findDoneInternshipProcessByStartDateAndEndDate(startDate, endDate);
         Set<Company> companies = new HashSet<>();
 
         for (DoneInternshipProcess doneInternshipProcess : doneInternshipProcesses) {

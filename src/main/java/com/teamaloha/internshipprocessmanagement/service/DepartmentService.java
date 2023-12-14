@@ -2,10 +2,7 @@ package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.DepartmentDao;
 import com.teamaloha.internshipprocessmanagement.dao.FacultyDao;
-import com.teamaloha.internshipprocessmanagement.dto.department.DepartmentAddRequest;
-import com.teamaloha.internshipprocessmanagement.dto.department.DepartmentDto;
-import com.teamaloha.internshipprocessmanagement.dto.department.DepartmentUpdateRequest;
-import com.teamaloha.internshipprocessmanagement.dto.department.DepartmentUpdateResponse;
+import com.teamaloha.internshipprocessmanagement.dto.department.*;
 import com.teamaloha.internshipprocessmanagement.dto.holiday.HolidayAddRequest;
 import com.teamaloha.internshipprocessmanagement.dto.holiday.HolidayDto;
 import com.teamaloha.internshipprocessmanagement.entity.Academician;
@@ -24,6 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DepartmentService {
@@ -65,6 +64,11 @@ public class DepartmentService {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
         return department;
+    }
+
+    public DepartmentGetAllResponse getAll() {
+        List<DepartmentDto> dtoList =  departmentDao.findAll().stream().map(department -> convertEntityToDto(department)).collect(Collectors.toList());
+        return DepartmentGetAllResponse.builder().departmentList(dtoList).build();
     }
 
 
@@ -115,5 +119,10 @@ public class DepartmentService {
         department.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
 
         return department;
+    }
+
+    private DepartmentDto convertEntityToDto(Department department) {
+        return DepartmentDto.builder().id(department.getId()).faculty(department.getFaculty().getFacultyName())
+                .name(department.getDepartmentName()).build();
     }
 }

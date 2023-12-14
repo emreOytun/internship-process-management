@@ -1,6 +1,7 @@
 package com.teamaloha.internshipprocessmanagement.controller;
 
 import com.teamaloha.internshipprocessmanagement.dto.department.DepartmentAddRequest;
+import com.teamaloha.internshipprocessmanagement.dto.department.DepartmentGetAllResponse;
 import com.teamaloha.internshipprocessmanagement.dto.department.DepartmentUpdateRequest;
 import com.teamaloha.internshipprocessmanagement.dto.department.DepartmentUpdateResponse;
 import com.teamaloha.internshipprocessmanagement.dto.faculty.FacultyUpdateRequest;
@@ -19,6 +20,12 @@ public class DepartmentController {
 
     public DepartmentController(DepartmentService departmentService) {
         this.departmentService = departmentService;
+    }
+
+    @GetMapping("/getAll")
+    @ResponseStatus(HttpStatus.OK)
+    public DepartmentGetAllResponse getAll() {
+        return departmentService.getAll();
     }
 
     @PostMapping("/addDepartment")

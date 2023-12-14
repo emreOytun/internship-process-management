@@ -14,7 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CompanyService {
@@ -78,6 +79,11 @@ public class CompanyService {
         return companyGetResponse;
     }
 
+    public CompanyGetAllResponse getAll() {
+        List<CompanyGetResponse> companyGetResponses = companyDao.findAll().stream().map(company -> convertEntityToDto(company)).collect(Collectors.toList());
+        return CompanyGetAllResponse.builder().companyList(companyGetResponses).build();
+    }
+
     private Company convertDtoToEntity(CompanyAddRequest companyAddRequest) {
         Company company = new Company();
         Date now = new Date();
@@ -87,5 +93,13 @@ public class CompanyService {
         return company;
     }
 
-
+    private CompanyGetResponse convertEntityToDto(Company company) {
+        return CompanyGetResponse.builder()
+                .companyName(company.getCompanyName())
+                .companyMail(company.getCompanyMail())
+                .companyTelephone(company.getCompanyTelephone())
+                .faxNumber(company.getFaxNumber())
+                .companyAddress(company.getCompanyAddress())
+                .build();
+    }
 }

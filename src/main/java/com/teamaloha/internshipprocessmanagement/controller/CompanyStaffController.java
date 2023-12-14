@@ -1,11 +1,9 @@
 package com.teamaloha.internshipprocessmanagement.controller;
 
 
-import com.teamaloha.internshipprocessmanagement.dto.companyStaff.CompanyStaffAddRequest;
-import com.teamaloha.internshipprocessmanagement.dto.companyStaff.CompanyStaffAddResponse;
-import com.teamaloha.internshipprocessmanagement.dto.companyStaff.CompanyStaffUpdateRequest;
-import com.teamaloha.internshipprocessmanagement.dto.companyStaff.CompanyStaffUpdateResponse;
+import com.teamaloha.internshipprocessmanagement.dto.companyStaff.*;
 import com.teamaloha.internshipprocessmanagement.service.CompanyStaffService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +21,7 @@ public class CompanyStaffController {
     @ResponseStatus(HttpStatus.OK)
     // test ten sonra ekleyelim
     // @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name()) || hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
-    public CompanyStaffAddResponse addCompany(@RequestBody CompanyStaffAddRequest companyStaffAddRequest) {
+    public CompanyStaffAddResponse addCompanyStaff(@RequestBody CompanyStaffAddRequest companyStaffAddRequest) {
         return companyStaffService.add(companyStaffAddRequest);
     }
 
@@ -31,9 +29,13 @@ public class CompanyStaffController {
     @ResponseStatus(HttpStatus.OK)
     // test ten sonra ekleyelim
     // @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name()) || hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
-    public CompanyStaffUpdateResponse updateCompany(@RequestBody CompanyStaffUpdateRequest companyStaffUpdateRequest) {
+    public CompanyStaffUpdateResponse updateCompanyStaff(@RequestBody CompanyStaffUpdateRequest companyStaffUpdateRequest) {
         return companyStaffService.update(companyStaffUpdateRequest);
     }
 
-
+    @GetMapping("/getAllByCompany")
+    @ResponseStatus(HttpStatus.OK)
+    public CompanyStaffGetAllResponse getAllByCompany(@RequestBody @Valid CompanyStaffGetAllByCompanyRequest getAllByCompanyRequest) {
+        return companyStaffService.getAllByCompanyId(getAllByCompanyRequest.getCompanyId());
+    }
 }

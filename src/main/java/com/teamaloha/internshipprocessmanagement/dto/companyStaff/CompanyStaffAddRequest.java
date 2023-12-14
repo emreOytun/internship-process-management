@@ -33,5 +33,8 @@ public class CompanyStaffAddRequest {
 
     @NotNull
     @NotBlank
-    private Company company;
+    private String department;
+
+    @NotNull
+    private Integer companyId;
 }

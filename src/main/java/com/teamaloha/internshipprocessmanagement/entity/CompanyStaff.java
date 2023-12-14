@@ -35,6 +35,9 @@ public class CompanyStaff {
     @Column(name = "title", nullable = true)
     private String title;
 
+    @Column(name = "department", nullable = true)
+    private String department;
+
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.DETACH}, fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "company_id")
     private Company company;

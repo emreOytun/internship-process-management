@@ -9,13 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CompanyStaffDto {
     private int id;
-    private String firstName;
-    private String lastName;
+    private String name;
+    private String surname;
     private String mail;
     private String telephone;
-    private String address;
-    private String position;
+    private String title;
     private String department;
-    private String company;
-
 }

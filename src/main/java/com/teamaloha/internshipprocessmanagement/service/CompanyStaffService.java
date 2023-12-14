@@ -2,10 +2,8 @@ package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.CompanyStaffDao;
 import com.teamaloha.internshipprocessmanagement.dto.company.*;
-import com.teamaloha.internshipprocessmanagement.dto.companyStaff.CompanyStaffAddRequest;
-import com.teamaloha.internshipprocessmanagement.dto.companyStaff.CompanyStaffAddResponse;
-import com.teamaloha.internshipprocessmanagement.dto.companyStaff.CompanyStaffUpdateRequest;
-import com.teamaloha.internshipprocessmanagement.dto.companyStaff.CompanyStaffUpdateResponse;
+import com.teamaloha.internshipprocessmanagement.dto.companyStaff.*;
+import com.teamaloha.internshipprocessmanagement.entity.Company;
 import com.teamaloha.internshipprocessmanagement.entity.CompanyStaff;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ErrorCodeEnum;
@@ -18,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CompanyStaffService {
@@ -34,10 +34,10 @@ public class CompanyStaffService {
 
 
     public CompanyStaffAddResponse add(CompanyStaffAddRequest companyAddRequest) {
-        CompanyGetResponse isCompanyExists = companyService.get(new CompanyGetRequest(companyAddRequest.getCompany().getId()));
+        CompanyGetResponse isCompanyExists = companyService.get(new CompanyGetRequest(companyAddRequest.getCompanyId()));
 
         if (isCompanyExists == null) {
-            logger.error("Given company id does exists before. Company: " + companyAddRequest.getCompany().getCompanyName());
+            logger.error("Given company id does exists before. CompanyId: " + companyAddRequest.getCompanyId());
             throw new CustomException(ErrorCodeEnum.COMPANY_EXISTS_BEFORE.getErrorCode(), HttpStatus.BAD_REQUEST);
         }
         // Convert given request dto to Company entity.
@@ -49,10 +49,10 @@ public class CompanyStaffService {
     }
 
     public CompanyStaffUpdateResponse update(CompanyStaffUpdateRequest companyStaffUpdateRequest) {
-        CompanyGetResponse isCompanyExists = companyService.get(new CompanyGetRequest(companyStaffUpdateRequest.getId()));
+        CompanyGetResponse isCompanyExists = companyService.get(new CompanyGetRequest(companyStaffUpdateRequest.getCompanyId()));
 
         if (isCompanyExists == null) {
-            logger.error("Given company not exists before. Company: " + companyStaffUpdateRequest.getCompany().getCompanyName());
+            logger.error("Given company not exists before. CompanyId: " + companyStaffUpdateRequest.getCompanyId());
             throw new CustomException(ErrorCodeEnum.COMPANY_NOT_EXISTS_BEFORE.getErrorCode(), HttpStatus.BAD_REQUEST);
         }
 
@@ -70,6 +70,15 @@ public class CompanyStaffService {
         return new CompanyStaffUpdateResponse(id);
     }
 
+    public CompanyStaffGetAllResponse getAllByCompanyId(Integer companyId) {
+        Company company = new Company();
+        company.setId(companyId);
+        List<CompanyStaffDto> companyStaffDtoList = companyStaffDao.findCompanyStaffByCompany(company)
+                                                    .stream()
+                                                    .map(companyStaff -> convertEntityToDto(companyStaff))
+                                                    .collect(Collectors.toList());
+        return CompanyStaffGetAllResponse.builder().companyStaffList(companyStaffDtoList).build();
+    }
 
     private CompanyStaff convertDtoToEntity(CompanyStaffAddRequest companyStaffAddRequest) {
         CompanyStaff companyStaff = new CompanyStaff();
@@ -77,6 +86,16 @@ public class CompanyStaffService {
         companyStaff.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
         BeanUtils.copyProperties(companyStaffAddRequest, companyStaff);
 
+        Company company = new Company();
+        company.setId(companyStaffAddRequest.getCompanyId());
+        companyStaff.setCompany(company);
+
         return companyStaff;
+    }
+
+    private CompanyStaffDto convertEntityToDto(CompanyStaff companyStaff) {
+        CompanyStaffDto companyStaffDto = new CompanyStaffDto();
+        BeanUtils.copyProperties(companyStaff, companyStaffDto);
+        return companyStaffDto;
     }
 }

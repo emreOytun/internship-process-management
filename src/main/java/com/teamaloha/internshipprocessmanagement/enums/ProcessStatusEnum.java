@@ -8,6 +8,7 @@ public enum ProcessStatusEnum {
     PRE4,
     IN1,
     REJECTED,
+    EXTEND,
     CANCEL;
 
     public static ProcessStatusEnum findNextStatus(ProcessStatusEnum processStatusEnum) {

@@ -6,6 +6,7 @@ import com.teamaloha.internshipprocessmanagement.dto.SearchByPageDto;
 import com.teamaloha.internshipprocessmanagement.dto.SearchCriteria;
 import com.teamaloha.internshipprocessmanagement.dto.SearchDto;
 import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetStudentAllProcessResponse;
+import com.teamaloha.internshipprocessmanagement.dto.holiday.IsValidRangeRequest;
 import com.teamaloha.internshipprocessmanagement.entity.*;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ProcessStatusEnum;
@@ -34,6 +35,7 @@ public class InternshipProcessService {
     private final DepartmentService departmentService;
     private final CompanyService companyService;
     private final AcademicianService academicianService;
+    private final HolidayService holidayService;
     private final ProcessAssigneeService processAssigneeService;
     private InternshipProcessService self;
     private final ApplicationContext applicationContext;
@@ -42,13 +44,14 @@ public class InternshipProcessService {
     @Autowired
     public InternshipProcessService(InternshipProcessDao internshipProcessDao, DepartmentService departmentService,
                                     CompanyService companyService, AcademicianService academicianService,
-                                    ProcessAssigneeService processAssigneeService,
+                                    HolidayService holidayService, ProcessAssigneeService processAssigneeService,
                                     ApplicationContext applicationContext,
                                     FiltersSpecification<InternshipProcess> filtersSpecification) {
         this.internshipProcessDao = internshipProcessDao;
         this.departmentService = departmentService;
         this.companyService = companyService;
         this.academicianService = academicianService;
+        this.holidayService = holidayService;
         this.processAssigneeService = processAssigneeService;
         this.applicationContext = applicationContext;
         this.filtersSpecification = filtersSpecification;
@@ -116,7 +119,7 @@ public class InternshipProcessService {
     }
 
     public InternshipProcessGetAllResponse getAssignedInternshipProcess(Integer assigneeId,
-                                                                           InternshipProcessSearchDto internshipProcessSearchDto) {
+                                                                        InternshipProcessSearchDto internshipProcessSearchDto) {
         List<InternshipProcess> internshipProcessList = internshipProcessDao.findAll(prepereInternshipProcessSearchSpecification(assigneeId, internshipProcessSearchDto),
                 SearchByPageDto.getPageable(internshipProcessSearchDto.getSearchByPageDto())).toList();
         return getInternshipProcessGetAllResponse(internshipProcessList);
@@ -185,25 +188,37 @@ public class InternshipProcessService {
     }
 
     public void internshipCancellationRequest(Integer internshipProcessID, Integer studentId) {
-        InternshipProcess internshipProcess = getInternshipProcessIfExistsOrThrowException(internshipProcessID);
-        Date now = new Date();
         Integer dayNumber = 3;
+        Date now = new Date();
 
-        checkIfStudentIdAndInternshipProcessMatchesOrThrowException(studentId, internshipProcess.getStudent().getId());
+        InternshipProcess internshipProcess = checkIfRequestIsPossible(internshipProcessID, studentId, dayNumber);
 
-        // Check if the 3 days passed from the internship start date
-        checkIfDiffSmallerOrThrowException(internshipProcess.getStartDate(), now, dayNumber);
-
-        // Check if the process is approved
-        checkIfProcessStatusesMatchesOrThrowException(List.of(ProcessStatusEnum.IN1), internshipProcess.getProcessStatus());
-
-        // Set updated process status to CANCEL
+        // Find assigneee list and set process status to CANCEL
+        List<ProcessAssignee> assigneeList = prepareProcessAssigneeList(internshipProcess, now);
         internshipProcess.setProcessStatus(ProcessStatusEnum.CANCEL);
         internshipProcess.getLogDates().setUpdateDate(now);
 
-        // Save the process
-        internshipProcessDao.save(internshipProcess);
+        // Save the process with Assignee list
+        self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, internshipProcess);
     }
+
+    public void internshipExtensionRequest(InternshipExtensionRequestDto internshipExtensionRequestDto, Integer userId) {
+        Integer dayNumber = 7;
+        Date now = new Date();
+        InternshipProcess internshipProcess = checkIfRequestIsPossible(internshipExtensionRequestDto.getProcessId(), userId, dayNumber);
+
+        checkIfIsGivenWorkDayTrueOrThrowException(internshipProcess, internshipExtensionRequestDto);
+
+        // Find assigneee list and set process status to EXTEND
+        List<ProcessAssignee> assigneeList = prepareProcessAssigneeList(internshipProcess, now);
+        internshipProcess.setProcessStatus(ProcessStatusEnum.EXTEND);
+        internshipProcess.setRequestedEndDate(internshipExtensionRequestDto.getRequestDate());
+        internshipProcess.getLogDates().setUpdateDate(now);
+
+        // Save the process with Assignee list
+        self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, internshipProcess);
+    }
+
 
     public void startInternshipApprovalProcess(Integer processId, Integer studentId) {
         InternshipProcess internshipProcess = getInternshipProcessIfExistsOrThrowException(processId);
@@ -261,6 +276,9 @@ public class InternshipProcessService {
             internshipProcess.getLogDates().setUpdateDate(now);
             if (internshipProcess.getProcessStatus() == ProcessStatusEnum.CANCEL) {
                 nextStatus = ProcessStatusEnum.IN1;
+            } else if (internshipProcess.getProcessStatus() == ProcessStatusEnum.EXTEND) {
+                internshipProcess.setRequestedEndDate(null);
+                nextStatus = ProcessStatusEnum.EXTEND;
             } else {
                 nextStatus = ProcessStatusEnum.REJECTED;
             }
@@ -272,13 +290,17 @@ public class InternshipProcessService {
             if (internshipProcess.getProcessStatus() == ProcessStatusEnum.CANCEL) {
                 // If the process is cancelled, delete the process
                 deleteInternshipProcess(processId);
+            } else if (internshipProcess.getProcessStatus() == ProcessStatusEnum.EXTEND) {
+                internshipProcess.setEndDate(internshipProcess.getRequestedEndDate());
+                internshipProcess.setRequestedEndDate(null);
+                nextStatus = ProcessStatusEnum.IN1;
             } else {
                 nextStatus = ProcessStatusEnum.findNextStatus(internshipProcess.getProcessStatus());
             }
         }
 
         // If the process is not cancelled, update the process status
-        if (internshipProcess.getProcessStatus() != ProcessStatusEnum.CANCEL) {
+        if (!(internshipProcess.getProcessStatus() == ProcessStatusEnum.CANCEL && internshipProcessEvaluateRequest.getApprove())) {
             internshipProcess.setProcessStatus(nextStatus);
             internshipProcess.setEditable(isNextStatusEditable(nextStatus));
             self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, internshipProcess);
@@ -292,6 +314,32 @@ public class InternshipProcessService {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
         return internshipProcess;
+    }
+
+    private InternshipProcess checkIfRequestIsPossible(Integer processID, Integer userId, Integer dayNumber) {
+        InternshipProcess internshipProcess = getInternshipProcessIfExistsOrThrowException(processID);
+        Date now = new Date();
+
+        checkIfStudentIdAndInternshipProcessMatchesOrThrowException(userId, internshipProcess.getStudent().getId());
+
+        // Check if the 7 days passed from the internship start date
+        checkIfDiffSmallerOrThrowException(internshipProcess.getStartDate(), now, dayNumber);
+
+        // Check if the process is approved
+        checkIfProcessStatusesMatchesOrThrowException(List.of(ProcessStatusEnum.IN1), internshipProcess.getProcessStatus());
+
+        return internshipProcess;
+    }
+
+    private void checkIfIsGivenWorkDayTrueOrThrowException(InternshipProcess internshipProcess, InternshipExtensionRequestDto internshipExtensionRequestDto) {
+        if (holidayService.isGivenWorkDayTrue(new IsValidRangeRequest(internshipProcess.getEndDate(),
+                internshipExtensionRequestDto.getRequestDate(), internshipExtensionRequestDto.getExtensionDayNumber()))) {
+            logger.error("The number of extension date and end date are not matching. Normal end Date: " +
+                    internshipProcess.getEndDate() + " Requested End Date" + internshipExtensionRequestDto.getRequestDate() +
+                    " Expected Number of Day: " + internshipExtensionRequestDto.getExtensionDayNumber());
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     private void checkIfDiffSmallerOrThrowException(Date startDate, Date now, Integer dayNumber) {
@@ -346,12 +394,12 @@ public class InternshipProcessService {
 
     private List<Integer> findAssigneeIdList(ProcessStatusEnum processStatusEnum, Department department, Integer studentId) {
         return switch (processStatusEnum) {
-            case FORM ->
+            case FORM, REJECTED, IN1 ->
                     academicianService.findAcademicianIdsByInternshipCommitteeAndDepartment(true, department.getId());
             case PRE1 -> academicianService.findAcademicianIdsByDepartmentChairAndDepartment(true, department.getId());
             case PRE2 -> academicianService.findAcademicianIdsByExecutiveAndDepartment(true, department.getId());
             case PRE3 -> academicianService.findAcademicianIdsByAcademicAndDepartment(true, department.getId());
-            case PRE4 -> {
+            case PRE4, CANCEL, EXTEND -> {
                 List<Integer> assigneIdList = new ArrayList<>();
                 assigneIdList.add(studentId);
                 yield assigneIdList;
@@ -397,7 +445,7 @@ public class InternshipProcessService {
     }
 
     private Specification<InternshipProcess> prepereInternshipProcessSearchSpecification(Integer assigneeId,
-                                                                InternshipProcessSearchDto internshipProcessSearchDto) {
+                                                                                         InternshipProcessSearchDto internshipProcessSearchDto) {
         Map<String, Comparable[]> criteriaMap = new HashMap<>();
 
         if (internshipProcessSearchDto.getStartDate() != null) {

@@ -92,7 +92,7 @@ public class InternshipProcessService {
         student.setId(studentId);
 
         List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllByStudent(student);
-        return getInternshipProcessGetAllResponse(internshipProcessList);
+        return createInternshipProcessGetAllResponse(internshipProcessList);
     }
 
     public InternshipProcessGetResponse getInternshipProcess(Integer internshipProcessID, Integer studentId) {
@@ -122,10 +122,10 @@ public class InternshipProcessService {
                                                                         InternshipProcessSearchDto internshipProcessSearchDto) {
         List<InternshipProcess> internshipProcessList = internshipProcessDao.findAll(prepereInternshipProcessSearchSpecification(assigneeId, internshipProcessSearchDto),
                 SearchByPageDto.getPageable(internshipProcessSearchDto.getSearchByPageDto())).toList();
-        return getInternshipProcessGetAllResponse(internshipProcessList);
+        return createInternshipProcessGetAllResponse(internshipProcessList);
     }
 
-    private InternshipProcessGetAllResponse getInternshipProcessGetAllResponse(List<InternshipProcess> internshipProcessList) {
+    private InternshipProcessGetAllResponse createInternshipProcessGetAllResponse(List<InternshipProcess> internshipProcessList) {
         List<InternshipProcessGetResponse> internshipProcessGetResponseList = new ArrayList<>();
         for (InternshipProcess internshipProcess : internshipProcessList) {
             InternshipProcessGetResponse internshipProcessGetResponse = new InternshipProcessGetResponse();

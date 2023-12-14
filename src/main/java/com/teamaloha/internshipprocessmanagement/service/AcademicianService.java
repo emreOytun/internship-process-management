@@ -1,6 +1,11 @@
 package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.AcademicianDao;
+import com.teamaloha.internshipprocessmanagement.dto.SearchByPageDto;
+import com.teamaloha.internshipprocessmanagement.dto.SearchCriteria;
+import com.teamaloha.internshipprocessmanagement.dto.SearchDto;
+import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicianGetResponse;
+import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicianSearchDto;
 import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetAllResponse;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AcademicianRegisterRequest;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AuthenticationRequest;
@@ -16,11 +21,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @Service
@@ -31,14 +36,17 @@ public class AcademicianService {
     private final UserService userService;
     private final AuthenticationService authenticationService;
     private final DepartmentService departmentService;
+    private final FiltersSpecification<Academician> filtersSpecification;
 
     @Autowired
     public AcademicianService(AcademicianDao academicianDao, UserService userService,
-                              DepartmentService departmentService, AuthenticationService authenticationService) {
+                              DepartmentService departmentService, AuthenticationService authenticationService,
+                              FiltersSpecification filtersSpecification) {
         this.academicianDao = academicianDao;
         this.userService = userService;
         this.departmentService = departmentService;
         this.authenticationService = authenticationService;
+        this.filtersSpecification = filtersSpecification;
     }
 
     public AuthenticationResponse register(AcademicianRegisterRequest academicianRegisterRequest) {
@@ -116,12 +124,47 @@ public class AcademicianService {
         return academicianDao.findAcademicianIdsByAcademicAndDepartment(academic, departmentId);
     }
 
-    public AcademicsGetAllResponse getAllAcademics(Integer adminId) {
-        // TODO : Add if user is admin if not throw expection
+    public AcademicsGetAllResponse getAllAcademics(AcademicianSearchDto academicianSearchDto) {
+        List<Academician> academicianList = academicianDao.findAll(prepareAcademicianSpecification(academicianSearchDto),
+                SearchByPageDto.getPageable(academicianSearchDto.getSearchByPageDto())).toList();
+        return createAcademicianGetAllResponse(academicianList);
+    }
 
-        List<Academician> academicianList = academicianDao.findAll();
+    private AcademicsGetAllResponse createAcademicianGetAllResponse(List<Academician> academicianList) {
+        List<AcademicianGetResponse> academicianGetResponseList = new ArrayList<>();
+        for (Academician academician : academicianList) {
+            academicianGetResponseList.add(convertEntityToDto(academician));
+        }
+        return AcademicsGetAllResponse.builder().academicsList(academicianList).build();
+    }
 
-        return new AcademicsGetAllResponse(academicianList);
+    private AcademicianGetResponse convertEntityToDto(Academician academician) {
+        AcademicianGetResponse academicianGetResponse = new AcademicianGetResponse();
+        BeanUtils.copyProperties(academician, academicianGetResponse);
+        if (academician.getDepartment() != null) {
+            academicianGetResponse.setDepartmentName(academician.getDepartment().getDepartmentName());
+        }
+        return academicianGetResponse;
+    }
+
+    private Specification<Academician> prepareAcademicianSpecification(AcademicianSearchDto academicianSearchDto) {
+        Map<String, Comparable[]> criteriaMap = new HashMap<>();
+
+        if (academicianSearchDto.getName() != null) {
+            criteriaMap.put("firstName", new Comparable[]{academicianSearchDto.getName(), SearchCriteria.Operation.LIKE});
+            criteriaMap.put("lastName", new Comparable[]{academicianSearchDto.getName(), SearchCriteria.Operation.LIKE});
+        }
+
+        if (academicianSearchDto.getCreateDateStart() != null) {
+            criteriaMap.put("createDate", new Comparable[]{academicianSearchDto.getCreateDateStart(), SearchCriteria.Operation.GREATER_THAN});
+        }
+
+        if (academicianSearchDto.getCreateDateEnd() != null) {
+            criteriaMap.put("createDate", new Comparable[]{academicianSearchDto.getCreateDateEnd(), SearchCriteria.Operation.LESS_THAN});
+        }
+
+        return filtersSpecification.getSearchSpecification(filtersSpecification.convertMapToSearchCriteriaList(criteriaMap),
+                                                            SearchDto.LogicOperator.AND);
     }
 
     public void validateAcademician(Integer academecianId, Integer adminId) {

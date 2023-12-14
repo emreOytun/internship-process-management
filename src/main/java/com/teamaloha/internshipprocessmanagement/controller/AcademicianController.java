@@ -1,6 +1,7 @@
 package com.teamaloha.internshipprocessmanagement.controller;
 
 import com.teamaloha.internshipprocessmanagement.annotations.CurrentUserId;
+import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicianSearchDto;
 import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetAllResponse;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AcademicianRegisterRequest;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AuthenticationRequest;
@@ -34,11 +35,12 @@ public class AcademicianController {
         return academicianService.login(authenticationRequest);
     }
 
+    // TODO: ADD ADMIN ROLE CONTROL INSTEAD ACADEMICIAN
     @GetMapping("/get-all")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
-    public AcademicsGetAllResponse getAllAcademics(@CurrentUserId Integer adminId) {
-        return academicianService.getAllAcademics(adminId);
+    public AcademicsGetAllResponse getAllAcademics(@RequestBody AcademicianSearchDto academicianSearchDto) {
+        return academicianService.getAllAcademics(academicianSearchDto);
     }
 
     // TODO : change Authority to admin if it is possible

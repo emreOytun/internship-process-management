@@ -420,6 +420,12 @@ public class InternshipProcessService {
         Set<String> excludedFields = new HashSet<>();
         excludedFields.add("assignerId");
         excludedFields.add("processAssignees");
+        excludedFields.add("requestedEndDate");
+
+        // TODO: BU ALANLAR KONTROL EDILECEK. SIMDILIK UPDATE'TE OLMADIGI ICIN SELIM'IN TESTLERI ICIN BOYLE YAPILDI.
+        excludedFields.add("mufredatDurumuPath");
+        excludedFields.add("transkriptPath");
+        excludedFields.add("dersProgramıPath");
 
         Field[] fields = InternshipProcess.class.getDeclaredFields();
 

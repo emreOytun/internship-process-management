@@ -44,6 +44,7 @@ public class InternshipProcessGetResponse {
     private Boolean sgkEntry;
 
     private Boolean gssEntry;
+    private Boolean editable;
 
     private String mustehaklikBelgesiPath;
 

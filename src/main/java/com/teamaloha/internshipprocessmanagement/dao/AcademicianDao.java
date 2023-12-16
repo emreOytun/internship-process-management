@@ -33,7 +33,7 @@ public interface AcademicianDao extends JpaRepository<Academician, Integer>,
 
 
     @Query("SELECT a.id FROM Academician a WHERE a.internshipCommittee = :internshipCommittee AND a.department.id = :departmentId")
-    List<Integer> findAcademicianIdsByInternshipCommitteeAndDepartment(
+    List<Integer> findAcademiciansIdsByInternshipCommitteeAndDepartment(
             @Param("internshipCommittee") Boolean internshipCommittee,
             @Param("departmentId") Integer departmentId
     );

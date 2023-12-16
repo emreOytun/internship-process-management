@@ -45,6 +45,7 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/swagger-ui/**",
             // other public endpoints of your API may be appended to this array
+            "/api/academician/**",
             "/api/academician/auth",
             "/api/academician/auth/**",
             "/api/student/auth",

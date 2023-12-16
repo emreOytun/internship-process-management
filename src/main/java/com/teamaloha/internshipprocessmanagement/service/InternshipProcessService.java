@@ -215,7 +215,7 @@ public class InternshipProcessService {
 
         checkIfIsGivenWorkDayTrueOrThrowException(internshipProcess, internshipExtensionRequestDto);
 
-        // Find assigneee list and set process status to EXTEND
+        // Find assignee list and set process status to EXTEND
         List<ProcessAssignee> assigneeList = prepareProcessAssigneeList(internshipProcess, now);
         internshipProcess.setProcessStatus(ProcessStatusEnum.EXTEND);
         internshipProcess.setRequestedEndDate(internshipExtensionRequestDto.getRequestDate());
@@ -401,7 +401,7 @@ public class InternshipProcessService {
     private List<Integer> findAssigneeIdList(ProcessStatusEnum processStatusEnum, Department department, Integer studentId) {
         return switch (processStatusEnum) {
             case FORM, REJECTED, IN1 ->
-                    academicianService.findAcademicianIdsByInternshipCommitteeAndDepartment(true, department.getId());
+                    academicianService.findAcademiciansIdsByInternshipCommitteeAndDepartment(true, department.getId());
             case PRE1 -> academicianService.findAcademicianIdsByDepartmentChairAndDepartment(true, department.getId());
             case PRE2 -> academicianService.findAcademicianIdsByExecutiveAndDepartment(true, department.getId());
             case PRE3 -> academicianService.findAcademicianIdsByAcademicAndDepartment(true, department.getId());

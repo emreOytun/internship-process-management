@@ -180,6 +180,25 @@ public class InternshipProcessService {
         logger.info("Updated InternshipProcess with ID: " + updatedInternshipProcess.getId());
     }
 
+    public void sendReport(SendReportRequest loadReportRequest, Integer studentId) {
+        Integer processId = loadReportRequest.getId();
+
+        InternshipProcess internshipProcess = getInternshipProcessIfExistsOrThrowException(processId);
+
+        // Check if internship process is in POST status
+        checkIfProcessStatusesMatchesOrThrowException(List.of(ProcessStatusEnum.POST), internshipProcess.getProcessStatus());
+
+        checkIfStudentIdAndInternshipProcessMatchesOrThrowException(studentId, internshipProcess.getStudent().getId());
+
+        internshipProcess.setStajRaporuPath(loadReportRequest.getStajRaporuPath());
+
+        internshipProcess.setProcessStatus(ProcessStatusEnum.REPORT);
+
+        InternshipProcess updatedInternshipProcess = internshipProcessDao.save(internshipProcess);
+
+        logger.info("Report sent for InternshipProcess with ID: " + updatedInternshipProcess.getId());
+    }
+
     // TODO: Ne zaman silebilir? Ornegin staj sureci baslamissa silinemez gibi bir kontrol eklenebilir.
     public void deleteInternshipProcess(Integer processId) {
 
@@ -404,8 +423,9 @@ public class InternshipProcessService {
                     academicianService.findAcademicianIdsByInternshipCommitteeAndDepartment(true, department.getId());
             case PRE1 -> academicianService.findAcademicianIdsByDepartmentChairAndDepartment(true, department.getId());
             case PRE2 -> academicianService.findAcademicianIdsByExecutiveAndDepartment(true, department.getId());
-            case PRE3 -> academicianService.findAcademicianIdsByAcademicAndDepartment(true, department.getId());
-            case PRE4, CANCEL, EXTEND -> {
+            case PRE3 -> academicianService.findAcademicianIdsByOfficerAndDepartment(true, department.getId());
+            case PRE4 -> academicianService.findAcademicianIdsByDeanAndDepartment(true, department.getId());
+            case PRE5, CANCEL, EXTEND -> {
                 List<Integer> assigneIdList = new ArrayList<>();
                 assigneIdList.add(studentId);
                 yield assigneIdList;
@@ -514,5 +534,4 @@ public class InternshipProcessService {
             internshipProcessGetResponse.setDepartmentId(internshipProcess.getDepartment().getId());
         }
     }
-
 }

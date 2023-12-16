@@ -6,7 +6,10 @@ public enum ProcessStatusEnum {
     PRE2,
     PRE3,
     PRE4,
+    PRE5,
     IN1,
+    POST,
+    REPORT,
     REJECTED,
     EXTEND,
     CANCEL;

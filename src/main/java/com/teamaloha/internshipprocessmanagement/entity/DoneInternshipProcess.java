@@ -72,4 +72,7 @@ public class DoneInternshipProcess {
     @Column(name = "mufredat_durumu_path", nullable = true)
     private String mufredatDurumuPath;
 
+    @Column(name = "staj_raporu_path", nullable = true)
+    private String stajRaporuPath;
+
 }

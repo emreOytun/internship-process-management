@@ -24,6 +24,12 @@ public class Academician extends User {
     @Column(name = "executive")
     private Boolean executive;
 
+    @Column(name = "officer")
+    private Boolean officer;
+
+    @Column(name = "dean")
+    private Boolean dean;
+
     @Column(name = "academic")
     private Boolean academic;
 

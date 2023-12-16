@@ -84,7 +84,7 @@ public class AcademicianService {
         academician.setInternshipCommittee(false);
         academician.setDepartmentChair(false);
         academician.setExecutive(false);
-        academician.setAcademic(false);
+        academician.setOfficer(false);
         academician.setValidated(false);
         academician.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
         return academician;
@@ -120,6 +120,14 @@ public class AcademicianService {
         return academicianDao.findAcademicianIdsByExecutiveAndDepartment(executive, departmentId);
     }
 
+
+    public List<Integer> findAcademicianIdsByOfficerAndDepartment(Boolean officer, Integer departmentId) {
+        return academicianDao.findAcademicianIdsByOfficerAndDepartment(officer, departmentId);
+    }
+
+    public List<Integer> findAcademicianIdsByDeanAndDepartment(Boolean dean, Integer departmentId) {
+        return academicianDao.findAcademicianIdsByDeanAndDepartment(dean, departmentId);
+    }
     public List<Integer> findAcademicianIdsByAcademicAndDepartment(Boolean academic, Integer departmentId) {
         return academicianDao.findAcademicianIdsByAcademicAndDepartment(academic, departmentId);
     }

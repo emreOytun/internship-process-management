@@ -184,6 +184,7 @@ public class InternshipProcessService {
     }
 
     public void sendReport(SendReportRequest loadReportRequest, Integer studentId) {
+        Date now = new Date();
         Integer processId = loadReportRequest.getId();
 
         InternshipProcess internshipProcess = getInternshipProcessIfExistsOrThrowException(processId);
@@ -195,9 +196,13 @@ public class InternshipProcessService {
 
         internshipProcess.setStajRaporuPath(loadReportRequest.getStajRaporuPath());
 
+        List<ProcessAssignee> assigneeList = prepareProcessAssigneeList(internshipProcess, new Date());
         internshipProcess.setProcessStatus(ProcessStatusEnum.REPORT);
+        internshipProcess.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
 
         InternshipProcess updatedInternshipProcess = internshipProcessDao.save(internshipProcess);
+
+        self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, updatedInternshipProcess);
 
         logger.info("Report sent for InternshipProcess with ID: " + updatedInternshipProcess.getId());
     }

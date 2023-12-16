@@ -15,6 +15,9 @@ public class InternshipProcessEvaluateRequest {
     @NotNull
     private Boolean approve;
 
+    // For report edit request
+    private Boolean edit;
+
     private String comment;
 
     @NotNull

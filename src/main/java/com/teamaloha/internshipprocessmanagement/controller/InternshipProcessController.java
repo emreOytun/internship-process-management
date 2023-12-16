@@ -75,10 +75,9 @@ public class InternshipProcessController {
 
     @PostMapping("/evaluate")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
-    public void evaluateInternshipProcess(@RequestBody @Valid InternshipProcessEvaluateRequest internshipProcessEvaluateRequest,
-                                          @CurrentUserId Integer userId) {
-        internshipProcessService.evaluateInternshipProcess(internshipProcessEvaluateRequest, userId);
+    /*@PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())") */
+    public void evaluateInternshipProcess(@RequestBody @Valid InternshipProcessEvaluateRequest internshipProcessEvaluateRequest) {
+        internshipProcessService.evaluateInternshipProcess(internshipProcessEvaluateRequest);
     }
 
     @PostMapping("/cancel")
@@ -107,7 +106,7 @@ public class InternshipProcessController {
 
     @PostMapping("/get-assigned-process")
     @ResponseStatus(HttpStatus.OK)
-    public InternshipProcessGetAllResponse getAssignedInternshipProcess(@RequestBody InternshipProcessSearchDto searchDto, @CurrentUserId Integer academicianId) {
+    public InternshipProcessGetAllResponse getAssignedInternshipProcess(@RequestBody InternshipProcessSearchDto searchDto,@RequestParam("academicianId") Integer academicianId) {
         System.out.println("getAssignedInternshipProcess");
         return internshipProcessService.getAssignedInternshipProcess(academicianId, searchDto);
     }

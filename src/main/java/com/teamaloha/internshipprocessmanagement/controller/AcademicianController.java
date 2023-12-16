@@ -59,5 +59,9 @@ public class AcademicianController {
         academicianService.assignDepartmentToAcademician(academicianId, departmentId, adminId);
     }
 
-
+    @PostMapping("/assignTask")
+    @ResponseStatus(HttpStatus.OK)
+    public boolean assignTask(@RequestParam("academicianId") Integer academicianId, @RequestParam("taskId") Integer taskId) {
+        return academicianService.assignTask(academicianId, taskId);
+    }
 }

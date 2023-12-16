@@ -51,4 +51,12 @@ public class InternshipProcessUpdateRequest {
     private String mustehaklikBelgesiPath;
 
     private String stajYeriFormuPath;
+
+    private String mufredatDurumuPath;
+
+    private String transkriptPath;
+
+    private String dersProgramıPath;
+
+    private Boolean donem_ici;
 }

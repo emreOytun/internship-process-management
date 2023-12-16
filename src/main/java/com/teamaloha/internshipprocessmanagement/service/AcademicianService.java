@@ -86,6 +86,7 @@ public class AcademicianService {
         academician.setExecutive(false);
         academician.setOfficer(false);
         academician.setValidated(false);
+        academician.setIs_admin(false);
         academician.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
         return academician;
     }
@@ -108,8 +109,36 @@ public class AcademicianService {
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
 
-    public List<Integer> findAcademicianIdsByInternshipCommitteeAndDepartment(Boolean internshipCommittee, Integer departmentId) {
-        return academicianDao.findAcademicianIdsByInternshipCommitteeAndDepartment(internshipCommittee, departmentId);
+    // TODO : abi burada admin id kontrolü felan lazım ama yapmadım
+    // task id 1- internshipCommittee 2- departmentChair  3-  executive 4- academic
+    public boolean assignTask(Integer academicianId, Integer taskId){
+
+        // TODO : Add assign task
+        Academician academician = getAcademicianIfExistsOrThrowException(academicianId);
+        switch(taskId){
+            case 1:
+                academician.setInternshipCommittee(true);
+                break;
+            case 2:
+                academician.setDepartmentChair(true);
+                break;
+            case 3:
+                academician.setExecutive(true);
+                break;
+            case 4:
+                academician.setAcademic(true);
+                break;
+            default:
+                logger.error("Invalid task id. Task id: " + taskId);
+                throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        academicianDao.save(academician);
+        logger.info("Task assigned. Academician id: " + academicianId + " Task id: " + taskId);
+        return true;
+    }
+
+    public List<Integer> findAcademiciansIdsByInternshipCommitteeAndDepartment(Boolean internshipCommittee, Integer departmentId) {
+        return academicianDao.findAcademiciansIdsByInternshipCommitteeAndDepartment(internshipCommittee, departmentId);
     }
 
     public List<Integer> findAcademicianIdsByDepartmentChairAndDepartment(Boolean departmentChair, Integer departmentId) {

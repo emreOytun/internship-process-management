@@ -40,4 +40,8 @@ public class ProcessAssigneeService {
         process.setId(processId);
         return processAssigneeDao.existsByInternshipProcessAndAssigneeId(process, assigneeId);
     }
+
+    List<Integer> findAllProcessIdByAssigneeId(Integer assigneeId) {
+        return processAssigneeDao.findAllProcessIdByAssigneeId(assigneeId);
+    }
 }

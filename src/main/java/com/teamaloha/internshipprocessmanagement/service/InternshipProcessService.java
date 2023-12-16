@@ -126,7 +126,10 @@ public class InternshipProcessService {
     }
 
     public InternshipProcessGetAllResponse getAssignedInternshipProcess(Integer assigneeId) {
-        List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllByAssignerId(assigneeId);
+        // get all processes that assigned to the given assignee
+        List<Integer> processIdList = processAssigneeService.findAllProcessIdByAssigneeId(assigneeId);
+        // TODO: Bu kisimda assigneeId'ye gore processleri getirirken, process statusu da kontrol edilecek.
+        List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllById(processIdList);
         return createInternshipProcessGetAllResponse(internshipProcessList);
     }
 
@@ -234,7 +237,7 @@ public class InternshipProcessService {
 
         checkIfIsGivenWorkDayTrueOrThrowException(internshipProcess, internshipExtensionRequestDto);
 
-        // Find assigneee list and set process status to EXTEND
+        // Find assignee list and set process status to EXTEND
         List<ProcessAssignee> assigneeList = prepareProcessAssigneeList(internshipProcess, now);
         internshipProcess.setProcessStatus(ProcessStatusEnum.EXTEND);
         internshipProcess.setRequestedEndDate(internshipExtensionRequestDto.getRequestDate());
@@ -273,9 +276,9 @@ public class InternshipProcessService {
         self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, internshipProcess);
     }
 
-    public void evaluateInternshipProcess(InternshipProcessEvaluateRequest internshipProcessEvaluateRequest,
-                                          Integer academicianId) {
+    public void evaluateInternshipProcess(InternshipProcessEvaluateRequest internshipProcessEvaluateRequest) {
         Integer processId = internshipProcessEvaluateRequest.getProcessId();
+        Integer academicianId = internshipProcessEvaluateRequest.getAcademicianId();
 
         if (!internshipProcessEvaluateRequest.getApprove() &&
                 StringUtils.isBlank(internshipProcessEvaluateRequest.getComment())) {
@@ -420,7 +423,7 @@ public class InternshipProcessService {
     private List<Integer> findAssigneeIdList(ProcessStatusEnum processStatusEnum, Department department, Integer studentId) {
         return switch (processStatusEnum) {
             case FORM, REJECTED, IN1 ->
-                    academicianService.findAcademicianIdsByInternshipCommitteeAndDepartment(true, department.getId());
+                    academicianService.findAcademiciansIdsByInternshipCommitteeAndDepartment(true, department.getId());
             case PRE1 -> academicianService.findAcademicianIdsByDepartmentChairAndDepartment(true, department.getId());
             case PRE2 -> academicianService.findAcademicianIdsByExecutiveAndDepartment(true, department.getId());
             case PRE3 -> academicianService.findAcademicianIdsByOfficerAndDepartment(true, department.getId());

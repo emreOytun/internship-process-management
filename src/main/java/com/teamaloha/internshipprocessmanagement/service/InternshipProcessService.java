@@ -126,7 +126,10 @@ public class InternshipProcessService {
     }
 
     public InternshipProcessGetAllResponse getAssignedInternshipProcess(Integer assigneeId) {
-        List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllByAssignerId(assigneeId);
+        // get all processes that assigned to the given assignee
+        List<Integer> processIdList = processAssigneeService.findAllProcessIdByAssigneeId(assigneeId);
+        // TODO: Bu kisimda assigneeId'ye gore processleri getirirken, process statusu da kontrol edilecek.
+        List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllById(processIdList);
         return createInternshipProcessGetAllResponse(internshipProcessList);
     }
 
@@ -254,9 +257,9 @@ public class InternshipProcessService {
         self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, internshipProcess);
     }
 
-    public void evaluateInternshipProcess(InternshipProcessEvaluateRequest internshipProcessEvaluateRequest,
-                                          Integer academicianId) {
+    public void evaluateInternshipProcess(InternshipProcessEvaluateRequest internshipProcessEvaluateRequest) {
         Integer processId = internshipProcessEvaluateRequest.getProcessId();
+        Integer academicianId = internshipProcessEvaluateRequest.getAcademicianId();
 
         if (!internshipProcessEvaluateRequest.getApprove() &&
                 StringUtils.isBlank(internshipProcessEvaluateRequest.getComment())) {

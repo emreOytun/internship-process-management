@@ -16,4 +16,7 @@ public class InternshipProcessEvaluateRequest {
     private Boolean approve;
 
     private String comment;
+
+    @NotNull
+    private Integer academicianId;
 }

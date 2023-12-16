@@ -86,6 +86,7 @@ public class AcademicianService {
         academician.setExecutive(false);
         academician.setAcademic(false);
         academician.setValidated(false);
+        academician.setIs_admin(false);
         academician.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
         return academician;
     }

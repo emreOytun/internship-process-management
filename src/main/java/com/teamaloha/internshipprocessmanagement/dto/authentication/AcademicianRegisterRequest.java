@@ -7,4 +7,5 @@ import lombok.Data;
 public class AcademicianRegisterRequest extends BaseRegisterRequest {
     @NotNull
     Integer departmentId;
+
 }

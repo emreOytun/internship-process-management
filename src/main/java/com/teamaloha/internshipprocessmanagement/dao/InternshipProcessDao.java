@@ -36,7 +36,7 @@ public interface InternshipProcessDao extends JpaRepository<InternshipProcess, I
     List<InternshipProcess> findAllByStudent(Student student);
 
     Integer countByStudentId(Integer studentId);
-
+    List<InternshipProcess> findAllByAssignerId(Integer assignerId);
     // If there are special Specifications needed for Internship process add here.
 //    interface Specs { }
 }

@@ -63,6 +63,8 @@ public class SecurityConfig {
             "/api/faculty/**",
             // internship types
             "/api/internshipTypes/**",
+            // intership process
+            "/api/internship-process/**",
     };
 
     @Autowired

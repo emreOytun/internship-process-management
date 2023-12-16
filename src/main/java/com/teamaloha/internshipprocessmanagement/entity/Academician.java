@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Academician extends User {
-    @OneToOne(cascade = {CascadeType.REFRESH, CascadeType.DETACH}, fetch = FetchType.EAGER, optional = true)
+    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.DETACH}, fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "department_id")
     private Department department;
 
@@ -29,4 +29,8 @@ public class Academician extends User {
 
     @Column(name = "validated")
     private Boolean validated;
+
+    @Column(name = "is_admin")
+    private Boolean is_admin;
+
 }

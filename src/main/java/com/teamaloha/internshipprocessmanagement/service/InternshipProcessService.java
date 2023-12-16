@@ -125,6 +125,12 @@ public class InternshipProcessService {
         return createInternshipProcessGetAllResponse(internshipProcessList);
     }
 
+    public InternshipProcessGetAllResponse getAssignedInternshipProcess(Integer assigneeId) {
+        List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllByAssignerId(assigneeId);
+        return createInternshipProcessGetAllResponse(internshipProcessList);
+    }
+
+
     private InternshipProcessGetAllResponse createInternshipProcessGetAllResponse(List<InternshipProcess> internshipProcessList) {
         List<InternshipProcessGetResponse> internshipProcessGetResponseList = new ArrayList<>();
         for (InternshipProcess internshipProcess : internshipProcessList) {

@@ -6,6 +6,7 @@ import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetStu
 import com.teamaloha.internshipprocessmanagement.service.InternshipProcessService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -98,9 +99,15 @@ public class InternshipProcessController {
 
     @PostMapping("/get-assigned-process")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
     public InternshipProcessGetAllResponse getAssignedInternshipProcess(@RequestBody InternshipProcessSearchDto searchDto, @CurrentUserId Integer academicianId) {
+        System.out.println("getAssignedInternshipProcess");
         return internshipProcessService.getAssignedInternshipProcess(academicianId, searchDto);
     }
 
+    @PostMapping("/get-all-process-assigned")
+    @ResponseStatus(HttpStatus.OK)
+    public InternshipProcessGetAllResponse getAllProcessAssigned(@RequestParam("academicianId") Integer academicianId) {
+        System.out.println("getAllProcessAssigned");
+        return internshipProcessService.getAssignedInternshipProcess(academicianId);
+    }
 }

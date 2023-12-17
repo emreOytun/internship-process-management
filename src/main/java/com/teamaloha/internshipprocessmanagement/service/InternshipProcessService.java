@@ -9,6 +9,7 @@ import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetStu
 import com.teamaloha.internshipprocessmanagement.dto.holiday.IsValidRangeRequest;
 import com.teamaloha.internshipprocessmanagement.entity.*;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
+import com.teamaloha.internshipprocessmanagement.enums.ErrorCodeEnum;
 import com.teamaloha.internshipprocessmanagement.enums.ProcessStatusEnum;
 import com.teamaloha.internshipprocessmanagement.exceptions.CustomException;
 import jakarta.annotation.PostConstruct;
@@ -40,13 +41,14 @@ public class InternshipProcessService {
     private InternshipProcessService self;
     private final ApplicationContext applicationContext;
     private final FiltersSpecification<InternshipProcess> filtersSpecification;
+    private final DoneInternshipProcessService doneInternshipProcessService;
 
     @Autowired
     public InternshipProcessService(InternshipProcessDao internshipProcessDao, DepartmentService departmentService,
                                     CompanyService companyService, AcademicianService academicianService,
                                     HolidayService holidayService, ProcessAssigneeService processAssigneeService,
                                     ApplicationContext applicationContext,
-                                    FiltersSpecification<InternshipProcess> filtersSpecification) {
+                                    FiltersSpecification<InternshipProcess> filtersSpecification, DoneInternshipProcessService doneInternshipProcessService) {
         this.internshipProcessDao = internshipProcessDao;
         this.departmentService = departmentService;
         this.companyService = companyService;
@@ -55,6 +57,7 @@ public class InternshipProcessService {
         this.processAssigneeService = processAssigneeService;
         this.applicationContext = applicationContext;
         this.filtersSpecification = filtersSpecification;
+        this.doneInternshipProcessService = doneInternshipProcessService;
     }
 
     @PostConstruct
@@ -72,7 +75,7 @@ public class InternshipProcessService {
         Integer count = internshipProcessDao.countByStudentId(studentId);
         if (count >= 2) {
             logger.error("Process cannot creatable for this student (2 or more active process). Student id: " + studentId);
-            throw new CustomException(HttpStatus.BAD_REQUEST);
+            throw new CustomException(ErrorCodeEnum.INTERNSHIP_MAX_NUMBER.getErrorCode(), HttpStatus.BAD_REQUEST);
         }
 
         Date now = new Date();
@@ -184,13 +187,13 @@ public class InternshipProcessService {
     }
 
     public void sendReport(SendReportRequest loadReportRequest, Integer studentId) {
-        Date now = new Date();
         Integer processId = loadReportRequest.getId();
 
         InternshipProcess internshipProcess = getInternshipProcessIfExistsOrThrowException(processId);
 
-        // Check if internship process is in POST status
-        checkIfProcessStatusesMatchesOrThrowException(List.of(ProcessStatusEnum.POST), internshipProcess.getProcessStatus());
+        // Check if internship process is in POST or DEN1 status
+        checkIfProcessStatusesMatchesOrThrowException(List.of(ProcessStatusEnum.POST, ProcessStatusEnum.DEN1),
+                internshipProcess.getProcessStatus());
 
         checkIfStudentIdAndInternshipProcessMatchesOrThrowException(studentId, internshipProcess.getStudent().getId());
 
@@ -198,7 +201,6 @@ public class InternshipProcessService {
 
         List<ProcessAssignee> assigneeList = prepareProcessAssigneeList(internshipProcess, new Date());
         internshipProcess.setProcessStatus(ProcessStatusEnum.REPORT1);
-        internshipProcess.getLogDates().setUpdateDate(now);
 
         InternshipProcess updatedInternshipProcess = internshipProcessDao.save(internshipProcess);
 
@@ -286,9 +288,11 @@ public class InternshipProcessService {
         Integer academicianId = internshipProcessEvaluateRequest.getAcademicianId();
         Boolean edit = internshipProcessEvaluateRequest.getReportEditRequest();
 
+        // If the request is edit request or rejection request, check if the comment is given
         if ((!internshipProcessEvaluateRequest.getApprove() || (edit != null && edit)) &&
                 StringUtils.isBlank(internshipProcessEvaluateRequest.getComment())) {
-            logger.error("Rejection without comment. AcademicianId: " + academicianId + " ProcessId: " + processId);
+            logger.error("Rejection or Edit Request without comment. AcademicianId: " + academicianId +
+                    " ProcessId: " + processId);
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
@@ -304,6 +308,9 @@ public class InternshipProcessService {
         ProcessStatusEnum nextStatus = null;
         List<ProcessAssignee> assigneeList = null;
         if ((edit != null && edit)) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(now);
+            calendar.add(Calendar.DAY_OF_MONTH, internshipProcessEvaluateRequest.getReportEditDays());
             // Edit request for report
             if (internshipProcess.getProcessStatus() != ProcessStatusEnum.REPORT1 &&
                     internshipProcess.getProcessStatus() != ProcessStatusEnum.REPORT2) {
@@ -313,12 +320,14 @@ public class InternshipProcessService {
             }
             internshipProcess.setAssignerId(academicianId);
             assigneeList = prepareProcessAssigneeList(internshipProcess, now);
-            internshipProcess.setProcessStatus(ProcessStatusEnum.POST);
+            internshipProcess.setProcessStatus(ProcessStatusEnum.DEN1);
+            internshipProcess.setComment(internshipProcessEvaluateRequest.getComment());
             internshipProcess.getLogDates().setUpdateDate(now);
+            internshipProcess.setReportLastEditDate(calendar.getTime());
         } else {
             if (!internshipProcessEvaluateRequest.getApprove()) {
                 // Rejection
-                if(internshipProcess.getProcessStatus() == ProcessStatusEnum.REPORT1) {
+                if (internshipProcess.getProcessStatus() == ProcessStatusEnum.REPORT1) {
                     logger.error("Research assistants can only request edits. intenshipProcess Id: "
                             + internshipProcess.getId());
                 }
@@ -333,10 +342,9 @@ public class InternshipProcessService {
                 } else if (internshipProcess.getProcessStatus() == ProcessStatusEnum.EXTEND) {
                     internshipProcess.setRequestedEndDate(null);
                     nextStatus = ProcessStatusEnum.EXTEND;
-                } else if(internshipProcess.getProcessStatus() == ProcessStatusEnum.REPORT2) {
+                } else if (internshipProcess.getProcessStatus() == ProcessStatusEnum.REPORT2) {
                     internshipProcess.setProcessStatus(ProcessStatusEnum.FAIL);
-                }
-                else {
+                } else {
                     nextStatus = ProcessStatusEnum.REJECTED;
                 }
             } else {
@@ -352,6 +360,10 @@ public class InternshipProcessService {
                     internshipProcess.setRequestedEndDate(null);
                     nextStatus = ProcessStatusEnum.IN1;
                 } else {
+                    // If the process is Done, save it as DoneInternshipProcess
+                    if (internshipProcess.getProcessStatus() == ProcessStatusEnum.REPORT2) {
+                        saveAsDoneInternshipProcess(internshipProcess);
+                    }
                     nextStatus = ProcessStatusEnum.findNextStatus(internshipProcess.getProcessStatus());
                 }
             }
@@ -362,6 +374,35 @@ public class InternshipProcessService {
             internshipProcess.setProcessStatus(nextStatus);
             internshipProcess.setEditable(isNextStatusEditable(nextStatus));
             self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, internshipProcess);
+        }
+    }
+
+    private void saveAsDoneInternshipProcess(InternshipProcess internshipProcess) {
+        DoneInternshipProcess doneInternshipProcess = new DoneInternshipProcess();
+        BeanUtils.copyProperties(internshipProcess, doneInternshipProcess);
+        doneInternshipProcess.setLogDates(LogDates.builder().createDate(new Date()).updateDate(new Date()).build());
+        doneInternshipProcessService.save(doneInternshipProcess);
+    }
+
+    public void checkReportEditLastDates() {
+        Date now = new Date();
+        List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllByProcessStatus(ProcessStatusEnum.DEN1);
+        for (InternshipProcess internshipProcess : internshipProcessList) {
+            if (internshipProcess.getReportLastEditDate().after(now)) {
+                internshipProcess.setProcessStatus(ProcessStatusEnum.REPORT1);
+                internshipProcessDao.save(internshipProcess);
+            }
+        }
+    }
+
+    public void finishInternshipProcesses() {
+        Date now = new Date();
+        List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllByProcessStatus(ProcessStatusEnum.IN1);
+        for (InternshipProcess internshipProcess : internshipProcessList) {
+            if (internshipProcess.getEndDate().before(now)) {
+                internshipProcess.setProcessStatus(ProcessStatusEnum.POST);
+                internshipProcessDao.save(internshipProcess);
+            }
         }
     }
 
@@ -570,4 +611,6 @@ public class InternshipProcessService {
             internshipProcessGetResponse.setDepartmentId(internshipProcess.getDepartment().getId());
         }
     }
+
+
 }

@@ -7,10 +7,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+
+
+
 
 @Service
 public class DoneInternshipProcessService {
@@ -23,6 +31,68 @@ public class DoneInternshipProcessService {
     public DoneInternshipProcessService(DoneInternshipProcessDao doneInternshipProcessDao, CompanyService companyService) {
         this.doneInternshipProcessDao = doneInternshipProcessDao;
         this.companyService = companyService;
+    }
+
+    public void exportToExcel(Date startDate, Date endDate, String filePath) {
+        Set<DoneInternshipProcess> doneInternshipProcesses = findDoneInternshipProcessByStartDateAndEndDate(startDate, endDate);
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("DoneInternshipProcesses");
+
+        // Create header row
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("Student Name");
+        headerRow.createCell(1).setCellValue("Student Number");
+        headerRow.createCell(2).setCellValue("TC Number");
+        headerRow.createCell(3).setCellValue("Telephone Number");
+        headerRow.createCell(4).setCellValue("Class");
+        headerRow.createCell(5).setCellValue("Position");
+        headerRow.createCell(6).setCellValue("Internship Type");
+        headerRow.createCell(7).setCellValue("Internship Number");
+        headerRow.createCell(8).setCellValue("Start Date");
+        headerRow.createCell(9).setCellValue("End Date");
+        headerRow.createCell(10).setCellValue("Company Name");
+        headerRow.createCell(11).setCellValue("Department");
+        headerRow.createCell(12).setCellValue("Engineer Name");
+        headerRow.createCell(13).setCellValue("Engineer Email");
+
+
+        // Populate data rows
+        int rowNum = 1;
+        for (DoneInternshipProcess process : doneInternshipProcesses) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(process.getStudent().getFirstName() + " " +
+                    process.getStudent().getLastName());
+            row.createCell(1).setCellValue(process.getStudentNumber());
+            row.createCell(2).setCellValue(process.getTc());
+            row.createCell(3).setCellValue(process.getTelephoneNumber());
+            row.createCell(4).setCellValue(process.getClassNumber());
+            row.createCell(5).setCellValue(process.getPosition());
+            row.createCell(6).setCellValue(process.getInternshipType());
+            row.createCell(7).setCellValue(process.getInternshipNumber());
+            row.createCell(8).setCellValue(process.getStartDate().toString());
+            row.createCell(9).setCellValue(process.getEndDate().toString());
+            row.createCell(10).setCellValue(process.getCompany().getCompanyName());
+            row.createCell(11).setCellValue(process.getDepartment().getDepartmentName());
+            row.createCell(12).setCellValue(process.getEngineerName());
+            row.createCell(13).setCellValue(process.getEngineerMail());
+
+        }
+
+        // Write the workbook to a file
+        try (FileOutputStream fileOut = new FileOutputStream(filePath)) {
+            workbook.write(fileOut);
+            fileOut.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Close the workbook to release resources
+        try {
+            workbook.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -41,5 +111,14 @@ public class DoneInternshipProcessService {
 
         }
         return companies;
+    }
+
+
+    public Set<DoneInternshipProcess> findDoneInternshipProcessByStartDateAndEndDate(Date startDate, Date endDate) {
+        return doneInternshipProcessDao.findDoneInternshipProcessByStartDateAndEndDate(startDate, endDate);
+    }
+
+    void save(DoneInternshipProcess doneInternshipProcess) {
+        doneInternshipProcessDao.save(doneInternshipProcess);
     }
 }

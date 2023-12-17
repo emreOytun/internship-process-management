@@ -2,6 +2,7 @@ package com.teamaloha.internshipprocessmanagement.dao;
 
 import com.teamaloha.internshipprocessmanagement.entity.InternshipProcess;
 import com.teamaloha.internshipprocessmanagement.entity.Student;
+import com.teamaloha.internshipprocessmanagement.enums.ProcessStatusEnum;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -34,6 +35,14 @@ public interface InternshipProcessDao extends JpaRepository<InternshipProcess, I
                     "department"
             })
     List<InternshipProcess> findAllByStudent(Student student);
+
+    @EntityGraph(type = EntityGraph.EntityGraphType.FETCH,
+            attributePaths = {
+                    "student",
+                    "company",
+                    "department"
+            })
+    List<InternshipProcess> findAllByProcessStatus(ProcessStatusEnum processStatus);
 
     Integer countByStudentId(Integer studentId);
     List<InternshipProcess> findAllByAssignerId(Integer assignerId);

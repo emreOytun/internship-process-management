@@ -11,7 +11,8 @@ public enum ErrorCodeEnum {
     Faculty_NOT_EXISTS_BEFORE("16"),
     DEPARTMENT_NOT_EXISTS_BEFORE("17"),
     INTERNSHIP_EXISTS_BEFORE("18"),
-    INTERNSHIP_DOES_NOT_EXISTS_BEFORE("19");
+    INTERNSHIP_DOES_NOT_EXISTS_BEFORE("19"),
+    INTERNSHIP_MAX_NUMBER("20");
 
     private final String errorCode;
 

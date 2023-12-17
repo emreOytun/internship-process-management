@@ -95,6 +95,7 @@ public class CompanyService {
 
     private CompanyGetResponse convertEntityToDto(Company company) {
         return CompanyGetResponse.builder()
+                .id(company.getId())
                 .companyName(company.getCompanyName())
                 .companyMail(company.getCompanyMail())
                 .companyTelephone(company.getCompanyTelephone())

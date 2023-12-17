@@ -488,6 +488,8 @@ public class InternshipProcessService {
         excludedFields.add("mufredatDurumuPath");
         excludedFields.add("transkriptPath");
         excludedFields.add("dersProgramıPath");
+        excludedFields.add("stajRaporuPath");
+        excludedFields.add("comment");
 
         Field[] fields = InternshipProcess.class.getDeclaredFields();
 

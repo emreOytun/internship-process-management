@@ -171,7 +171,10 @@ public class AcademicianService {
                 SearchByPageDto.getPageable(academicianSearchDto.getSearchByPageDto())).toList();
         return createAcademicianGetAllResponse(academicianList);
     }
-
+    public AcademicsGetAllResponse getAllAcademics() {
+        List<Academician> academicianList = academicianDao.findAllAcademicians();
+        return createAcademicianGetAllResponse(academicianList);
+    }
     private AcademicsGetAllResponse createAcademicianGetAllResponse(List<Academician> academicianList) {
         List<AcademicianGetResponse> academicianGetResponseList = new ArrayList<>();
         for (Academician academician : academicianList) {

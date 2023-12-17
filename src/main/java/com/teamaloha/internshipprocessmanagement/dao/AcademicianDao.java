@@ -74,4 +74,6 @@ public interface AcademicianDao extends JpaRepository<Academician, Integer>,
             @Param("departmentId") Integer departmentId
     );
 
+    @Query("SELECT a FROM Academician a")
+    List<Academician> findAllAcademicians();
 }

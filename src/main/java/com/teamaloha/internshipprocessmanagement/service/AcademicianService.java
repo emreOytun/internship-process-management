@@ -157,6 +157,11 @@ public class AcademicianService {
     public List<Integer> findAcademicianIdsByDeanAndDepartment(Boolean dean, Integer departmentId) {
         return academicianDao.findAcademicianIdsByDeanAndDepartment(dean, departmentId);
     }
+
+    public List<Integer> findAcademicianIdsByResearchAssistantAndDepartment(Boolean researchAssistant, Integer departmentId) {
+        return academicianDao.findAcademicianIdsByResearchAssistantAndDepartment(researchAssistant, departmentId);
+    }
+
     public List<Integer> findAcademicianIdsByAcademicAndDepartment(Boolean academic, Integer departmentId) {
         return academicianDao.findAcademicianIdsByAcademicAndDepartment(academic, departmentId);
     }

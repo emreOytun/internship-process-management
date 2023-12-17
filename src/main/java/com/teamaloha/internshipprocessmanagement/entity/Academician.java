@@ -59,6 +59,9 @@ public class Academician {
     @Column(name = "academic")
     private Boolean academic;
 
+    @Column(name = "research_assistant")
+    private Boolean researchAssistant;
+
     @Column(name = "validated")
     private Boolean validated;
 

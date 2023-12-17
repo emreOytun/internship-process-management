@@ -197,8 +197,8 @@ public class InternshipProcessService {
         internshipProcess.setStajRaporuPath(loadReportRequest.getStajRaporuPath());
 
         List<ProcessAssignee> assigneeList = prepareProcessAssigneeList(internshipProcess, new Date());
-        internshipProcess.setProcessStatus(ProcessStatusEnum.REPORT);
-        internshipProcess.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
+        internshipProcess.setProcessStatus(ProcessStatusEnum.REPORT1);
+        internshipProcess.getLogDates().setUpdateDate(now);
 
         InternshipProcess updatedInternshipProcess = internshipProcessDao.save(internshipProcess);
 
@@ -284,8 +284,9 @@ public class InternshipProcessService {
     public void evaluateInternshipProcess(InternshipProcessEvaluateRequest internshipProcessEvaluateRequest) {
         Integer processId = internshipProcessEvaluateRequest.getProcessId();
         Integer academicianId = internshipProcessEvaluateRequest.getAcademicianId();
+        Boolean edit = internshipProcessEvaluateRequest.getReportEditRequest();
 
-        if (!internshipProcessEvaluateRequest.getApprove() &&
+        if ((!internshipProcessEvaluateRequest.getApprove() || (edit != null && edit)) &&
                 StringUtils.isBlank(internshipProcessEvaluateRequest.getComment())) {
             logger.error("Rejection without comment. AcademicianId: " + academicianId + " ProcessId: " + processId);
             throw new CustomException(HttpStatus.BAD_REQUEST);
@@ -302,33 +303,57 @@ public class InternshipProcessService {
         Date now = new Date();
         ProcessStatusEnum nextStatus = null;
         List<ProcessAssignee> assigneeList = null;
-        if (!internshipProcessEvaluateRequest.getApprove()) {
-            // Rejection
-            assigneeList = new ArrayList<>();
-            internshipProcess.setAssignerId(academicianId);
-            internshipProcess.getLogDates().setUpdateDate(now);
-            if (internshipProcess.getProcessStatus() == ProcessStatusEnum.CANCEL) {
-                nextStatus = ProcessStatusEnum.IN1;
-            } else if (internshipProcess.getProcessStatus() == ProcessStatusEnum.EXTEND) {
-                internshipProcess.setRequestedEndDate(null);
-                nextStatus = ProcessStatusEnum.EXTEND;
-            } else {
-                nextStatus = ProcessStatusEnum.REJECTED;
+        if ((edit != null && edit)) {
+            // Edit request for report
+            if (internshipProcess.getProcessStatus() != ProcessStatusEnum.REPORT1 &&
+                    internshipProcess.getProcessStatus() != ProcessStatusEnum.REPORT2) {
+                logger.error("Report edit request is not possible for this process status. Process status: "
+                        + internshipProcess.getProcessStatus());
+                throw new CustomException(HttpStatus.BAD_REQUEST);
             }
-        } else {
-            // Approval
-            assigneeList = prepareProcessAssigneeList(internshipProcess, now);
             internshipProcess.setAssignerId(academicianId);
+            assigneeList = prepareProcessAssigneeList(internshipProcess, now);
+            internshipProcess.setProcessStatus(ProcessStatusEnum.POST);
             internshipProcess.getLogDates().setUpdateDate(now);
-            if (internshipProcess.getProcessStatus() == ProcessStatusEnum.CANCEL) {
-                // If the process is cancelled, delete the process
-                deleteInternshipProcess(processId);
-            } else if (internshipProcess.getProcessStatus() == ProcessStatusEnum.EXTEND) {
-                internshipProcess.setEndDate(internshipProcess.getRequestedEndDate());
-                internshipProcess.setRequestedEndDate(null);
-                nextStatus = ProcessStatusEnum.IN1;
+        } else {
+            if (!internshipProcessEvaluateRequest.getApprove()) {
+                // Rejection
+                if(internshipProcess.getProcessStatus() == ProcessStatusEnum.REPORT1) {
+                    logger.error("Research assistants can only request edits. intenshipProcess Id: "
+                            + internshipProcess.getId());
+                }
+
+                assigneeList = new ArrayList<>();
+                internshipProcess.setAssignerId(academicianId);
+                internshipProcess.getLogDates().setUpdateDate(now);
+                internshipProcess.setComment(internshipProcessEvaluateRequest.getComment());
+
+                if (internshipProcess.getProcessStatus() == ProcessStatusEnum.CANCEL) {
+                    nextStatus = ProcessStatusEnum.IN1;
+                } else if (internshipProcess.getProcessStatus() == ProcessStatusEnum.EXTEND) {
+                    internshipProcess.setRequestedEndDate(null);
+                    nextStatus = ProcessStatusEnum.EXTEND;
+                } else if(internshipProcess.getProcessStatus() == ProcessStatusEnum.REPORT2) {
+                    internshipProcess.setProcessStatus(ProcessStatusEnum.FAIL);
+                }
+                else {
+                    nextStatus = ProcessStatusEnum.REJECTED;
+                }
             } else {
-                nextStatus = ProcessStatusEnum.findNextStatus(internshipProcess.getProcessStatus());
+                // Approval
+                assigneeList = prepareProcessAssigneeList(internshipProcess, now);
+                internshipProcess.setAssignerId(academicianId);
+                internshipProcess.getLogDates().setUpdateDate(now);
+                if (internshipProcess.getProcessStatus() == ProcessStatusEnum.CANCEL) {
+                    // If the process is cancelled, delete the process
+                    deleteInternshipProcess(processId);
+                } else if (internshipProcess.getProcessStatus() == ProcessStatusEnum.EXTEND) {
+                    internshipProcess.setEndDate(internshipProcess.getRequestedEndDate());
+                    internshipProcess.setRequestedEndDate(null);
+                    nextStatus = ProcessStatusEnum.IN1;
+                } else {
+                    nextStatus = ProcessStatusEnum.findNextStatus(internshipProcess.getProcessStatus());
+                }
             }
         }
 
@@ -433,7 +458,10 @@ public class InternshipProcessService {
             case PRE2 -> academicianService.findAcademicianIdsByExecutiveAndDepartment(true, department.getId());
             case PRE3 -> academicianService.findAcademicianIdsByOfficerAndDepartment(true, department.getId());
             case PRE4 -> academicianService.findAcademicianIdsByDeanAndDepartment(true, department.getId());
-            case PRE5, CANCEL, EXTEND -> {
+            case POST ->
+                    academicianService.findAcademicianIdsByResearchAssistantAndDepartment(true, department.getId());
+            case REPORT1 -> academicianService.findAcademicianIdsByAcademicAndDepartment(true, department.getId());
+            case PRE5, CANCEL, EXTEND, REPORT2 -> {
                 List<Integer> assigneIdList = new ArrayList<>();
                 assigneIdList.add(studentId);
                 yield assigneIdList;

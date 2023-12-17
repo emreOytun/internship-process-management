@@ -113,6 +113,9 @@ public class InternshipProcess {
     @Column(name = "editable")
     private Boolean editable;
 
+    @Column(name = "comment", nullable = true)
+    private String comment;
+
     @OneToMany(mappedBy = "internshipProcess", cascade = {CascadeType.DETACH, CascadeType.REFRESH}, fetch = FetchType.LAZY)
     private Set<ProcessAssignee> processAssignees;
 }

@@ -16,7 +16,7 @@ public class InternshipProcessEvaluateRequest {
     private Boolean approve;
 
     // For report edit request
-    private Boolean edit;
+    private Boolean reportEditRequest;
 
     private String comment;
 

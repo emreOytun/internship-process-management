@@ -46,7 +46,6 @@ public class AcademicianController {
     // TODO: ADD ADMIN ROLE CONTROL INSTEAD ACADEMICIAN
     @GetMapping("/get-all-not-pageable")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
     public AcademicsGetAllResponse getAllAcademics() {
         return academicianService.getAllAcademics();
     }

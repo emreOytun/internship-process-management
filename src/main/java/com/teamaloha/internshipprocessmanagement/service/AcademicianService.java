@@ -106,7 +106,9 @@ public class AcademicianService {
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(academician, userDto);
         String jwtToken = authenticationService.createJwtToken(userDto);
-        return AuthenticationResponse.builder().token(jwtToken).build();
+        AuthenticationResponse authenticationResponse = AuthenticationResponse.builder().token(jwtToken).build();
+        authenticationResponse.setId(academician.getId());
+        return authenticationResponse;
     }
 
     // TODO : abi burada admin id kontrolü felan lazım ama yapmadım

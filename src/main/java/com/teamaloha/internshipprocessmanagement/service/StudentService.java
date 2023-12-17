@@ -77,7 +77,9 @@ public class StudentService {
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(student, userDto);
         String jwtToken = authenticationService.createJwtToken(userDto);
-        return AuthenticationResponse.builder().token(jwtToken).build();
+        AuthenticationResponse authenticationResponse = AuthenticationResponse.builder().token(jwtToken).build();
+        authenticationResponse.setId(student.getId());
+        return authenticationResponse;
     }
 
     public Student findStudentById(Integer id) {

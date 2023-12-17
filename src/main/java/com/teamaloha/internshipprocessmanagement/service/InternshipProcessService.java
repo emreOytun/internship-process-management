@@ -456,12 +456,12 @@ public class InternshipProcessService {
                     academicianService.findAcademiciansIdsByInternshipCommitteeAndDepartment(true, department.getId());
             case PRE1 -> academicianService.findAcademicianIdsByDepartmentChairAndDepartment(true, department.getId());
             case PRE2 -> academicianService.findAcademicianIdsByExecutiveAndDepartment(true, department.getId());
-            case PRE3 -> academicianService.findAcademicianIdsByOfficerAndDepartment(true, department.getId());
-            case PRE4 -> academicianService.findAcademicianIdsByDeanAndDepartment(true, department.getId());
+            case PRE3 -> academicianService.findAcademicianIdsByAcademicAndDepartment(true, department.getId());
+            /*case PRE4 -> academicianService.findAcademicianIdsByDeanAndDepartment(true, department.getId());*/
             case POST ->
                     academicianService.findAcademicianIdsByResearchAssistantAndDepartment(true, department.getId());
             case REPORT1 -> academicianService.findAcademicianIdsByAcademicAndDepartment(true, department.getId());
-            case PRE5, CANCEL, EXTEND, REPORT2 -> {
+            case PRE4, CANCEL, EXTEND, REPORT2 -> {
                 List<Integer> assigneIdList = new ArrayList<>();
                 assigneIdList.add(studentId);
                 yield assigneIdList;

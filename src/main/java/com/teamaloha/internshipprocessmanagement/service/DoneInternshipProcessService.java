@@ -1,6 +1,7 @@
 package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.DoneInternshipProcessDao;
+import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.ExportRequest;
 import com.teamaloha.internshipprocessmanagement.entity.Company;
 import com.teamaloha.internshipprocessmanagement.entity.DoneInternshipProcess;
 import org.slf4j.Logger;
@@ -9,15 +10,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
-
-
 
 
 @Service
@@ -33,8 +38,9 @@ public class DoneInternshipProcessService {
         this.companyService = companyService;
     }
 
-    public void exportToExcel(Date startDate, Date endDate, String filePath) {
-        Set<DoneInternshipProcess> doneInternshipProcesses = findDoneInternshipProcessByStartDateAndEndDate(startDate, endDate);
+    public void exportExcel(ExportRequest exportRequest) {
+        Set<DoneInternshipProcess> doneInternshipProcesses = findDoneInternshipProcessBetweenStartDateAndEndDate(
+                exportRequest.getStartDate(), exportRequest.getEndDate());
 
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("DoneInternshipProcesses");
@@ -76,11 +82,10 @@ public class DoneInternshipProcessService {
             row.createCell(11).setCellValue(process.getDepartment().getDepartmentName());
             row.createCell(12).setCellValue(process.getEngineerName());
             row.createCell(13).setCellValue(process.getEngineerMail());
-
         }
 
         // Write the workbook to a file
-        try (FileOutputStream fileOut = new FileOutputStream(filePath)) {
+        try (FileOutputStream fileOut = new FileOutputStream(exportRequest.getFilePath())) {
             workbook.write(fileOut);
             fileOut.flush();
         } catch (IOException e) {
@@ -95,6 +100,96 @@ public class DoneInternshipProcessService {
         }
     }
 
+    public void exportPdf(ExportRequest exportRequest) {
+        List<DoneInternshipProcess> doneInternshipProcesses = findAllByEndDateBetween(
+                exportRequest.getStartDate(), exportRequest.getEndDate());
+
+        try (PDDocument document = new PDDocument()) {
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
+                contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+                contentStream.beginText();
+
+                // Set position for header
+                contentStream.newLineAtOffset(50, 700);
+                contentStream.showText("Student Name");
+                contentStream.newLineAtOffset(150, 0);
+                contentStream.showText("Student Number");
+                contentStream.newLineAtOffset(150, 0);
+                contentStream.showText("TC Number");
+                contentStream.newLineAtOffset(150, 0);
+                contentStream.showText("Telephone Number");
+                contentStream.newLineAtOffset(150, 0);
+                contentStream.showText("Class");
+                contentStream.newLineAtOffset(150, 0);
+                contentStream.showText("Position");
+                contentStream.newLineAtOffset(150, 0);
+                contentStream.showText("Internship Type");
+                contentStream.newLineAtOffset(150, 0);
+                contentStream.showText("Internship Number");
+                contentStream.newLineAtOffset(150, 0);
+                contentStream.showText("Start Date");
+                contentStream.newLineAtOffset(150, 0);
+                contentStream.showText("End Date");
+                contentStream.newLineAtOffset(150, 0);
+                contentStream.showText("Company Name");
+                contentStream.newLineAtOffset(150, 0);
+                contentStream.showText("Department");
+                contentStream.newLineAtOffset(150, 0);
+                contentStream.showText("Engineer Name");
+                contentStream.newLineAtOffset(150, 0);
+                contentStream.showText("Engineer Email");
+
+                // Set position for data
+                int yOffset = 680; // Starting y-coordinate for data
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                for (DoneInternshipProcess process : doneInternshipProcesses) {
+                    contentStream.newLineAtOffset(-120, -20); // Reset x-coordinate for each row
+                    contentStream.newLineAtOffset(50, yOffset);
+
+                    // Add data to PDF
+                    contentStream.showText(process.getStudent().getFirstName() + " " + process.getStudent().getLastName());
+                    contentStream.newLineAtOffset(150, 0);
+                    contentStream.showText(process.getStudentNumber());
+                    contentStream.newLineAtOffset(150, 0);
+                    contentStream.showText(process.getTc());
+                    contentStream.newLineAtOffset(150, 0);
+                    contentStream.showText(process.getTelephoneNumber());
+                    contentStream.newLineAtOffset(150, 0);
+                    contentStream.showText(String.valueOf(process.getClassNumber()));
+                    contentStream.newLineAtOffset(150, 0);
+                    contentStream.showText(process.getPosition());
+                    contentStream.newLineAtOffset(150, 0);
+                    contentStream.showText(process.getInternshipType());
+                    contentStream.newLineAtOffset(150, 0);
+                    contentStream.showText(String.valueOf(process.getInternshipNumber()));
+                    contentStream.newLineAtOffset(150, 0);
+                    contentStream.showText(dateFormat.format(process.getStartDate()));
+                    contentStream.newLineAtOffset(150, 0);
+                    contentStream.showText(dateFormat.format(process.getEndDate()));
+                    contentStream.newLineAtOffset(150, 0);
+                    contentStream.showText(process.getCompany().getCompanyName());
+                    contentStream.newLineAtOffset(150, 0);
+                    contentStream.showText(process.getDepartment().getDepartmentName());
+                    contentStream.newLineAtOffset(150, 0);
+                    contentStream.showText(process.getEngineerName());
+                    contentStream.newLineAtOffset(150, 0);
+                    contentStream.showText(process.getEngineerMail());
+
+                    yOffset -= 20; // Adjust the y-coordinate for the next row
+                }
+
+                contentStream.endText();
+            }
+
+            document.save(exportRequest.getFilePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     Set<Company> findCompainesByDateRange(Date startDate, Date endDate) {
         Set<DoneInternshipProcess> doneInternshipProcesses = doneInternshipProcessDao.findDoneInternshipProcessByStartDateAndEndDate(startDate, endDate);
@@ -104,7 +199,7 @@ public class DoneInternshipProcessService {
 
             Company company = companyService.findCompanyById(doneInternshipProcess.getCompany().getId());
 
-            if(company != null)
+            if (company != null)
                 companies.add(companyService.findCompanyById(doneInternshipProcess.getCompany().getId()));
             else
                 logger.error("Given company does not exists before. Company: " + doneInternshipProcess.getCompany().getCompanyName());
@@ -114,8 +209,8 @@ public class DoneInternshipProcessService {
     }
 
 
-    public Set<DoneInternshipProcess> findDoneInternshipProcessByStartDateAndEndDate(Date startDate, Date endDate) {
-        return doneInternshipProcessDao.findDoneInternshipProcessByStartDateAndEndDate(startDate, endDate);
+    public List<DoneInternshipProcess> findAllByEndDateBetween(Date startDate, Date endDate) {
+        return doneInternshipProcessDao.findAllByEndDateBetween(startDate, endDate);
     }
 
     void save(DoneInternshipProcess doneInternshipProcess) {

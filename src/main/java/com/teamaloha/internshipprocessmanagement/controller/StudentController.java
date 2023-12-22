@@ -30,4 +30,16 @@ public class StudentController {
     public AuthenticationResponse login(@RequestBody @Valid AuthenticationRequest authenticationRequest) {
         return studentService.login(authenticationRequest);
     }
+
+    @PostMapping("/auth/forgotPassword")
+    @ResponseStatus(HttpStatus.OK)
+    public void forgotPassword(@RequestParam @Valid String email) {
+        studentService.forgotPassword(email);
+    }
+
+    @PostMapping("/auth/resetPassword")
+    @ResponseStatus(HttpStatus.OK)
+    public void resetPassword(@RequestParam @Valid String token, @RequestParam @Valid String newPassword) {
+        studentService.resetPassword(token, newPassword);
+    }
 }

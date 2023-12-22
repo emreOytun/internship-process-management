@@ -12,31 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Academician {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id")
-    private Integer id;
-
-    @Embedded
-    LogDates logDates;
-
-    @Column(name = "mail", nullable = false, unique = true)
-    private String mail;
-
-    @Column(name = "password", nullable = false)
-    private String password;
-
-    @Column(name = "role")
-    @Enumerated(EnumType.STRING)
-    private RoleEnum roleEnum;
-
-    @Column(name = "first_name")
-    private String firstName;
-
-    @Column(name = "last_name")
-    private String lastName;
-
+public class Academician extends User{
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.DETACH}, fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "department_id")
     private Department department;

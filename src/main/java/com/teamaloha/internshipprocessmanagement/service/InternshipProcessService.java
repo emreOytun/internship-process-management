@@ -41,12 +41,15 @@ public class InternshipProcessService {
     private final ApplicationContext applicationContext;
     private final FiltersSpecification<InternshipProcess> filtersSpecification;
 
+    private final MailService mailService;
+
     @Autowired
     public InternshipProcessService(InternshipProcessDao internshipProcessDao, DepartmentService departmentService,
                                     CompanyService companyService, AcademicianService academicianService,
                                     HolidayService holidayService, ProcessAssigneeService processAssigneeService,
                                     ApplicationContext applicationContext,
-                                    FiltersSpecification<InternshipProcess> filtersSpecification) {
+                                    FiltersSpecification<InternshipProcess> filtersSpecification,
+                                    MailService mailService) {
         this.internshipProcessDao = internshipProcessDao;
         this.departmentService = departmentService;
         this.companyService = companyService;
@@ -55,6 +58,7 @@ public class InternshipProcessService {
         this.processAssigneeService = processAssigneeService;
         this.applicationContext = applicationContext;
         this.filtersSpecification = filtersSpecification;
+        this.mailService = mailService;
     }
 
     @PostConstruct
@@ -279,6 +283,17 @@ public class InternshipProcessService {
         internshipProcess.getLogDates().setUpdateDate(now);
 
         self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, internshipProcess);
+
+        List<Integer> assigneeIds = assigneeList.stream().map(ProcessAssignee::getAssigneeId).toList();
+        List<String> to = academicianService.getAcademiciansMail(assigneeIds);
+
+        mailService.sendMail(
+                to,
+                null,
+                "Staj Başvurusu",
+                "Staj Başvurusu Yapıldı bu link üzerinden detayları inceleyebilirsiniz." +
+                        "http://localhost:3000/internship-process/" + internshipProcess.getId()
+        );
     }
 
     public void evaluateInternshipProcess(InternshipProcessEvaluateRequest internshipProcessEvaluateRequest) {

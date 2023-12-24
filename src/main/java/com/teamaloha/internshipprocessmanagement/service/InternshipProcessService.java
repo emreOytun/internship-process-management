@@ -545,7 +545,7 @@ public class InternshipProcessService {
             case PRE2 -> academicianService.findAcademicianIdsByExecutiveAndDepartment(true, department.getId());
             case PRE3 -> academicianService.findAcademicianIdsByAcademicAndDepartment(true, department.getId());
             /*case PRE4 -> academicianService.findAcademicianIdsByDeanAndDepartment(true, department.getId());*/
-            case POST ->
+            case POST, DEN1 ->
                     academicianService.findAcademicianIdsByResearchAssistantAndDepartment(true, department.getId());
             case REPORT1 -> academicianService.findAcademicianIdsByAcademicAndDepartment(true, department.getId());
             case PRE4, CANCEL, EXTEND, REPORT2 -> {

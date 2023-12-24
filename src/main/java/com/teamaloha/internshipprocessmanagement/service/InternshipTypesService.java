@@ -40,7 +40,7 @@ public class InternshipTypesService {
         return internshipTypesDao.existsByInternshipType(internshipType);
     }
 
-    public ResponseEntity<HttpStatus> addInternshipType(InternshipTypesAddRequest internshipTypesAddRequest) {
+    public InternshipTypesDto addInternshipType(InternshipTypesAddRequest internshipTypesAddRequest) {
         boolean isInternshipTypesAddedBefore = isInternshipTypeExistsByInternshipType(internshipTypesAddRequest.getInternshipType());
 
         if (isInternshipTypesAddedBefore) {
@@ -55,10 +55,10 @@ public class InternshipTypesService {
         InternshipTypesDto internshipTypesDto = new InternshipTypesDto();
         BeanUtils.copyProperties(internshipTypes, internshipTypesDto);
 
-        return new ResponseEntity(internshipTypesDto, HttpStatus.OK);
+        return internshipTypesDto;
     }
 
-    public ResponseEntity<HttpStatus> updateInternshipType(InternshipTypesUpdateRequest internshipTypesUpdateRequest){
+    public void updateInternshipType(InternshipTypesUpdateRequest internshipTypesUpdateRequest){
         boolean isInternshipTypesExists = internshipTypesDao.existsById(internshipTypesUpdateRequest.getId());
 
         if (!isInternshipTypesExists) {
@@ -70,11 +70,9 @@ public class InternshipTypesService {
 
         internshipTypes.setLogDates(LogDates.builder().createDate(internshipTypes.getLogDates().getCreateDate()).updateDate(new Date()).build());
         internshipTypesDao.save(internshipTypes);
-
-        return new ResponseEntity(HttpStatus.OK);
     }
 
-    public ResponseEntity<HttpStatus> removeInternshipType(InternshipTypesRemoveRequest internshipTypesRemoveRequest){
+    public InternshipTypesDto removeInternshipType(InternshipTypesRemoveRequest internshipTypesRemoveRequest){
         boolean isInternshipTypesExists = internshipTypesDao.existsById(internshipTypesRemoveRequest.getId());
 
         if (!isInternshipTypesExists) {
@@ -87,7 +85,7 @@ public class InternshipTypesService {
         InternshipTypesDto internshipTypesDto = new InternshipTypesDto();
         BeanUtils.copyProperties(internshipTypes, internshipTypesDto);
 
-        return new ResponseEntity(internshipTypesDto, HttpStatus.OK);
+        return internshipTypesDto;
     }
 
     private InternshipTypes convertDtoToEntity(InternshipTypesAddRequest internshipTypesAddRequest) {

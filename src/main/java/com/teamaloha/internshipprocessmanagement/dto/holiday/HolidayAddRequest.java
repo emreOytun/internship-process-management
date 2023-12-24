@@ -1,6 +1,7 @@
 package com.teamaloha.internshipprocessmanagement.dto.holiday;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,12 +10,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HolidayAddRequest {
-    @NotBlank
-    String date;
+    @NotNull
+    private String date;
 
     @NotBlank
-    String name;
+    private String name;
 
     @NotBlank
-    String description;
+    private String description;
 }

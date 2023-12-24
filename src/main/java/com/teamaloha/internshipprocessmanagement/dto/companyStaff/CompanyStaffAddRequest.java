@@ -11,27 +11,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CompanyStaffAddRequest {
-    @NotNull
     @NotBlank
     private String name;
 
-    @NotNull
     @NotBlank
     private String surname;
 
-    @NotNull
     @NotBlank
     private String mail;
 
-    @NotNull
     @NotBlank
     private String telephone;
 
-    @NotNull
     @NotBlank
     private String title;
 
-    @NotNull
     @NotBlank
     private String department;
 

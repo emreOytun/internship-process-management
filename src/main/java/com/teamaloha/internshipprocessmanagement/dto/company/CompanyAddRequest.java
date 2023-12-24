@@ -10,11 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CompanyAddRequest {
-    @NotNull
     @NotBlank
     private String companyName;
 
-    @NotNull
     @NotBlank
     private String companyMail;
 

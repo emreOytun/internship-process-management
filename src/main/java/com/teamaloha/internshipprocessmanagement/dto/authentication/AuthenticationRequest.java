@@ -10,12 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthenticationRequest {
-
-    @NotNull
     @NotBlank
     private String mail;
 
-    @NotNull
     @NotBlank
     private String password;
 }

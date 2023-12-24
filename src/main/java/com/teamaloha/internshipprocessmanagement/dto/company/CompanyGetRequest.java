@@ -11,6 +11,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CompanyGetRequest {
     @NotNull
-    @NotBlank
     private Integer id;
 }

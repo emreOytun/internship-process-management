@@ -441,12 +441,12 @@ public class InternshipProcessService {
     public void checkReportSubmitLastDates() {
         Date now = new Date();
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(now);
-        calendar.add(Calendar.DAY_OF_MONTH, 7);
         List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllByProcessStatus(ProcessStatusEnum.POST);
         for (InternshipProcess internshipProcess : internshipProcessList) {
-            if (internshipProcess.getReportLastEditDate().before(now)) {
-                internshipProcess.setProcessStatus(ProcessStatusEnum.REPORT2);
+            calendar.setTime(internshipProcess.getEndDate());
+            calendar.add(Calendar.DAY_OF_MONTH, 7);
+            if (calendar.getTime().before(now)) {
+                internshipProcess.setProcessStatus(ProcessStatusEnum.FAIL);
                 internshipProcessDao.save(internshipProcess);
             }
         }

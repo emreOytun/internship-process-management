@@ -79,6 +79,9 @@ public class DoneInternshipProcess {
     @Column(name = "staj_raporu_path", nullable = true)
     private String stajRaporuPath;
 
+    @Column(name = "transkript path", nullable = true)
+    private String transkriptPath;
+
     @Column(name = "process_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ProcessStatusEnum processStatus;

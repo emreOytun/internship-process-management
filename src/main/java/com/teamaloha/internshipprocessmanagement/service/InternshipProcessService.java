@@ -44,15 +44,13 @@ public class InternshipProcessService {
     private final FiltersSpecification<InternshipProcess> filtersSpecification;
     private final DoneInternshipProcessService doneInternshipProcessService;
 
-    private final MailService mailService;
-
     @Autowired
     public InternshipProcessService(InternshipProcessDao internshipProcessDao, DepartmentService departmentService,
                                     CompanyService companyService, AcademicianService academicianService,
                                     HolidayService holidayService, ProcessAssigneeService processAssigneeService,
                                     ApplicationContext applicationContext,
                                     FiltersSpecification<InternshipProcess> filtersSpecification,
-                                    MailService mailService) {
+                                    MailService mailService, DoneInternshipProcessService doneInternshipProcessService) {
         this.internshipProcessDao = internshipProcessDao;
         this.departmentService = departmentService;
         this.companyService = companyService;
@@ -62,6 +60,7 @@ public class InternshipProcessService {
         this.applicationContext = applicationContext;
         this.filtersSpecification = filtersSpecification;
         this.mailService = mailService;
+        this.doneInternshipProcessService = doneInternshipProcessService;
     }
 
     @PostConstruct
@@ -299,6 +298,7 @@ public class InternshipProcessService {
     }
 
     public void evaluateInternshipProcess(InternshipProcessEvaluateRequest internshipProcessEvaluateRequest) {
+        Boolean savedAsDone = false;
         Integer processId = internshipProcessEvaluateRequest.getProcessId();
         Integer academicianId = internshipProcessEvaluateRequest.getAcademicianId();
         Boolean edit = internshipProcessEvaluateRequest.getReportEditRequest();
@@ -323,10 +323,10 @@ public class InternshipProcessService {
         ProcessStatusEnum nextStatus = null;
         List<ProcessAssignee> assigneeList = null;
         if ((edit != null && edit)) {
+            // Edit request for report
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(now);
             calendar.add(Calendar.DAY_OF_MONTH, internshipProcessEvaluateRequest.getReportEditDays());
-            // Edit request for report
             if (internshipProcess.getProcessStatus() != ProcessStatusEnum.REPORT1 &&
                     internshipProcess.getProcessStatus() != ProcessStatusEnum.REPORT2) {
                 logger.error("Report edit request is not possible for this process status. Process status: "
@@ -356,9 +356,10 @@ public class InternshipProcessService {
                     nextStatus = ProcessStatusEnum.IN1;
                 } else if (internshipProcess.getProcessStatus() == ProcessStatusEnum.EXTEND) {
                     internshipProcess.setRequestedEndDate(null);
-                    nextStatus = ProcessStatusEnum.EXTEND;
+                    nextStatus = ProcessStatusEnum.IN1;
                 } else if (internshipProcess.getProcessStatus() == ProcessStatusEnum.REPORT2) {
-                    internshipProcess.setProcessStatus(ProcessStatusEnum.FAIL);
+                    self.saveAsDoneInternshipProcess(internshipProcess, ProcessStatusEnum.FAIL);
+                    savedAsDone = true;
                 } else {
                     nextStatus = ProcessStatusEnum.REJECTED;
                 }
@@ -368,8 +369,9 @@ public class InternshipProcessService {
                 internshipProcess.setAssignerId(academicianId);
                 internshipProcess.getLogDates().setUpdateDate(now);
                 if (internshipProcess.getProcessStatus() == ProcessStatusEnum.CANCEL) {
-                    // If the process is cancelled, delete the process
-                    deleteInternshipProcess(processId);
+                    // If the process is cancelled, save as done saveAsDoneInternshipProcess with CANCEL status
+                    self.saveAsDoneInternshipProcess(internshipProcess, ProcessStatusEnum.CANCEL);
+                    savedAsDone = true;
                 } else if (internshipProcess.getProcessStatus() == ProcessStatusEnum.EXTEND) {
                     internshipProcess.setEndDate(internshipProcess.getRequestedEndDate());
                     internshipProcess.setRequestedEndDate(null);
@@ -377,7 +379,8 @@ public class InternshipProcessService {
                 } else {
                     // If the process is Done, save it as DoneInternshipProcess
                     if (internshipProcess.getProcessStatus() == ProcessStatusEnum.REPORT2) {
-                        self.saveAsDoneInternshipProcess(internshipProcess);
+                        self.saveAsDoneInternshipProcess(internshipProcess, ProcessStatusEnum.DONE);
+                        savedAsDone = true;
                     }
                     nextStatus = ProcessStatusEnum.findNextStatus(internshipProcess.getProcessStatus());
                 }
@@ -385,7 +388,7 @@ public class InternshipProcessService {
         }
 
         // If the process is not cancelled, update the process status
-        if (!(internshipProcess.getProcessStatus() == ProcessStatusEnum.CANCEL && internshipProcessEvaluateRequest.getApprove())) {
+        if (savedAsDone) {
             internshipProcess.setProcessStatus(nextStatus);
             internshipProcess.setEditable(isNextStatusEditable(nextStatus));
             self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, internshipProcess);
@@ -393,10 +396,12 @@ public class InternshipProcessService {
     }
 
     @Transactional
-    public void saveAsDoneInternshipProcess(InternshipProcess internshipProcess) {
+    public void saveAsDoneInternshipProcess(InternshipProcess internshipProcess, ProcessStatusEnum processStatus) {
         DoneInternshipProcess doneInternshipProcess = new DoneInternshipProcess();
         BeanUtils.copyProperties(internshipProcess, doneInternshipProcess);
         doneInternshipProcess.setLogDates(LogDates.builder().createDate(new Date()).updateDate(new Date()).build());
+        doneInternshipProcess.setProcessStatus(processStatus);
+        internshipProcessDao.delete(internshipProcess);
         doneInternshipProcessService.save(doneInternshipProcess);
     }
 

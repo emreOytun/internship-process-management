@@ -278,9 +278,16 @@ public class InternshipProcessService {
     public void startInternshipApprovalProcess(Integer processId, Integer studentId) {
         InternshipProcess internshipProcess = getInternshipProcessIfExistsOrThrowException(processId);
         checkIfStudentIdAndInternshipProcessMatchesOrThrowException(studentId, internshipProcess.getStudent().getId());
+
+        // If process is rejected, then pre statuses are accepted. Otherwise, only form is accepted.
         ArrayList<ProcessStatusEnum> expectedStatuses = new ArrayList<>();
         expectedStatuses.add(ProcessStatusEnum.FORM);
-        expectedStatuses.add(ProcessStatusEnum.REJECTED);
+        if (internshipProcess.getRejected()) {
+            expectedStatuses.add(ProcessStatusEnum.PRE1);
+            expectedStatuses.add(ProcessStatusEnum.PRE2);
+            expectedStatuses.add(ProcessStatusEnum.PRE3);
+            expectedStatuses.add(ProcessStatusEnum.PRE4);
+        }
         checkIfProcessStatusesMatchesOrThrowException(expectedStatuses, internshipProcess.getProcessStatus());
 
         if (!areFormFieldsEntered(internshipProcess)) {
@@ -299,6 +306,7 @@ public class InternshipProcessService {
         ProcessStatusEnum nextStatus = ProcessStatusEnum.findNextStatus(internshipProcess.getProcessStatus());
         internshipProcess.setProcessStatus(nextStatus);
         internshipProcess.setEditable(false);
+        internshipProcess.setRejected(false);
         internshipProcess.setAssignerId(studentId);
         internshipProcess.getLogDates().setUpdateDate(now);
 
@@ -367,6 +375,7 @@ public class InternshipProcessService {
                 if (internshipProcess.getProcessStatus() == ProcessStatusEnum.REPORT1) {
                     logger.error("Research assistants can only request edits. intenshipProcess Id: "
                             + internshipProcess.getId());
+                    throw new CustomException(HttpStatus.BAD_REQUEST);
                 }
 
                 assigneeList = new ArrayList<>();
@@ -385,7 +394,8 @@ public class InternshipProcessService {
                     self.saveAsDoneInternshipProcess(internshipProcess, processOperation, ProcessStatusEnum.FAIL);
                     savedAsDone = true;
                 } else {
-                    nextStatus = ProcessStatusEnum.REJECTED;
+                    internshipProcess.setRejected(true);
+                    internshipProcess.setEditable(true);
                 }
             } else {
                 // Approval
@@ -420,7 +430,6 @@ public class InternshipProcessService {
             processOperation = prepareProcessOperation(internshipProcess, oldStatus, ProcessOperationType.REJECTION,
                     internshipProcessEvaluateRequest.getComment(), now);
             internshipProcess.setProcessStatus(nextStatus);
-            internshipProcess.setEditable(isNextStatusEditable(nextStatus));
             self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, processOperation, internshipProcess);
         }
     }
@@ -644,10 +653,6 @@ public class InternshipProcessService {
             }
         }
         return true;
-    }
-
-    private boolean isNextStatusEditable(ProcessStatusEnum nextStatus) {
-        return nextStatus == ProcessStatusEnum.FORM || nextStatus == ProcessStatusEnum.REJECTED;
     }
 
     private Specification<InternshipProcess> prepereInternshipProcessSearchSpecification(Integer assigneeId,

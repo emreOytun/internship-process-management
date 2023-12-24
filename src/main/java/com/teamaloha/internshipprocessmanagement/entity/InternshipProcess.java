@@ -121,6 +121,9 @@ public class InternshipProcess {
     @Column(name = "report_last_edit_date", nullable = true)
     private Date reportLastEditDate;
 
+    @Column(name = "rejected")
+    private Boolean rejected;
+
     @OneToMany(mappedBy = "internshipProcess", cascade = {CascadeType.DETACH, CascadeType.REFRESH}, fetch = FetchType.LAZY)
     private Set<ProcessAssignee> processAssignees;
 }

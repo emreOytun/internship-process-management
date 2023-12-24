@@ -82,5 +82,4 @@ public class DoneInternshipProcess {
     @Column(name = "process_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ProcessStatusEnum processStatus;
-
 }

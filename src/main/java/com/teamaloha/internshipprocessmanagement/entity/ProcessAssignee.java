@@ -2,14 +2,14 @@ package com.teamaloha.internshipprocessmanagement.entity;
 
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "process_assignee")
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class ProcessAssignee {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

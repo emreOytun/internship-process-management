@@ -3,9 +3,7 @@ package com.teamaloha.internshipprocessmanagement.entity;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ProcessStatusEnum;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 import java.util.Set;
@@ -14,6 +12,8 @@ import java.util.Set;
 @Table(name = "internship_process")
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class InternshipProcess {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

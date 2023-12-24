@@ -4,14 +4,14 @@ import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ProcessOperationType;
 import com.teamaloha.internshipprocessmanagement.enums.ProcessStatusEnum;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "process_operation")
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class ProcessOperation {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

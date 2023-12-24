@@ -57,7 +57,10 @@ public class StudentService {
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(student, userDto);
         String jwtToken = authenticationService.createJwtToken(userDto);
-        return AuthenticationResponse.builder().token(jwtToken).build();
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .fullName(getFullName(student))
+                .build();
     }
 
     private Student convertDtoToEntity(StudentRegisterRequest studentRegisterRequest) {
@@ -86,7 +89,10 @@ public class StudentService {
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(student, userDto);
         String jwtToken = authenticationService.createJwtToken(userDto);
-        AuthenticationResponse authenticationResponse = AuthenticationResponse.builder().token(jwtToken).build();
+        AuthenticationResponse authenticationResponse =
+                AuthenticationResponse.builder()
+                .fullName(getFullName(student))
+                .token(jwtToken).build();
         authenticationResponse.setId(student.getId());
         return authenticationResponse;
     }
@@ -138,5 +144,9 @@ public class StudentService {
     }
     public Student findByMail(String mail) {
         return studentDao.findByMail(mail);
+    }
+
+    private String getFullName(Student student) {
+        return student.getFirstName() + " " + student.getLastName();
     }
 }

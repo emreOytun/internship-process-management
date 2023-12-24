@@ -8,9 +8,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -78,7 +75,7 @@ public class InternshipProcessController {
 
     @PostMapping("/evaluate")
     @ResponseStatus(HttpStatus.OK)
-    /*@PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")*/
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
     public void evaluateInternshipProcess(@RequestBody @Valid InternshipProcessEvaluateRequest internshipProcessEvaluateRequest) {
         internshipProcessService.evaluateInternshipProcess(internshipProcessEvaluateRequest);
     }
@@ -106,18 +103,16 @@ public class InternshipProcessController {
     }
 
 
-
     @PostMapping("/get-assigned-process")
     @ResponseStatus(HttpStatus.OK)
-    public InternshipProcessGetAllResponse getAssignedInternshipProcess(@RequestBody InternshipProcessSearchDto searchDto,@RequestParam("academicianId") Integer academicianId) {
-        System.out.println("getAssignedInternshipProcess");
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
+    public InternshipProcessGetAllResponse getAssignedInternshipProcess(@RequestBody InternshipProcessSearchDto searchDto,@CurrentUserId Integer academicianId) {
         return internshipProcessService.getAssignedInternshipProcess(academicianId, searchDto);
     }
 
     @PostMapping("/get-all-process-assigned")
     @ResponseStatus(HttpStatus.OK)
     public InternshipProcessGetAllResponse getAllProcessAssigned(@RequestParam("academicianId") Integer academicianId) {
-        System.out.println("getAllProcessAssigned");
         return internshipProcessService.getAssignedInternshipProcess(academicianId);
     }
 }

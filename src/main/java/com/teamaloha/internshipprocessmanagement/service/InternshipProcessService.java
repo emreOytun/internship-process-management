@@ -362,7 +362,7 @@ public class InternshipProcessService {
                 } else {
                     // If the process is Done, save it as DoneInternshipProcess
                     if (internshipProcess.getProcessStatus() == ProcessStatusEnum.REPORT2) {
-                        saveAsDoneInternshipProcess(internshipProcess);
+                        self.saveAsDoneInternshipProcess(internshipProcess);
                     }
                     nextStatus = ProcessStatusEnum.findNextStatus(internshipProcess.getProcessStatus());
                 }
@@ -377,7 +377,8 @@ public class InternshipProcessService {
         }
     }
 
-    private void saveAsDoneInternshipProcess(InternshipProcess internshipProcess) {
+    @Transactional
+    public void saveAsDoneInternshipProcess(InternshipProcess internshipProcess) {
         DoneInternshipProcess doneInternshipProcess = new DoneInternshipProcess();
         BeanUtils.copyProperties(internshipProcess, doneInternshipProcess);
         doneInternshipProcess.setLogDates(LogDates.builder().createDate(new Date()).updateDate(new Date()).build());

@@ -5,14 +5,16 @@ import com.teamaloha.internshipprocessmanagement.enums.ProcessOperationType;
 import com.teamaloha.internshipprocessmanagement.enums.ProcessStatusEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "process_operation")
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class ProcessOperation {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

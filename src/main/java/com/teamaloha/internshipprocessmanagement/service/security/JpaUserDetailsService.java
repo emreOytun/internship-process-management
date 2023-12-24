@@ -1,7 +1,7 @@
 package com.teamaloha.internshipprocessmanagement.service.security;
 
-import com.teamaloha.internshipprocessmanagement.dto.user.UserDto;
 import com.teamaloha.internshipprocessmanagement.dto.security.SecurityUser;
+import com.teamaloha.internshipprocessmanagement.dto.user.UserDto;
 import com.teamaloha.internshipprocessmanagement.entity.User;
 import com.teamaloha.internshipprocessmanagement.service.UserService;
 import org.slf4j.Logger;

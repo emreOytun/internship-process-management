@@ -1,15 +1,10 @@
 package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.InternshipTypesDao;
-import com.teamaloha.internshipprocessmanagement.dto.holiday.HolidayAddRequest;
-import com.teamaloha.internshipprocessmanagement.dto.holiday.HolidayDto;
 import com.teamaloha.internshipprocessmanagement.dto.internshipTypes.InternshipTypesAddRequest;
 import com.teamaloha.internshipprocessmanagement.dto.internshipTypes.InternshipTypesDto;
 import com.teamaloha.internshipprocessmanagement.dto.internshipTypes.InternshipTypesRemoveRequest;
 import com.teamaloha.internshipprocessmanagement.dto.internshipTypes.InternshipTypesUpdateRequest;
-import com.teamaloha.internshipprocessmanagement.entity.InternshipTypes;
-import com.teamaloha.internshipprocessmanagement.entity.Faculty;
-import com.teamaloha.internshipprocessmanagement.entity.Holiday;
 import com.teamaloha.internshipprocessmanagement.entity.InternshipTypes;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ErrorCodeEnum;
@@ -19,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -40,7 +34,7 @@ public class InternshipTypesService {
         return internshipTypesDao.existsByInternshipType(internshipType);
     }
 
-    public ResponseEntity<HttpStatus> addInternshipType(InternshipTypesAddRequest internshipTypesAddRequest) {
+    public InternshipTypesDto addInternshipType(InternshipTypesAddRequest internshipTypesAddRequest) {
         boolean isInternshipTypesAddedBefore = isInternshipTypeExistsByInternshipType(internshipTypesAddRequest.getInternshipType());
 
         if (isInternshipTypesAddedBefore) {
@@ -55,10 +49,10 @@ public class InternshipTypesService {
         InternshipTypesDto internshipTypesDto = new InternshipTypesDto();
         BeanUtils.copyProperties(internshipTypes, internshipTypesDto);
 
-        return new ResponseEntity(internshipTypesDto, HttpStatus.OK);
+        return internshipTypesDto;
     }
 
-    public ResponseEntity<HttpStatus> updateInternshipType(InternshipTypesUpdateRequest internshipTypesUpdateRequest){
+    public void updateInternshipType(InternshipTypesUpdateRequest internshipTypesUpdateRequest){
         boolean isInternshipTypesExists = internshipTypesDao.existsById(internshipTypesUpdateRequest.getId());
 
         if (!isInternshipTypesExists) {
@@ -70,11 +64,9 @@ public class InternshipTypesService {
 
         internshipTypes.setLogDates(LogDates.builder().createDate(internshipTypes.getLogDates().getCreateDate()).updateDate(new Date()).build());
         internshipTypesDao.save(internshipTypes);
-
-        return new ResponseEntity(HttpStatus.OK);
     }
 
-    public ResponseEntity<HttpStatus> removeInternshipType(InternshipTypesRemoveRequest internshipTypesRemoveRequest){
+    public InternshipTypesDto removeInternshipType(InternshipTypesRemoveRequest internshipTypesRemoveRequest){
         boolean isInternshipTypesExists = internshipTypesDao.existsById(internshipTypesRemoveRequest.getId());
 
         if (!isInternshipTypesExists) {
@@ -87,7 +79,7 @@ public class InternshipTypesService {
         InternshipTypesDto internshipTypesDto = new InternshipTypesDto();
         BeanUtils.copyProperties(internshipTypes, internshipTypesDto);
 
-        return new ResponseEntity(internshipTypesDto, HttpStatus.OK);
+        return internshipTypesDto;
     }
 
     private InternshipTypes convertDtoToEntity(InternshipTypesAddRequest internshipTypesAddRequest) {

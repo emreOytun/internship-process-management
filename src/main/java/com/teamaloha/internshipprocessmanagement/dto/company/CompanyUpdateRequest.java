@@ -11,14 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CompanyUpdateRequest {
     @NotNull
-    @NotBlank
     private Integer id;
 
-    @NotNull
     @NotBlank
     private String companyName;
 
-    @NotNull
     @NotBlank
     private String companyMail;
 

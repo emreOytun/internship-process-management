@@ -2,7 +2,8 @@ package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dto.SearchCriteria;
 import com.teamaloha.internshipprocessmanagement.dto.SearchDto;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 

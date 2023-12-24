@@ -1,7 +1,8 @@
 package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.CompanyStaffDao;
-import com.teamaloha.internshipprocessmanagement.dto.company.*;
+import com.teamaloha.internshipprocessmanagement.dto.company.CompanyGetRequest;
+import com.teamaloha.internshipprocessmanagement.dto.company.CompanyGetResponse;
 import com.teamaloha.internshipprocessmanagement.dto.companyStaff.*;
 import com.teamaloha.internshipprocessmanagement.entity.Company;
 import com.teamaloha.internshipprocessmanagement.entity.CompanyStaff;

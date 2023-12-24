@@ -4,15 +4,17 @@ import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.RoleEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "\"user\"")
 @Inheritance(strategy = InheritanceType.JOINED)
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class User {
 
     @Id
@@ -39,4 +41,6 @@ public class User {
     @Column(name = "last_name")
     private String lastName;
 
+    @Column(name = "password_reset_token")
+    private String passwordResetToken;
 }

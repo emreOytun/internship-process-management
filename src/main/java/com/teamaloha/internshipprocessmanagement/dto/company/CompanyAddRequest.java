@@ -1,7 +1,6 @@
 package com.teamaloha.internshipprocessmanagement.dto.company;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,11 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CompanyAddRequest {
-    @NotNull
     @NotBlank
     private String companyName;
 
-    @NotNull
     @NotBlank
     private String companyMail;
 

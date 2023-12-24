@@ -1,5 +1,6 @@
 package com.teamaloha.internshipprocessmanagement.dto.InternshipProcess;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +16,7 @@ public class InternshipExtensionRequestDto {
     private Integer processId;
     @NotNull
     private Date requestDate;
-    @NotNull
+    @NotBlank
     private String extensionDayNumber;
 
 }

@@ -44,6 +44,8 @@ public class InternshipProcessService {
     private final FiltersSpecification<InternshipProcess> filtersSpecification;
     private final DoneInternshipProcessService doneInternshipProcessService;
 
+    private final MailService mailService;
+
     @Autowired
     public InternshipProcessService(InternshipProcessDao internshipProcessDao, DepartmentService departmentService,
                                     CompanyService companyService, AcademicianService academicianService,
@@ -283,6 +285,17 @@ public class InternshipProcessService {
         internshipProcess.getLogDates().setUpdateDate(now);
 
         self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, internshipProcess);
+
+        List<Integer> assigneeIds = assigneeList.stream().map(ProcessAssignee::getAssigneeId).toList();
+        List<String> to = academicianService.getAcademiciansMail(assigneeIds);
+
+        mailService.sendMail(
+                to,
+                null,
+                "Staj Başvurusu",
+                "Staj Başvurusu Yapıldı bu link üzerinden detayları inceleyebilirsiniz." +
+                        "http://localhost:3000/internship-process/" + internshipProcess.getId()
+        );
     }
 
     public void evaluateInternshipProcess(InternshipProcessEvaluateRequest internshipProcessEvaluateRequest) {

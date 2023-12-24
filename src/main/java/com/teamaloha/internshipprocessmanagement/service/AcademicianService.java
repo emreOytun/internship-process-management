@@ -106,7 +106,9 @@ public class AcademicianService {
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(academician, userDto);
         String jwtToken = authenticationService.createJwtToken(userDto);
-        return AuthenticationResponse.builder().token(jwtToken).build();
+        AuthenticationResponse authenticationResponse = AuthenticationResponse.builder().token(jwtToken).build();
+        authenticationResponse.setId(academician.getId());
+        return authenticationResponse;
     }
 
     // TODO : abi burada admin id kontrolü felan lazım ama yapmadım
@@ -135,6 +137,14 @@ public class AcademicianService {
         academicianDao.save(academician);
         logger.info("Task assigned. Academician id: " + academicianId + " Task id: " + taskId);
         return true;
+    }
+
+    public List<String> getAcademiciansMail(List<Integer> ids){
+        List<String> mails = new ArrayList<>();
+        for (Integer id : ids) {
+            mails.add(getAcademicianIfExistsOrThrowException(id).getMail());
+        }
+        return mails;
     }
 
     public List<Integer> findAcademiciansIdsByInternshipCommitteeAndDepartment(Boolean internshipCommittee, Integer departmentId) {
@@ -171,7 +181,10 @@ public class AcademicianService {
                 SearchByPageDto.getPageable(academicianSearchDto.getSearchByPageDto())).toList();
         return createAcademicianGetAllResponse(academicianList);
     }
-
+    public AcademicsGetAllResponse getAllAcademics() {
+        List<Academician> academicianList = academicianDao.findAllAcademicians();
+        return createAcademicianGetAllResponse(academicianList);
+    }
     private AcademicsGetAllResponse createAcademicianGetAllResponse(List<Academician> academicianList) {
         List<AcademicianGetResponse> academicianGetResponseList = new ArrayList<>();
         for (Academician academician : academicianList) {

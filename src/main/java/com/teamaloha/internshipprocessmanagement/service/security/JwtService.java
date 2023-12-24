@@ -46,6 +46,21 @@ public class JwtService {
                 .compact();
     }
 
+    public String generateTokenForResetPassword(
+            Map<String, Object> extraClaims,
+            Integer id
+    ) {
+        int totalExpireTimeInMs = 1000 * InternshipProcessManagementConstants.RESET_PASSWORD_EXPIRE_TIME_IN_SECONDS;
+
+        return Jwts.builder()
+                .setClaims(extraClaims)
+                .setSubject(id.toString())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + totalExpireTimeInMs))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     // Generates JWT Token using username subject from our UserDetails class.
     public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);

@@ -10,6 +10,7 @@ import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ErrorCodeEnum;
 import com.teamaloha.internshipprocessmanagement.enums.RoleEnum;
 import com.teamaloha.internshipprocessmanagement.exceptions.CustomException;
+import com.teamaloha.internshipprocessmanagement.service.security.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -17,7 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class StudentService {
@@ -26,11 +29,17 @@ public class StudentService {
     private final UserService userService;
     private final AuthenticationService authenticationService;
 
+    private final JwtService jwtService;
+
+    private final MailService mailService;
+
     @Autowired
-    public StudentService(StudentDao studentDao, UserService userService, AuthenticationService authenticationService) {
+    public StudentService(StudentDao studentDao, UserService userService, AuthenticationService authenticationService, MailService mailService, JwtService jwtService){
         this.studentDao = studentDao;
         this.userService = userService;
         this.authenticationService = authenticationService;
+        this.mailService = mailService;
+        this.jwtService = jwtService;
     }
 
     public AuthenticationResponse register(StudentRegisterRequest studentRegisterRequest) {
@@ -77,7 +86,51 @@ public class StudentService {
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(student, userDto);
         String jwtToken = authenticationService.createJwtToken(userDto);
-        return AuthenticationResponse.builder().token(jwtToken).build();
+        AuthenticationResponse authenticationResponse = AuthenticationResponse.builder().token(jwtToken).build();
+        authenticationResponse.setId(student.getId());
+        return authenticationResponse;
+    }
+
+    public void forgotPassword(String email) {
+        Student student = studentDao.findByMail(email);
+        if (student == null) {
+            logger.error("Invalid mail. mail: " + email);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        List<String> to = new ArrayList<>();
+        to.add(student.getMail());
+
+        UserDto userDto = new UserDto();
+        BeanUtils.copyProperties(student, userDto);
+        String token = authenticationService.createJwtToken(userDto);
+        student.setPasswordResetToken(token);
+        studentDao.save(student);
+
+        this.mailService.sendMail(
+                to,
+                null,
+                "Şifre Sıfırlama",
+                "Şifrenizi sıfırlamak için aşağıdaki linke tıklayınız 50 dakika aktif olacaktır: http://localhost:8080/api/student/auth/resetPassword/"+token
+        );
+    }
+
+    public void resetPassword(String token, String password) {
+        Student student = studentDao.findByPasswordResetToken(token);
+        if (student == null) {
+            logger.error("Invalid token. token: " + token);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+
+        if(jwtService.isTokenValid(student.getPasswordResetToken())){
+            student.setPassword(authenticationService.hashPassword(password));
+        }else{
+            logger.error("Invalid token. token: " + token);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+
+        student.setPassword(authenticationService.hashPassword(password));
+        student.setPasswordResetToken(null);
+        studentDao.save(student);
     }
 
     public Student findStudentById(Integer id) {

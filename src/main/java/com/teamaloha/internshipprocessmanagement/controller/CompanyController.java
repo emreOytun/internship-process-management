@@ -1,8 +1,8 @@
 package com.teamaloha.internshipprocessmanagement.controller;
 
 import com.teamaloha.internshipprocessmanagement.dto.company.*;
-import com.teamaloha.internshipprocessmanagement.dto.company.CompanyGetAllResponse;
 import com.teamaloha.internshipprocessmanagement.service.CompanyService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +21,7 @@ public class CompanyController {
     @ResponseStatus(HttpStatus.OK)
     // test ten sonra ekleyelim
     // @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name()) || hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
-    public CompanyAddResponse addCompany(@RequestBody CompanyAddRequest companyAddRequest) {
+    public CompanyAddResponse addCompany(@RequestBody @Valid CompanyAddRequest companyAddRequest) {
         return companyService.add(companyAddRequest);
     }
 
@@ -29,7 +29,7 @@ public class CompanyController {
     @ResponseStatus(HttpStatus.OK)
     // test ten sonra ekleyelim
     // @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name()) || hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
-    public CompanyUpdateResponse updateCompany(@RequestBody CompanyUpdateRequest companyUpdateRequest) {
+    public CompanyUpdateResponse updateCompany(@RequestBody @Valid CompanyUpdateRequest companyUpdateRequest) {
         return companyService.update(companyUpdateRequest);
     }
 
@@ -37,7 +37,7 @@ public class CompanyController {
     @ResponseStatus(HttpStatus.OK)
     // test ten sonra ekleyelim
     // @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name()) || hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
-    public CompanyGetResponse updateCompany(@RequestBody CompanyGetRequest companyGetRequest) {
+    public CompanyGetResponse updateCompany(@RequestBody @Valid CompanyGetRequest companyGetRequest) {
         return companyService.get(companyGetRequest);
     }
 

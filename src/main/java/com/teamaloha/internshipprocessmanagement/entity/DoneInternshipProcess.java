@@ -12,7 +12,6 @@ import java.util.Set;
 
 @Entity
 @Table(name = "done_internship_process")
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class DoneInternshipProcess {
@@ -75,4 +74,7 @@ public class DoneInternshipProcess {
     @Column(name = "staj_raporu_path", nullable = true)
     private String stajRaporuPath;
 
+    @Column(name = "process_status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ProcessStatusEnum processStatus;
 }

@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "holiday")
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Holiday {

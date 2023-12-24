@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "academician")
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Academician extends User{

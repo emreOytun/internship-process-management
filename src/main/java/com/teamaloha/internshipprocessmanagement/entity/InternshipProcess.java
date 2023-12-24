@@ -12,7 +12,6 @@ import java.util.Set;
 
 @Entity
 @Table(name = "internship_process")
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class InternshipProcess {

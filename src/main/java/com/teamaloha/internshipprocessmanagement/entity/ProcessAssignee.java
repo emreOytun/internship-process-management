@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "process_assignee")
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProcessAssignee {

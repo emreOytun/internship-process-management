@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "process_operation")
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProcessOperation {

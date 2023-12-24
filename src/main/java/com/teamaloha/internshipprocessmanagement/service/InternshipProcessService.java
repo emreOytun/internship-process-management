@@ -37,6 +37,7 @@ public class InternshipProcessService {
     private final CompanyService companyService;
     private final AcademicianService academicianService;
     private final HolidayService holidayService;
+    private final MailService mailService;
     private final ProcessAssigneeService processAssigneeService;
     private InternshipProcessService self;
     private final ApplicationContext applicationContext;
@@ -48,7 +49,9 @@ public class InternshipProcessService {
                                     CompanyService companyService, AcademicianService academicianService,
                                     HolidayService holidayService, ProcessAssigneeService processAssigneeService,
                                     ApplicationContext applicationContext,
-                                    FiltersSpecification<InternshipProcess> filtersSpecification, DoneInternshipProcessService doneInternshipProcessService) {
+                                    FiltersSpecification<InternshipProcess> filtersSpecification,
+                                    MailService mailService
+            , DoneInternshipProcessService doneInternshipProcessService) {
         this.internshipProcessDao = internshipProcessDao;
         this.departmentService = departmentService;
         this.companyService = companyService;
@@ -58,6 +61,7 @@ public class InternshipProcessService {
         this.applicationContext = applicationContext;
         this.filtersSpecification = filtersSpecification;
         this.doneInternshipProcessService = doneInternshipProcessService;
+        this.mailService = mailService;
     }
 
     @PostConstruct
@@ -498,12 +502,12 @@ public class InternshipProcessService {
                     academicianService.findAcademiciansIdsByInternshipCommitteeAndDepartment(true, department.getId());
             case PRE1 -> academicianService.findAcademicianIdsByDepartmentChairAndDepartment(true, department.getId());
             case PRE2 -> academicianService.findAcademicianIdsByExecutiveAndDepartment(true, department.getId());
-            case PRE3 -> academicianService.findAcademicianIdsByOfficerAndDepartment(true, department.getId());
-            case PRE4 -> academicianService.findAcademicianIdsByDeanAndDepartment(true, department.getId());
+            case PRE3 -> academicianService.findAcademicianIdsByAcademicAndDepartment(true, department.getId());
+            /*case PRE4 -> academicianService.findAcademicianIdsByDeanAndDepartment(true, department.getId());*/
             case POST ->
                     academicianService.findAcademicianIdsByResearchAssistantAndDepartment(true, department.getId());
             case REPORT1 -> academicianService.findAcademicianIdsByAcademicAndDepartment(true, department.getId());
-            case PRE5, CANCEL, EXTEND, REPORT2 -> {
+            case PRE4, CANCEL, EXTEND, REPORT2 -> {
                 List<Integer> assigneIdList = new ArrayList<>();
                 assigneIdList.add(studentId);
                 yield assigneIdList;

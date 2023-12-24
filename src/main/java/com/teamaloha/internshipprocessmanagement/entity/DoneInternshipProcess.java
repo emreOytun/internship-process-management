@@ -83,7 +83,4 @@ public class DoneInternshipProcess {
     @Enumerated(EnumType.STRING)
     private ProcessStatusEnum processStatus;
 
-    @Column(name = "transkript_path", nullable = true)
-    private String transkriptPath;
-
 }

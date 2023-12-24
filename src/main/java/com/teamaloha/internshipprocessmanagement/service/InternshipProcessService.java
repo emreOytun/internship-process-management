@@ -49,7 +49,6 @@ public class InternshipProcessService {
                                     CompanyService companyService, AcademicianService academicianService,
                                     HolidayService holidayService, ProcessAssigneeService processAssigneeService,
                                     ApplicationContext applicationContext,
-                                    DoneInternshipProcessService doneInternshipProcessService,
                                     FiltersSpecification<InternshipProcess> filtersSpecification,
                                     MailService mailService) {
         this.internshipProcessDao = internshipProcessDao;
@@ -61,7 +60,6 @@ public class InternshipProcessService {
         this.applicationContext = applicationContext;
         this.filtersSpecification = filtersSpecification;
         this.mailService = mailService;
-        this.doneInternshipProcessService = doneInternshipProcessService;
     }
 
     @PostConstruct

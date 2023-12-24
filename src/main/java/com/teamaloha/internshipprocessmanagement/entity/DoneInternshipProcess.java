@@ -3,10 +3,12 @@ package com.teamaloha.internshipprocessmanagement.entity;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ProcessStatusEnum;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
-import java.util.Set;
 
 @Entity
 @Table(name = "done_internship_process")
@@ -77,11 +79,11 @@ public class DoneInternshipProcess {
     @Column(name = "staj_raporu_path", nullable = true)
     private String stajRaporuPath;
 
-    @Column(name = "transkript_path", nullable = true)
-    private String transkriptPath;
-
     @Column(name = "process_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ProcessStatusEnum processStatus;
+
+    @Column(name = "transkript_path", nullable = true)
+    private String transkriptPath;
 
 }

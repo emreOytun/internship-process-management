@@ -1,10 +1,10 @@
 package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.FacultyDao;
-import com.teamaloha.internshipprocessmanagement.dto.faculty.FacultyUpdateRequest;
-import com.teamaloha.internshipprocessmanagement.dto.faculty.FacultyUpdateResponse;
 import com.teamaloha.internshipprocessmanagement.dto.faculty.FacultyAddRequest;
 import com.teamaloha.internshipprocessmanagement.dto.faculty.FacultyDto;
+import com.teamaloha.internshipprocessmanagement.dto.faculty.FacultyUpdateRequest;
+import com.teamaloha.internshipprocessmanagement.dto.faculty.FacultyUpdateResponse;
 import com.teamaloha.internshipprocessmanagement.entity.Faculty;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ErrorCodeEnum;

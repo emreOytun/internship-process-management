@@ -1,6 +1,5 @@
 package com.teamaloha.internshipprocessmanagement.dto.company;
 
-import com.teamaloha.internshipprocessmanagement.dto.company.CompanyGetResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

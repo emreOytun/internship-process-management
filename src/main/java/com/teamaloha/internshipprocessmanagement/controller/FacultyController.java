@@ -1,11 +1,8 @@
 package com.teamaloha.internshipprocessmanagement.controller;
 
-import com.teamaloha.internshipprocessmanagement.dto.company.CompanyUpdateRequest;
-import com.teamaloha.internshipprocessmanagement.dto.company.CompanyUpdateResponse;
 import com.teamaloha.internshipprocessmanagement.dto.faculty.FacultyAddRequest;
 import com.teamaloha.internshipprocessmanagement.dto.faculty.FacultyUpdateRequest;
 import com.teamaloha.internshipprocessmanagement.dto.faculty.FacultyUpdateResponse;
-import com.teamaloha.internshipprocessmanagement.dto.holiday.HolidayAddRequest;
 import com.teamaloha.internshipprocessmanagement.service.FacultyService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,15 +1,10 @@
 package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.InternshipTypesDao;
-import com.teamaloha.internshipprocessmanagement.dto.holiday.HolidayAddRequest;
-import com.teamaloha.internshipprocessmanagement.dto.holiday.HolidayDto;
 import com.teamaloha.internshipprocessmanagement.dto.internshipTypes.InternshipTypesAddRequest;
 import com.teamaloha.internshipprocessmanagement.dto.internshipTypes.InternshipTypesDto;
 import com.teamaloha.internshipprocessmanagement.dto.internshipTypes.InternshipTypesRemoveRequest;
 import com.teamaloha.internshipprocessmanagement.dto.internshipTypes.InternshipTypesUpdateRequest;
-import com.teamaloha.internshipprocessmanagement.entity.InternshipTypes;
-import com.teamaloha.internshipprocessmanagement.entity.Faculty;
-import com.teamaloha.internshipprocessmanagement.entity.Holiday;
 import com.teamaloha.internshipprocessmanagement.entity.InternshipTypes;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ErrorCodeEnum;
@@ -19,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;

@@ -1,7 +1,7 @@
 package com.teamaloha.internshipprocessmanagement.entity;
 
-import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 

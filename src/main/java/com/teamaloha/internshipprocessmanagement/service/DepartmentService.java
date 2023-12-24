@@ -1,14 +1,9 @@
 package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.DepartmentDao;
-import com.teamaloha.internshipprocessmanagement.dao.FacultyDao;
 import com.teamaloha.internshipprocessmanagement.dto.department.*;
-import com.teamaloha.internshipprocessmanagement.dto.holiday.HolidayAddRequest;
-import com.teamaloha.internshipprocessmanagement.dto.holiday.HolidayDto;
-import com.teamaloha.internshipprocessmanagement.entity.Academician;
 import com.teamaloha.internshipprocessmanagement.entity.Department;
 import com.teamaloha.internshipprocessmanagement.entity.Faculty;
-import com.teamaloha.internshipprocessmanagement.entity.Holiday;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ErrorCodeEnum;
 import com.teamaloha.internshipprocessmanagement.exceptions.CustomException;

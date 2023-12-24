@@ -4,13 +4,9 @@ import com.teamaloha.internshipprocessmanagement.dto.department.DepartmentAddReq
 import com.teamaloha.internshipprocessmanagement.dto.department.DepartmentGetAllResponse;
 import com.teamaloha.internshipprocessmanagement.dto.department.DepartmentUpdateRequest;
 import com.teamaloha.internshipprocessmanagement.dto.department.DepartmentUpdateResponse;
-import com.teamaloha.internshipprocessmanagement.dto.faculty.FacultyUpdateRequest;
-import com.teamaloha.internshipprocessmanagement.dto.faculty.FacultyUpdateResponse;
-import com.teamaloha.internshipprocessmanagement.dto.holiday.HolidayAddRequest;
 import com.teamaloha.internshipprocessmanagement.service.DepartmentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

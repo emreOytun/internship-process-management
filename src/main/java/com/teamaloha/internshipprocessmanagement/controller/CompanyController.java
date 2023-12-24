@@ -1,7 +1,6 @@
 package com.teamaloha.internshipprocessmanagement.controller;
 
 import com.teamaloha.internshipprocessmanagement.dto.company.*;
-import com.teamaloha.internshipprocessmanagement.dto.company.CompanyGetAllResponse;
 import com.teamaloha.internshipprocessmanagement.service.CompanyService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

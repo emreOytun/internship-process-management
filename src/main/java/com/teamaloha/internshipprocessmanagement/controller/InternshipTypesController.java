@@ -4,6 +4,7 @@ import com.teamaloha.internshipprocessmanagement.dto.internshipTypes.InternshipT
 import com.teamaloha.internshipprocessmanagement.dto.internshipTypes.InternshipTypesRemoveRequest;
 import com.teamaloha.internshipprocessmanagement.dto.internshipTypes.InternshipTypesUpdateRequest;
 import com.teamaloha.internshipprocessmanagement.service.InternshipTypesService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,19 +23,19 @@ public class InternshipTypesController {
 
     @PostMapping("/addInternshipType")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<HttpStatus> addInternshipType(@RequestBody InternshipTypesAddRequest internshipTypesAddRequest) {
+    public ResponseEntity<HttpStatus> addInternshipType(@RequestBody @Valid InternshipTypesAddRequest internshipTypesAddRequest) {
         return internshipTypesService.addInternshipType(internshipTypesAddRequest);
     }
 
     @PostMapping("/updateInternshipType")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<HttpStatus> updateInternshipType(@RequestBody InternshipTypesUpdateRequest internshipTypesUpdateRequest) {
+    public ResponseEntity<HttpStatus> updateInternshipType(@RequestBody @Valid InternshipTypesUpdateRequest internshipTypesUpdateRequest) {
         return internshipTypesService.updateInternshipType(internshipTypesUpdateRequest);
     }
 
     @GetMapping("/removeInternshipType")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<HttpStatus> removeInternshipType(@RequestBody InternshipTypesRemoveRequest internshipTypesRemoveRequest) {
+    public ResponseEntity<HttpStatus> removeInternshipType(@RequestBody @Valid InternshipTypesRemoveRequest internshipTypesRemoveRequest) {
         return internshipTypesService.removeInternshipType(internshipTypesRemoveRequest);
     }
 

@@ -21,7 +21,7 @@ public class CompanyStaffController {
     @ResponseStatus(HttpStatus.OK)
     // test ten sonra ekleyelim
     // @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name()) || hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
-    public CompanyStaffAddResponse addCompanyStaff(@RequestBody CompanyStaffAddRequest companyStaffAddRequest) {
+    public CompanyStaffAddResponse addCompanyStaff(@RequestBody @Valid CompanyStaffAddRequest companyStaffAddRequest) {
         return companyStaffService.add(companyStaffAddRequest);
     }
 
@@ -29,7 +29,7 @@ public class CompanyStaffController {
     @ResponseStatus(HttpStatus.OK)
     // test ten sonra ekleyelim
     // @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name()) || hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
-    public CompanyStaffUpdateResponse updateCompanyStaff(@RequestBody CompanyStaffUpdateRequest companyStaffUpdateRequest) {
+    public CompanyStaffUpdateResponse updateCompanyStaff(@RequestBody @Valid CompanyStaffUpdateRequest companyStaffUpdateRequest) {
         return companyStaffService.update(companyStaffUpdateRequest);
     }
 

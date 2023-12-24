@@ -8,6 +8,7 @@ import com.teamaloha.internshipprocessmanagement.dto.faculty.FacultyUpdateReques
 import com.teamaloha.internshipprocessmanagement.dto.faculty.FacultyUpdateResponse;
 import com.teamaloha.internshipprocessmanagement.dto.holiday.HolidayAddRequest;
 import com.teamaloha.internshipprocessmanagement.service.DepartmentService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,7 @@ public class DepartmentController {
 
     @PostMapping("/addDepartment")
     @ResponseStatus(HttpStatus.OK)
-    public void addHoliday(@RequestBody DepartmentAddRequest departmentAddRequest) {
+    public void addHoliday(@RequestBody @Valid DepartmentAddRequest departmentAddRequest) {
         departmentService.addDepartment(departmentAddRequest);
     }
 
@@ -38,7 +39,7 @@ public class DepartmentController {
     @ResponseStatus(HttpStatus.OK)
     // test ten sonra ekleyelim
     // @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name()) || hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
-    public DepartmentUpdateResponse updateFaculty(@RequestBody DepartmentUpdateRequest departmentUpdateRequest) {
+    public DepartmentUpdateResponse updateFaculty(@RequestBody @Valid DepartmentUpdateRequest departmentUpdateRequest) {
         return departmentService.update(departmentUpdateRequest);
     }
 }

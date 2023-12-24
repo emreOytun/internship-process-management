@@ -71,24 +71,10 @@ public class AcademicianService {
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(academician, userDto);
         String jwtToken = authenticationService.createJwtToken(userDto);
-        return AuthenticationResponse.builder().token(jwtToken).build();
-    }
-
-    private Academician convertDtoToEntity(AcademicianRegisterRequest academicianRegisterRequest, Department department) {
-        Academician academician = new Academician();
-        Date now = new Date();
-        BeanUtils.copyProperties(academicianRegisterRequest, academician);
-        academician.setDepartment(department);
-        academician.setRoleEnum(RoleEnum.ACADEMICIAN);
-        academician.setPassword(authenticationService.hashPassword(academicianRegisterRequest.getPassword()));
-        academician.setInternshipCommittee(false);
-        academician.setDepartmentChair(false);
-        academician.setExecutive(false);
-        academician.setOfficer(false);
-        academician.setValidated(false);
-        academician.setIs_admin(false);
-        academician.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
-        return academician;
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .fullName(getFullName(academician))
+                .build();
     }
 
     public AuthenticationResponse login(AuthenticationRequest authenticationRequest) {
@@ -106,7 +92,11 @@ public class AcademicianService {
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(academician, userDto);
         String jwtToken = authenticationService.createJwtToken(userDto);
-        AuthenticationResponse authenticationResponse = AuthenticationResponse.builder().token(jwtToken).build();
+        AuthenticationResponse authenticationResponse =
+                AuthenticationResponse.builder()
+                        .token(jwtToken)
+                        .fullName(getFullName(academician))
+                        .build();
         authenticationResponse.setId(academician.getId());
         return authenticationResponse;
     }
@@ -250,6 +240,28 @@ public class AcademicianService {
                     + academicianId);
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
+        return academician;
+    }
+
+
+    private String getFullName(Academician academician) {
+        return academician.getFirstName() + " " + academician.getLastName();
+    }
+
+    private Academician convertDtoToEntity(AcademicianRegisterRequest academicianRegisterRequest, Department department) {
+        Academician academician = new Academician();
+        Date now = new Date();
+        BeanUtils.copyProperties(academicianRegisterRequest, academician);
+        academician.setDepartment(department);
+        academician.setRoleEnum(RoleEnum.ACADEMICIAN);
+        academician.setPassword(authenticationService.hashPassword(academicianRegisterRequest.getPassword()));
+        academician.setInternshipCommittee(false);
+        academician.setDepartmentChair(false);
+        academician.setExecutive(false);
+        academician.setOfficer(false);
+        academician.setValidated(false);
+        academician.setIs_admin(false);
+        academician.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
         return academician;
     }
 

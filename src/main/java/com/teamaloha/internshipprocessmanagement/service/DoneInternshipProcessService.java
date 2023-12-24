@@ -39,7 +39,7 @@ public class DoneInternshipProcessService {
     }
 
     public void exportExcel(ExportRequest exportRequest) {
-        Set<DoneInternshipProcess> doneInternshipProcesses = findDoneInternshipProcessBetweenStartDateAndEndDate(
+        List<DoneInternshipProcess> doneInternshipProcesses = doneInternshipProcessDao.findAllByEndDateBetween(
                 exportRequest.getStartDate(), exportRequest.getEndDate());
 
         Workbook workbook = new XSSFWorkbook();

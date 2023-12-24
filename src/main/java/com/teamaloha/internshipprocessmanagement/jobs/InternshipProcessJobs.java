@@ -19,8 +19,20 @@ public class InternshipProcessJobs {
         internshipProcessService.checkReportEditLastDates();
     }
 
-    @Scheduled(cron = "0 0 0 * * *") // Runs every day at 12:00 AM
+    @Scheduled(cron = "0 1 0 * * *") // Runs every day at 12:01 AM
     public void finishInternshipProcesses() {
         internshipProcessService.finishInternshipProcesses();
     }
+
+    @Scheduled(cron = "0 2 0 * * *") // Runs every day at 12:02 AM
+    public void checkReportSubmitLastDates() {
+        internshipProcessService.checkReportSubmitLastDates();
+    }
+
+    @Scheduled(cron = "0 3 0 * * *") // Runs every day at 12:03 AM
+    public void activateInternshipProcesses() {
+        internshipProcessService.activateInternshipProcesses();
+    }
+
+
 }

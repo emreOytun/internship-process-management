@@ -427,6 +427,31 @@ public class InternshipProcessService {
         }
     }
 
+    public void activateInternshipProcesses() {
+        Date now = new Date();
+        List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllByProcessStatus(ProcessStatusEnum.values()[(ProcessStatusEnum.IN1.ordinal()) - 1]);
+        for (InternshipProcess internshipProcess : internshipProcessList) {
+            if (internshipProcess.getStartDate().before(now)) {
+                internshipProcess.setProcessStatus(ProcessStatusEnum.IN1);
+                internshipProcessDao.save(internshipProcess);
+            }
+        }
+    }
+
+    public void checkReportSubmitLastDates() {
+        Date now = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(now);
+        calendar.add(Calendar.DAY_OF_MONTH, 7);
+        List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllByProcessStatus(ProcessStatusEnum.POST);
+        for (InternshipProcess internshipProcess : internshipProcessList) {
+            if (internshipProcess.getReportLastEditDate().before(now)) {
+                internshipProcess.setProcessStatus(ProcessStatusEnum.REPORT2);
+                internshipProcessDao.save(internshipProcess);
+            }
+        }
+    }
+
     private InternshipProcess getInternshipProcessIfExistsOrThrowException(Integer processId) {
         InternshipProcess internshipProcess = internshipProcessDao.findInternshipProcessById(processId);
         if (internshipProcess == null) {

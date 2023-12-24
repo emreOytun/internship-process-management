@@ -18,6 +18,9 @@ public class InternshipProcessEvaluateRequest {
     // For report edit request
     private Boolean reportEditRequest;
 
+    // Given day number to student for edit report
+    private Integer reportEditDays;
+
     private String comment;
 
     @NotNull

@@ -41,6 +41,9 @@ public class DoneInternshipProcess {
     @Column(name = "class", nullable = true)
     private Integer classNumber;
 
+    @Column(name = "position", nullable = true)
+    private String position;
+
     @Column(name = "internship_type", nullable = true)
     private String internshipType;
 
@@ -75,6 +78,9 @@ public class DoneInternshipProcess {
 
     @Column(name = "staj_raporu_path", nullable = true)
     private String stajRaporuPath;
+
+    @Column(name = "transkript path", nullable = true)
+    private String transkriptPath;
 
     @Column(name = "process_status", nullable = false)
     @Enumerated(EnumType.STRING)

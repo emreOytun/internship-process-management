@@ -11,6 +11,7 @@ public enum ProcessStatusEnum {
     REPORT1,
     REPORT2,
     DONE,
+    DEN1,
     FAIL,
     REJECTED,
     EXTEND,

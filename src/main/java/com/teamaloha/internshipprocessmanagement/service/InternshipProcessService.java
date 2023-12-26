@@ -19,7 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -72,6 +74,10 @@ public class InternshipProcessService {
         self = applicationContext.getBean(InternshipProcessService.class);
     }
 
+//    @EventListener(ApplicationReadyEvent.class)
+//    public void afterStartup() {
+//        internshipProcessDao.updateNullRejectedFields();
+//    }
 
     public InternshipProcessInitResponse initInternshipProcess(Integer studentId) {
         // Only setting the ID of Student entity is enough to insert InternshipProcess entity.
@@ -91,6 +97,7 @@ public class InternshipProcessService {
         emptyProcess.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
         emptyProcess.setProcessStatus(ProcessStatusEnum.FORM);
         emptyProcess.setEditable(true);
+        emptyProcess.setRejected(false);
         InternshipProcess savedProcess = internshipProcessDao.save(emptyProcess);
 
         logger.info("Created InternshipProcess with ID: " + savedProcess.getId());
@@ -310,7 +317,7 @@ public class InternshipProcessService {
         internshipProcess.setAssignerId(studentId);
         internshipProcess.getLogDates().setUpdateDate(now);
 
-        processOperation = prepareProcessOperation(internshipProcess, oldStatus, ProcessOperationType.SUBMIT, null, now);
+        processOperation = prepareProcessOperation(internshipProcess, oldStatus, ProcessOperationType.APPROVAL, null, now);
         self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, processOperation, internshipProcess);
 
         List<Integer> assigneeIds = assigneeList.stream().map(ProcessAssignee::getAssigneeId).toList();
@@ -635,6 +642,7 @@ public class InternshipProcessService {
         excludedFields.add("dersProgramıPath");
         excludedFields.add("stajRaporuPath");
         excludedFields.add("comment");
+        excludedFields.add("reportLastEditDate");
 
         Field[] fields = InternshipProcess.class.getDeclaredFields();
 

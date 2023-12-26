@@ -3,9 +3,8 @@ package com.teamaloha.internshipprocessmanagement.dao;
 import com.teamaloha.internshipprocessmanagement.entity.InternshipProcess;
 import com.teamaloha.internshipprocessmanagement.entity.Student;
 import com.teamaloha.internshipprocessmanagement.enums.ProcessStatusEnum;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -48,4 +47,9 @@ public interface InternshipProcessDao extends JpaRepository<InternshipProcess, I
     List<InternshipProcess> findAllByAssignerId(Integer assignerId);
     // If there are special Specifications needed for Internship process add here.
 //    interface Specs { }
+
+    @Query("UPDATE InternshipProcess i SET i.rejected = false WHERE i.rejected IS NULL")
+    @Modifying
+    @Transactional
+    void updateNullRejectedFields();
 }

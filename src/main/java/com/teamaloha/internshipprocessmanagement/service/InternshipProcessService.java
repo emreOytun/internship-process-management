@@ -91,6 +91,7 @@ public class InternshipProcessService {
         emptyProcess.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
         emptyProcess.setProcessStatus(ProcessStatusEnum.FORM);
         emptyProcess.setEditable(true);
+        emptyProcess.setRejected(false);
         InternshipProcess savedProcess = internshipProcessDao.save(emptyProcess);
 
         logger.info("Created InternshipProcess with ID: " + savedProcess.getId());
@@ -635,6 +636,8 @@ public class InternshipProcessService {
         excludedFields.add("dersProgramıPath");
         excludedFields.add("stajRaporuPath");
         excludedFields.add("comment");
+        excludedFields.add("reportLastEditDate");
+        excludedFields.add("rejected");
 
         Field[] fields = InternshipProcess.class.getDeclaredFields();
 

@@ -637,7 +637,6 @@ public class InternshipProcessService {
         excludedFields.add("stajRaporuPath");
         excludedFields.add("comment");
         excludedFields.add("reportLastEditDate");
-        excludedFields.add("rejected");
 
         Field[] fields = InternshipProcess.class.getDeclaredFields();
 

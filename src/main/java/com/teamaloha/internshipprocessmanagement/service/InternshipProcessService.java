@@ -683,6 +683,13 @@ public class InternshipProcessService {
             criteriaMap.put("internshipNumber", new Comparable[]{internshipProcessSearchDto.getInternshipNumber(), SearchCriteria.Operation.EQUAL});
         }
 
+        if (internshipProcessSearchDto.getProcessStatusEnum() != null) {
+            Comparable[] values = new Comparable[internshipProcessSearchDto.getProcessStatusEnum().size() + 1];
+            values = internshipProcessSearchDto.getProcessStatusEnum().toArray(values);
+            values[values.length - 1] = SearchCriteria.Operation.IN;
+            criteriaMap.put("processStatus", values);
+        }
+
         List<SearchCriteria> searchCriteriaList = filtersSpecification.convertMapToSearchCriteriaList(criteriaMap);
 
         // Write Join criteria separate to the dynamic SearchCriteria generator.

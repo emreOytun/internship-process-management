@@ -52,4 +52,6 @@ public class InternshipProcessGetResponse {
 
     // @Enumerated(EnumType.STRING)
     private ProcessStatusEnum processStatus;
+
+    private Boolean rejected;
 }

@@ -433,7 +433,7 @@ public class InternshipProcessService {
         }
 
         // If the process is not cancelled, update the process status
-        if (savedAsDone) {
+        if (!savedAsDone) {
             processOperation = prepareProcessOperation(internshipProcess, oldStatus, ProcessOperationType.REJECTION,
                     internshipProcessEvaluateRequest.getComment(), now);
             internshipProcess.setProcessStatus(nextStatus);

@@ -728,6 +728,9 @@ public class InternshipProcessService {
         if (internshipProcess.getDepartment() != null) {
             internshipProcessGetResponse.setDepartmentId(internshipProcess.getDepartment().getId());
         }
+
+        internshipProcessGetResponse.setFullName(internshipProcess.getStudent().getFirstName() + " " + internshipProcess.getStudent().getLastName());
+        internshipProcessGetResponse.setUpdateDate(internshipProcess.getLogDates().getUpdateDate());
     }
 
 

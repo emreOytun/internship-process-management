@@ -22,7 +22,7 @@ public class ProcessAssignee {
     @Embedded
     LogDates logDates;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name = "process_id")
     private InternshipProcess internshipProcess;
 

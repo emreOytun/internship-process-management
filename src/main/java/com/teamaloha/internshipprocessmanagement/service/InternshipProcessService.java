@@ -372,10 +372,10 @@ public class InternshipProcessService {
             }
             internshipProcess.setAssignerId(academicianId);
             assigneeList = prepareProcessAssigneeList(internshipProcess, now);
-            internshipProcess.setProcessStatus(ProcessStatusEnum.DEN1);
             internshipProcess.setComment(internshipProcessEvaluateRequest.getComment());
             internshipProcess.getLogDates().setUpdateDate(now);
             internshipProcess.setReportLastEditDate(calendar.getTime());
+            nextStatus = ProcessStatusEnum.DEN1;
         } else {
             if (!internshipProcessEvaluateRequest.getApprove()) {
                 // Rejection
@@ -403,6 +403,7 @@ public class InternshipProcessService {
                 } else {
                     internshipProcess.setRejected(true);
                     internshipProcess.setEditable(true);
+                    nextStatus = internshipProcess.getProcessStatus();
                 }
             } else {
                 // Approval
@@ -624,10 +625,10 @@ public class InternshipProcessService {
     public void insertProcessAssigneesAndUpdateProcessStatus(List<ProcessAssignee> processAssigneeList,
                                                              ProcessOperation processOperation,
                                                              InternshipProcess internshipProcess) {
-        processAssigneeService.deleteByProcessId(internshipProcess.getId());
-        processAssigneeService.saveAll(processAssigneeList);
         internshipProcessDao.save(internshipProcess);
         processOperationService.save(processOperation);
+        processAssigneeService.deleteByProcess(internshipProcess);
+        processAssigneeService.saveAll(processAssigneeList);
     }
 
     private boolean areFormFieldsEntered(InternshipProcess internshipProcess) {

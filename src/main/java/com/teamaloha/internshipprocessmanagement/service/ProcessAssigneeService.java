@@ -29,10 +29,8 @@ public class ProcessAssigneeService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public void deleteByProcessId(Integer processId) {
-        InternshipProcess process = new InternshipProcess();
-        process.setId(processId);
-        processAssigneeDao.deleteByInternshipProcess(process);
+    public void deleteByProcess(InternshipProcess internshipProcess) {
+        processAssigneeDao.deleteByInternshipProcess(internshipProcess);
     }
 
     boolean existsByProcessIdAndAssigneeId(Integer processId, Integer assigneeId) {

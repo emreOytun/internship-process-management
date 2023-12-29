@@ -56,4 +56,5 @@ public class InternshipProcessGetResponse {
     private ProcessStatusEnum processStatus;
 
     private Boolean rejected;
+    private String comment;
 }

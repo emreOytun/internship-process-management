@@ -1,4 +1,4 @@
-package com.teamaloha.internshipprocessmanagement.dto.InternshipProcess;
+package com.teamaloha.internshipprocessmanagement.dto.doneInternshipProcess;
 
 import com.teamaloha.internshipprocessmanagement.enums.ProcessStatusEnum;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class InternshipProcessGetResponse {
+public class DoneInternshipProcessGetResponse {
 
     private String fullName;
 
@@ -44,20 +44,12 @@ public class InternshipProcessGetResponse {
 
     private String engineerName;
 
-    private String choiceReason;
-
-    private Boolean sgkEntry;
-
-    private Boolean gssEntry;
-    private Boolean editable;
-
     private String mustehaklikBelgesiPath;
 
-    private String stajYeriFormuPath;
+    private String transkriptPath;
 
-    // @Enumerated(EnumType.STRING)
+    private String stajRaporuPath;
+
     private ProcessStatusEnum processStatus;
 
-    private Boolean rejected;
-    private String comment;
 }

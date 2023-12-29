@@ -1,6 +1,10 @@
 package com.teamaloha.internshipprocessmanagement.controller;
 
+import com.teamaloha.internshipprocessmanagement.annotations.CurrentUserId;
 import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.ExportRequest;
+import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessGetAllResponse;
+import com.teamaloha.internshipprocessmanagement.dto.doneInternshipProcess.DoneInternshipProcessGetAllResponse;
+import com.teamaloha.internshipprocessmanagement.dto.doneInternshipProcess.DoneInternshipProcessGetResponse;
 import com.teamaloha.internshipprocessmanagement.dto.faculty.FacultyAddRequest;
 import com.teamaloha.internshipprocessmanagement.service.DoneInternshipProcessService;
 import jakarta.validation.Valid;
@@ -16,6 +20,21 @@ public class DoneInternshipProcessController {
 
     public DoneInternshipProcessController(DoneInternshipProcessService doneInternshipProcessService) {
         this.doneInternshipProcessService = doneInternshipProcessService;
+    }
+
+    @GetMapping("/get-all")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
+    public DoneInternshipProcessGetAllResponse getAllDoneInternshipProcess(@CurrentUserId Integer userId) {
+        return doneInternshipProcessService.getAllDoneInternshipProcess(userId);
+    }
+
+    @GetMapping("/get")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
+    public DoneInternshipProcessGetResponse getDoneInternshipProcess(@RequestParam("processId") Integer internshipProcessID,
+                                                                 @CurrentUserId Integer userId) {
+        return doneInternshipProcessService.getDoneInternshipProcess(internshipProcessID, userId);
     }
 
     @GetMapping("/export-excel")

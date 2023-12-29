@@ -2,11 +2,19 @@ package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.DoneInternshipProcessDao;
 import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.ExportRequest;
+import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessGetResponse;
+import com.teamaloha.internshipprocessmanagement.dto.doneInternshipProcess.DoneInternshipProcessGetAllResponse;
+import com.teamaloha.internshipprocessmanagement.dto.doneInternshipProcess.DoneInternshipProcessGetResponse;
 import com.teamaloha.internshipprocessmanagement.entity.Company;
 import com.teamaloha.internshipprocessmanagement.entity.DoneInternshipProcess;
+import com.teamaloha.internshipprocessmanagement.entity.InternshipProcess;
+import com.teamaloha.internshipprocessmanagement.entity.Student;
+import com.teamaloha.internshipprocessmanagement.exceptions.CustomException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -17,10 +25,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -36,6 +41,28 @@ public class DoneInternshipProcessService {
     public DoneInternshipProcessService(DoneInternshipProcessDao doneInternshipProcessDao, CompanyService companyService) {
         this.doneInternshipProcessDao = doneInternshipProcessDao;
         this.companyService = companyService;
+    }
+
+    public DoneInternshipProcessGetAllResponse getAllDoneInternshipProcess(Integer studentId) {
+        Student student = new Student();
+        student.setId(studentId);
+
+        List<DoneInternshipProcess> internshipProcessList = doneInternshipProcessDao.findAllByStudent(student);
+        return createDoneInternshipProcessGetAllResponse(internshipProcessList);
+    }
+
+    public DoneInternshipProcessGetResponse getDoneInternshipProcess(Integer internshipProcessID, Integer studentId) {
+        // Check if the process exists
+        DoneInternshipProcess internshipProcess = getDoneInternshipProcessIfExistsOrThrowException(internshipProcessID);
+
+        // Check if the current user id and the student id of the given internship process is matching.
+        checkIfStudentIdAndDoneInternshipProcessMatchesOrThrowException(studentId, internshipProcess.getStudent().getId());
+
+        DoneInternshipProcessGetResponse internshipProcessGetResponse = new DoneInternshipProcessGetResponse();
+
+        copyEntityToDto(internshipProcess, internshipProcessGetResponse);
+
+        return internshipProcessGetResponse;
     }
 
     public void exportExcel(ExportRequest exportRequest) {
@@ -216,4 +243,47 @@ public class DoneInternshipProcessService {
     void save(DoneInternshipProcess doneInternshipProcess) {
         doneInternshipProcessDao.save(doneInternshipProcess);
     }
+
+    private DoneInternshipProcessGetAllResponse createDoneInternshipProcessGetAllResponse(List<DoneInternshipProcess> internshipProcessList) {
+        List<DoneInternshipProcessGetResponse> doneInternshipProcessGetResponseList = new ArrayList<>();
+        for (DoneInternshipProcess internshipProcess : internshipProcessList) {
+            DoneInternshipProcessGetResponse doneInternshipProcessGetResponse = new DoneInternshipProcessGetResponse();
+            copyEntityToDto(internshipProcess, doneInternshipProcessGetResponse);
+            doneInternshipProcessGetResponseList.add(doneInternshipProcessGetResponse);
+        }
+        return new DoneInternshipProcessGetAllResponse(doneInternshipProcessGetResponseList);
+    }
+
+    private void copyEntityToDto(DoneInternshipProcess doneInternshipProcess, DoneInternshipProcessGetResponse doneInternshipProcessGetResponse) {
+        BeanUtils.copyProperties(doneInternshipProcess, doneInternshipProcessGetResponse);
+
+        if (doneInternshipProcess.getCompany() != null) {
+            doneInternshipProcessGetResponse.setCompanyId(doneInternshipProcess.getCompany().getId());
+        }
+
+        if (doneInternshipProcess.getDepartment() != null) {
+            doneInternshipProcessGetResponse.setDepartmentId(doneInternshipProcess.getDepartment().getId());
+        }
+
+        doneInternshipProcessGetResponse.setFullName(doneInternshipProcess.getStudent().getFirstName() + " " + doneInternshipProcess.getStudent().getLastName());
+        doneInternshipProcessGetResponse.setUpdateDate(doneInternshipProcess.getLogDates().getUpdateDate());
+    }
+
+    private DoneInternshipProcess getDoneInternshipProcessIfExistsOrThrowException(Integer processId) {
+        DoneInternshipProcess internshipProcess = doneInternshipProcessDao.findDoneInternshipProcessById(processId);
+        if (internshipProcess == null) {
+            logger.error("DoneInternshipProcess with ID " + processId + " not found for update.");
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        return internshipProcess;
+    }
+
+    private void checkIfStudentIdAndDoneInternshipProcessMatchesOrThrowException(Integer userId, Integer processId) {
+        if (!userId.equals(processId)) {
+            logger.error("The internshipProcess id given does not belong to the student. Student id: "
+                    + userId);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
+

@@ -78,7 +78,7 @@ public class StudentService {
         Student student = studentDao.findByMail(authenticationRequest.getMail());
         if (student == null) {
             logger.error("Invalid mail. mail: " + authenticationRequest.getMail());
-            throw new CustomException(HttpStatus.BAD_REQUEST);
+            throw new CustomException(ErrorCodeEnum.MAIL_NOT_EXISTS_BEFORE.getErrorCode(), HttpStatus.BAD_REQUEST);
         }
 
         if (!authenticationService.matchesPassword(authenticationRequest.getPassword(), student.getPassword())) {

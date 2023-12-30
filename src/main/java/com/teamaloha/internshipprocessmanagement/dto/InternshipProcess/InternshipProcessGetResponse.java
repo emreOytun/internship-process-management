@@ -21,6 +21,7 @@ public class InternshipProcessGetResponse {
     private String tc;
 
     private String studentNumber;
+    private Integer studentId;
 
     private String telephoneNumber;
 

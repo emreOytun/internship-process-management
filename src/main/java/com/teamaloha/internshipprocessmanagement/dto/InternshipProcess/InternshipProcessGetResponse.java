@@ -61,4 +61,5 @@ public class InternshipProcessGetResponse {
 
     private Boolean rejected;
     private String comment;
+    private String companyName;
 }

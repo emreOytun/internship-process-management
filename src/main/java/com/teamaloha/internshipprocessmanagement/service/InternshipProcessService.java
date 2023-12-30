@@ -723,6 +723,7 @@ public class InternshipProcessService {
 
         if (internshipProcess.getCompany() != null) {
             internshipProcessGetResponse.setCompanyId(internshipProcess.getCompany().getId());
+            internshipProcessGetResponse.setCompanyName(internshipProcess.getCompany().getCompanyName());
         }
 
         if (internshipProcess.getDepartment() != null) {

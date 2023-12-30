@@ -741,6 +741,7 @@ public class InternshipProcessService {
 
         internshipProcessGetResponse.setFullName(internshipProcess.getStudent().getFirstName() + " " + internshipProcess.getStudent().getLastName());
         internshipProcessGetResponse.setUpdateDate(internshipProcess.getLogDates().getUpdateDate());
+        internshipProcessGetResponse.setStudentId(internshipProcess.getStudent().getId());
     }
 
 

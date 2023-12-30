@@ -6,6 +6,8 @@ import com.teamaloha.internshipprocessmanagement.dto.SearchByPageDto;
 import com.teamaloha.internshipprocessmanagement.dto.SearchCriteria;
 import com.teamaloha.internshipprocessmanagement.dto.SearchDto;
 import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetStudentAllProcessResponse;
+import com.teamaloha.internshipprocessmanagement.dto.doneInternshipProcess.DoneInternshipProcessGetAllResponse;
+import com.teamaloha.internshipprocessmanagement.dto.doneInternshipProcess.DoneInternshipProcessGetResponse;
 import com.teamaloha.internshipprocessmanagement.dto.holiday.IsValidRangeRequest;
 import com.teamaloha.internshipprocessmanagement.entity.*;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
@@ -119,7 +121,8 @@ public class InternshipProcessService {
         else {
             internshipProcessList = internshipProcessDao.findAllByStudent(student);
         }
-        return createInternshipProcessGetAllResponse(internshipProcessList);
+
+        return createInternshipProcessGetAllResponse(internshipProcessList, doneInternshipProcessService.getAllDoneInternshipProcess(studentId).getInternshipProcessList());
     }
 
     public InternshipProcessGetResponse getInternshipProcess(Integer internshipProcessID, Integer studentId) {
@@ -160,13 +163,23 @@ public class InternshipProcessService {
         return createInternshipProcessGetAllResponse(internshipProcessList);
     }
 
-
     private InternshipProcessGetAllResponse createInternshipProcessGetAllResponse(List<InternshipProcess> internshipProcessList) {
+        return createInternshipProcessGetAllResponse(internshipProcessList, null);
+    }
+
+    private InternshipProcessGetAllResponse createInternshipProcessGetAllResponse(List<InternshipProcess> internshipProcessList, List<DoneInternshipProcessGetResponse> doneInternshipProcessList) {
         List<InternshipProcessGetResponse> internshipProcessGetResponseList = new ArrayList<>();
         for (InternshipProcess internshipProcess : internshipProcessList) {
             InternshipProcessGetResponse internshipProcessGetResponse = new InternshipProcessGetResponse();
             copyEntityToDto(internshipProcess, internshipProcessGetResponse);
             internshipProcessGetResponseList.add(internshipProcessGetResponse);
+        }
+        if (doneInternshipProcessList != null) {
+            for (DoneInternshipProcessGetResponse doneInternshipProcessGetResponse : doneInternshipProcessList) {
+                InternshipProcessGetResponse internshipProcessGetResponse = new InternshipProcessGetResponse();
+                BeanUtils.copyProperties(doneInternshipProcessGetResponse, internshipProcessGetResponse);
+                internshipProcessGetResponseList.add(internshipProcessGetResponse);
+            }
         }
         return new InternshipProcessGetAllResponse(internshipProcessGetResponseList);
     }

@@ -180,7 +180,7 @@ public class AcademicianService {
         for (Academician academician : academicianList) {
             academicianGetResponseList.add(convertEntityToDto(academician));
         }
-        return AcademicsGetAllResponse.builder().academicsList(academicianList).build();
+        return AcademicsGetAllResponse.builder().academicsList(academicianGetResponseList).build();
     }
 
     private AcademicianGetResponse convertEntityToDto(Academician academician) {

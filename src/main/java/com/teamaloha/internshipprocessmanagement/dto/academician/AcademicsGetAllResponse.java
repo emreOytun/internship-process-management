@@ -13,5 +13,5 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class AcademicsGetAllResponse {
-    private List<Academician> academicsList;
+    private List<AcademicianGetResponse> academicsList;
 }

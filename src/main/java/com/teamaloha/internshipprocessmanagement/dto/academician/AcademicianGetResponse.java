@@ -15,5 +15,6 @@ public class AcademicianGetResponse {
     private Boolean departmentChair;
     private Boolean executive;
     private Boolean academic;
+    private Boolean is_admin;
     private Boolean validated;
 }

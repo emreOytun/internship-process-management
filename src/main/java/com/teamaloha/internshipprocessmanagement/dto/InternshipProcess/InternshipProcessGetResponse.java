@@ -22,6 +22,7 @@ public class InternshipProcessGetResponse {
     private String tc;
 
     private String studentNumber;
+
     private Integer studentId;
 
     private String telephoneNumber;
@@ -72,5 +73,6 @@ public class InternshipProcessGetResponse {
     private Boolean rejected;
 
     private String comment;
+
     private String companyName;
 }

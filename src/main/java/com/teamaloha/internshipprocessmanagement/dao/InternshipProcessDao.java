@@ -41,6 +41,14 @@ public interface InternshipProcessDao extends JpaRepository<InternshipProcess, I
                     "company",
                     "department"
             })
+    List<InternshipProcess> findAllByStudentAndProcessStatusNot(Student student, ProcessStatusEnum processStatus);
+
+    @EntityGraph(type = EntityGraph.EntityGraphType.FETCH,
+            attributePaths = {
+                    "student",
+                    "company",
+                    "department"
+            })
     List<InternshipProcess> findAllByProcessStatus(ProcessStatusEnum processStatus);
 
     Integer countByStudentId(Integer studentId);

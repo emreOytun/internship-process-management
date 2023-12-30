@@ -105,10 +105,20 @@ public class InternshipProcessService {
     }
 
     public InternshipProcessGetAllResponse getAllInternshipProcess(Integer studentId) {
+        return getAllInternshipProcess(studentId, null);
+    }
+
+    public InternshipProcessGetAllResponse getAllInternshipProcess(Integer studentId, ProcessStatusEnum processStatus) {
         Student student = new Student();
         student.setId(studentId);
+        List<InternshipProcess> internshipProcessList = null;
 
-        List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllByStudent(student);
+        if (processStatus != null) {
+            internshipProcessList = internshipProcessDao.findAllByStudentAndProcessStatusNot(student, processStatus);
+        }
+        else {
+            internshipProcessList = internshipProcessDao.findAllByStudent(student);
+        }
         return createInternshipProcessGetAllResponse(internshipProcessList);
     }
 
@@ -129,7 +139,7 @@ public class InternshipProcessService {
 
     public AcademicsGetStudentAllProcessResponse getStudentAllProcess(Integer studentId, Integer academicianId) {
         academicianService.getAcademicianIfExistsOrThrowException(academicianId);
-        List<InternshipProcessGetResponse> processList = getAllInternshipProcess(studentId).getInternshipProcessList();
+        List<InternshipProcessGetResponse> processList = getAllInternshipProcess(studentId, ProcessStatusEnum.FORM).getInternshipProcessList();
 
 
         return new AcademicsGetStudentAllProcessResponse(processList);

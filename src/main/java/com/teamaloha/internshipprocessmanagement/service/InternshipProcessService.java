@@ -6,6 +6,8 @@ import com.teamaloha.internshipprocessmanagement.dto.SearchByPageDto;
 import com.teamaloha.internshipprocessmanagement.dto.SearchCriteria;
 import com.teamaloha.internshipprocessmanagement.dto.SearchDto;
 import com.teamaloha.internshipprocessmanagement.dto.academician.AcademicsGetStudentAllProcessResponse;
+import com.teamaloha.internshipprocessmanagement.dto.doneInternshipProcess.DoneInternshipProcessGetAllResponse;
+import com.teamaloha.internshipprocessmanagement.dto.doneInternshipProcess.DoneInternshipProcessGetResponse;
 import com.teamaloha.internshipprocessmanagement.dto.holiday.IsValidRangeRequest;
 import com.teamaloha.internshipprocessmanagement.entity.*;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
@@ -105,11 +107,22 @@ public class InternshipProcessService {
     }
 
     public InternshipProcessGetAllResponse getAllInternshipProcess(Integer studentId) {
+        return getAllInternshipProcess(studentId, null);
+    }
+
+    public InternshipProcessGetAllResponse getAllInternshipProcess(Integer studentId, ProcessStatusEnum processStatus) {
         Student student = new Student();
         student.setId(studentId);
+        List<InternshipProcess> internshipProcessList = null;
 
-        List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllByStudent(student);
-        return createInternshipProcessGetAllResponse(internshipProcessList);
+        if (processStatus != null) {
+            internshipProcessList = internshipProcessDao.findAllByStudentAndProcessStatusNot(student, processStatus);
+        }
+        else {
+            internshipProcessList = internshipProcessDao.findAllByStudent(student);
+        }
+
+        return createInternshipProcessGetAllResponse(internshipProcessList, doneInternshipProcessService.getAllDoneInternshipProcess(studentId).getInternshipProcessList());
     }
 
     public InternshipProcessGetResponse getInternshipProcess(Integer internshipProcessID, Integer studentId) {
@@ -129,7 +142,7 @@ public class InternshipProcessService {
 
     public AcademicsGetStudentAllProcessResponse getStudentAllProcess(Integer studentId, Integer academicianId) {
         academicianService.getAcademicianIfExistsOrThrowException(academicianId);
-        List<InternshipProcessGetResponse> processList = getAllInternshipProcess(studentId).getInternshipProcessList();
+        List<InternshipProcessGetResponse> processList = getAllInternshipProcess(studentId, ProcessStatusEnum.FORM).getInternshipProcessList();
 
 
         return new AcademicsGetStudentAllProcessResponse(processList);
@@ -150,13 +163,23 @@ public class InternshipProcessService {
         return createInternshipProcessGetAllResponse(internshipProcessList);
     }
 
-
     private InternshipProcessGetAllResponse createInternshipProcessGetAllResponse(List<InternshipProcess> internshipProcessList) {
+        return createInternshipProcessGetAllResponse(internshipProcessList, null);
+    }
+
+    private InternshipProcessGetAllResponse createInternshipProcessGetAllResponse(List<InternshipProcess> internshipProcessList, List<DoneInternshipProcessGetResponse> doneInternshipProcessList) {
         List<InternshipProcessGetResponse> internshipProcessGetResponseList = new ArrayList<>();
         for (InternshipProcess internshipProcess : internshipProcessList) {
             InternshipProcessGetResponse internshipProcessGetResponse = new InternshipProcessGetResponse();
             copyEntityToDto(internshipProcess, internshipProcessGetResponse);
             internshipProcessGetResponseList.add(internshipProcessGetResponse);
+        }
+        if (doneInternshipProcessList != null) {
+            for (DoneInternshipProcessGetResponse doneInternshipProcessGetResponse : doneInternshipProcessList) {
+                InternshipProcessGetResponse internshipProcessGetResponse = new InternshipProcessGetResponse();
+                BeanUtils.copyProperties(doneInternshipProcessGetResponse, internshipProcessGetResponse);
+                internshipProcessGetResponseList.add(internshipProcessGetResponse);
+            }
         }
         return new InternshipProcessGetAllResponse(internshipProcessGetResponseList);
     }

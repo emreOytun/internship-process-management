@@ -1,6 +1,7 @@
 package com.teamaloha.internshipprocessmanagement.dto.InternshipProcess;
 
 import com.teamaloha.internshipprocessmanagement.enums.ProcessStatusEnum;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -50,16 +51,26 @@ public class InternshipProcessGetResponse {
     private Boolean sgkEntry;
 
     private Boolean gssEntry;
+
     private Boolean editable;
 
-    private String mustehaklikBelgesiPath;
-
     private String stajYeriFormuPath;
+
+    private Boolean donem_ici;
+
+    private String mufredatDurumuPath;
+
+    private String transkriptPath;
+
+    private String dersProgramıPath;
+
+    private String stajRaporuPath;
 
     // @Enumerated(EnumType.STRING)
     private ProcessStatusEnum processStatus;
 
     private Boolean rejected;
+
     private String comment;
     private String companyName;
 }

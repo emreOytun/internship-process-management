@@ -103,7 +103,7 @@ public class AcademicianService {
 
     // TODO : abi burada admin id kontrolü felan lazım ama yapmadım
     // task id 1- internshipCommittee 2- departmentChair  3-  executive 4- academic
-    public boolean assignTask(Integer academicianId, Integer taskId){
+    public boolean assignTask(Integer academicianId, Integer  taskId){
 
         // TODO : Add assign task
         Academician academician = getAcademicianIfExistsOrThrowException(academicianId);
@@ -124,6 +124,36 @@ public class AcademicianService {
                 logger.error("Invalid task id. Task id: " + taskId);
                 throw new CustomException(HttpStatus.BAD_REQUEST);
         }
+        academicianDao.save(academician);
+        logger.info("Task assigned. Academician id: " + academicianId + " Task id: " + taskId);
+        return true;
+    }
+
+    public boolean assignTask(Integer academicianId, List<Integer> taskId){
+
+        // TODO : Add assign task
+        Academician academician = getAcademicianIfExistsOrThrowException(academicianId);
+
+        for (Integer id : taskId) {
+            switch(id){
+                case 1:
+                    academician.setInternshipCommittee(true);
+                    break;
+                case 2:
+                    academician.setDepartmentChair(true);
+                    break;
+                case 3:
+                    academician.setExecutive(true);
+                    break;
+                case 4:
+                    academician.setAcademic(true);
+                    break;
+                default:
+                    logger.error("Invalid task id. Task id: " + id);
+                    throw new CustomException(HttpStatus.BAD_REQUEST);
+            }
+        }
+
         academicianDao.save(academician);
         logger.info("Task assigned. Academician id: " + academicianId + " Task id: " + taskId);
         return true;

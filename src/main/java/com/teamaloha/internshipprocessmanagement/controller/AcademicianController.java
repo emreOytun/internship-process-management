@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/academician")
 public class AcademicianController {
@@ -66,9 +68,16 @@ public class AcademicianController {
         academicianService.assignDepartmentToAcademician(academicianId, departmentId, adminId);
     }
 
+    @PostMapping("/assignTaskOnly")
+    @ResponseStatus(HttpStatus.OK)
+    public boolean assignTaskOnly(@RequestParam("academicianId") Integer academicianId, @RequestParam("taskId") Integer taskId) {
+        return academicianService.assignTask(academicianId, taskId);
+    }
+
     @PostMapping("/assignTask")
     @ResponseStatus(HttpStatus.OK)
-    public boolean assignTask(@RequestParam("academicianId") Integer academicianId, @RequestParam("taskId") Integer taskId) {
+    public boolean assignTask(@RequestParam("academicianId") Integer academicianId, @RequestParam("taskId") List<Integer> taskId) {
+        System.out.println(taskId);
         return academicianService.assignTask(academicianId, taskId);
     }
 }

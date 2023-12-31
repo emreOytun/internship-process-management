@@ -255,6 +255,8 @@ public class AcademicianService {
         academician.setDepartment(department);
         academician.setRoleEnum(RoleEnum.ACADEMICIAN);
         academician.setPassword(authenticationService.hashPassword(academicianRegisterRequest.getPassword()));
+        academician.setDean(false);
+        academician.setAcademic(false);
         academician.setInternshipCommittee(false);
         academician.setDepartmentChair(false);
         academician.setExecutive(false);

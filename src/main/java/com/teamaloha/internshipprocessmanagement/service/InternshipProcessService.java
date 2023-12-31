@@ -540,6 +540,39 @@ public class InternshipProcessService {
         }
     }
 
+    public void remindToEnterEngineerInfo() {
+        Date now = new Date();
+        Calendar calendar = Calendar.getInstance();
+        List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllByProcessStatus(ProcessStatusEnum.IN1);
+        for (InternshipProcess internshipProcess : internshipProcessList) {
+            calendar.setTime(internshipProcess.getStartDate());
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+            if (calendar.getTime().before(now)) {
+                mailService.sendMail(
+                        List.of(internshipProcess.getStudent().getMail()),
+                        null,
+                        "Girilmesi Gereken Ek Staj Bilgileri",
+                        "Sevgili Öğrencimiz,\n" +
+                                "\n  Stajınızın ilk haftası içinde sizi denetleyen mühendisin iletişim bilgilerini ve " +
+                                "stajını gerçekleştirmekte olduğunuz pozisyon bilgisini girmeniz gerekmektedir. " +
+                                "Bu link üzerinden detayları inceleyebilirsiniz. http://localhost:3000/internship-process/" + internshipProcess.getId()
+                );
+            }
+            calendar.add(Calendar.DAY_OF_MONTH, 4);
+            if (calendar.getTime().before(now)) {
+                mailService.sendMail(
+                        List.of(internshipProcess.getStudent().getMail()),
+                        null,
+                        "Girilmesi Gereken Ek Staj Bilgileri İçin Son Gün",
+                        "Sevgili Öğrencimiz,\n" +
+                                "\n  Yarın sizi denetleyen mühendisin iletişim bilgilerini stajını gerçekleştirmekte olduğunuz " +
+                                "pozisyon bilgisini girmeniz için verilen sürenin son günü olduğunu hatırlatır iyi günler dileriz. " +
+                                "Bu link üzerinden detayları inceleyebilirsiniz. http://localhost:3000/internship-process/" + internshipProcess.getId()
+                );
+            }
+        }
+    }
+
     private InternshipProcess getInternshipProcessIfExistsOrThrowException(Integer processId) {
         InternshipProcess internshipProcess = internshipProcessDao.findInternshipProcessById(processId);
         if (internshipProcess == null) {
@@ -758,6 +791,7 @@ public class InternshipProcessService {
         internshipProcessGetResponse.setUpdateDate(internshipProcess.getLogDates().getUpdateDate());
         internshipProcessGetResponse.setStudentId(internshipProcess.getStudent().getId());
     }
+
 
 
 }

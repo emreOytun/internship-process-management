@@ -433,6 +433,7 @@ public class InternshipProcessService {
                 assigneeList = prepareProcessAssigneeList(internshipProcess, now);
                 internshipProcess.setAssignerId(academicianId);
                 internshipProcess.getLogDates().setUpdateDate(now);
+                internshipProcess.setComment(internshipProcessEvaluateRequest.getComment());
                 if (internshipProcess.getProcessStatus() == ProcessStatusEnum.CANCEL) {
                     // If the process is cancelled, save as done saveAsDoneInternshipProcess with CANCEL status
                     processOperation = prepareProcessOperation(internshipProcess, oldStatus, ProcessOperationType.REJECTION,

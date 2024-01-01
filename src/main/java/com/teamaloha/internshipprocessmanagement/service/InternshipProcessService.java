@@ -361,6 +361,24 @@ public class InternshipProcessService {
         );
     }
 
+    public void submitInternshipInfo(InternshipInfoSubmitRequest internshipInfoSubmitRequest, Integer studentId) {
+        Integer processId = internshipInfoSubmitRequest.getId();
+
+        InternshipProcess internshipProcess = getInternshipProcessIfExistsOrThrowException(processId);
+
+        checkIfProcessStatusesMatchesOrThrowException(List.of(ProcessStatusEnum.IN1, ProcessStatusEnum.IN2),
+                internshipProcess.getProcessStatus());
+
+        checkIfStudentIdAndInternshipProcessMatchesOrThrowException(studentId, internshipProcess.getStudent().getId());
+
+        internshipProcess.setEngineerMail(internshipInfoSubmitRequest.getEngineerMail());
+        internshipProcess.setEngineerName(internshipInfoSubmitRequest.getEngineerName());
+        internshipProcess.setPosition(internshipInfoSubmitRequest.getPosition());
+        InternshipProcess updatedInternshipProcess = internshipProcessDao.save(internshipProcess);
+
+        logger.info("Information added to InternshipProcess with ID: " + updatedInternshipProcess.getId());
+    }
+
     public void evaluateInternshipProcess(InternshipProcessEvaluateRequest internshipProcessEvaluateRequest) {
         Boolean savedAsDone = false;
         Integer processId = internshipProcessEvaluateRequest.getProcessId();
@@ -597,8 +615,10 @@ public class InternshipProcessService {
         // Check if the 7 days passed from the internship start date
         checkIfDiffSmallerOrThrowException(internshipProcess.getStartDate(), now, dayNumber);
 
-        // Check if the process is approved
-        checkIfProcessStatusesMatchesOrThrowException(List.of(ProcessStatusEnum.IN1), internshipProcess.getProcessStatus());
+        // Check if the process is approved (in IN1 OR IN2 status)
+        checkIfProcessStatusesMatchesOrThrowException(List.of(ProcessStatusEnum.IN1, ProcessStatusEnum.IN2),
+                internshipProcess.getProcessStatus());
+
 
         return internshipProcess;
     }

@@ -79,6 +79,13 @@ public class InternshipProcessController {
         internshipProcessService.startInternshipApprovalProcess(internshipProcessID, userId);
     }
 
+    @PostMapping("/submit-internship-info")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
+    public void submitInternshipInfo(@RequestBody @Valid InternshipInfoSubmitRequest internshipInfoSubmitRequest, @CurrentUserId Integer userId) {
+        internshipProcessService.submitInternshipInfo(internshipInfoSubmitRequest, userId);
+    }
+
 
     @PostMapping("/evaluate")
     @ResponseStatus(HttpStatus.OK)
@@ -93,6 +100,7 @@ public class InternshipProcessController {
     public void internshipCancellationRequest(@RequestParam("processId") Integer internshipProcessID, @CurrentUserId Integer userId) {
         internshipProcessService.internshipCancellationRequest(internshipProcessID, userId);
     }
+
 
     // Internship Extension Request
     @PostMapping("/extension")

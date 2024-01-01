@@ -7,6 +7,7 @@ public enum ProcessStatusEnum {
     PRE3,
     PRE4,
     IN1,
+    IN2,
     POST,
     REPORT1,
     REPORT2,

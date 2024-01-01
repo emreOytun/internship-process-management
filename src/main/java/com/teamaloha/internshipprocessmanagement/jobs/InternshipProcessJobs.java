@@ -34,5 +34,10 @@ public class InternshipProcessJobs {
         internshipProcessService.activateInternshipProcesses();
     }
 
+    @Scheduled(cron = "0 0 8 * * *") // Runs every day at 8:00 AM
+    public void remindToEnterEngineerInfo() {
+        internshipProcessService.remindToEnterEngineerInfo();
+    }
+
 
 }

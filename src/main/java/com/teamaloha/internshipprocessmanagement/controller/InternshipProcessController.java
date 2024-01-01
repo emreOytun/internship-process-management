@@ -98,7 +98,7 @@ public class InternshipProcessController {
     @PutMapping("/load-report")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
-    public void sendReport(@RequestBody @Valid SendReportRequest sendReportRequest, @CurrentUserId Integer userId) {
+    public void sendReport(@RequestBody SendReportRequest sendReportRequest, @CurrentUserId Integer userId) {
         internshipProcessService.sendReport(sendReportRequest, userId);
     }
 

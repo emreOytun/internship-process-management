@@ -102,6 +102,13 @@ public class InternshipProcessController {
         internshipProcessService.sendReport(sendReportRequest, userId);
     }
 
+    // TODO: send report testi için yazıldı, silinecek
+    @PutMapping("/post")
+    @ResponseStatus(HttpStatus.OK)
+    public void makePost(Integer internshipProcessID) {
+        internshipProcessService.makePost(internshipProcessID);
+    }
+
 
     @PostMapping("/get-assigned-process")
     @ResponseStatus(HttpStatus.OK)

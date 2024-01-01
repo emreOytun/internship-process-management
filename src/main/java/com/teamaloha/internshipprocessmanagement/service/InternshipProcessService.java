@@ -304,7 +304,6 @@ public class InternshipProcessService {
         self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, processOperation, internshipProcess);
     }
 
-
     public void startInternshipApprovalProcess(Integer processId, Integer studentId) {
         InternshipProcess internshipProcess = getInternshipProcessIfExistsOrThrowException(processId);
         checkIfStudentIdAndInternshipProcessMatchesOrThrowException(studentId, internshipProcess.getStudent().getId());
@@ -793,5 +792,9 @@ public class InternshipProcessService {
     }
 
 
-
+    public void makePost(Integer internshipProcessID) {
+        InternshipProcess internshipProcess = internshipProcessDao.findInternshipProcessById(internshipProcessID);
+        internshipProcess.setProcessStatus(ProcessStatusEnum.POST);
+        internshipProcessDao.save(internshipProcess);
+    }
 }

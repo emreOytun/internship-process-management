@@ -50,6 +50,13 @@ public class InternshipProcessController {
         return internshipProcessService.getStudentAllProcess(studentId, academicianId);
     }
 
+    @GetMapping("/get-all-active-processes")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
+    public AcademicsGetStudentAllProcessResponse getAllActiveProcesses() {
+        return internshipProcessService.getAllActiveProcesses();
+    }
+
     @PutMapping("/update")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
@@ -95,7 +102,6 @@ public class InternshipProcessController {
         internshipProcessService.internshipExtensionRequest(internshipExtensionRequestDto, userId);
     }
 
-    // TODO: Add validation back
     @PutMapping("/load-report")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")

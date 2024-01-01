@@ -148,6 +148,13 @@ public class InternshipProcessService {
         return new AcademicsGetStudentAllProcessResponse(processList);
     }
 
+    public AcademicsGetStudentAllProcessResponse getAllActiveProcesses() {
+        List<InternshipProcess> processList = internshipProcessDao.findAll();
+        List<InternshipProcessGetResponse> processGetResponseList = createInternshipProcessGetAllResponse(processList).getInternshipProcessList();
+
+        return new AcademicsGetStudentAllProcessResponse(processGetResponseList);
+    }
+
     public InternshipProcessGetAllResponse getAssignedInternshipProcess(Integer assigneeId,
                                                                         InternshipProcessSearchDto internshipProcessSearchDto) {
         List<InternshipProcess> internshipProcessList = internshipProcessDao.findAll(prepereInternshipProcessSearchSpecification(assigneeId, internshipProcessSearchDto),
@@ -797,4 +804,5 @@ public class InternshipProcessService {
         internshipProcess.setProcessStatus(ProcessStatusEnum.POST);
         internshipProcessDao.save(internshipProcess);
     }
+
 }

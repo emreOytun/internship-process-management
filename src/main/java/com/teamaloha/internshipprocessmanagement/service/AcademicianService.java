@@ -102,7 +102,7 @@ public class AcademicianService {
     }
 
     // TODO : abi burada admin id kontrolü felan lazım ama yapmadım
-    // task id 1- internshipCommittee 2- departmentChair  3-  executive 4- academic
+    // task id 1- internshipCommittee 2- departmentChair  3-  executive 4- academic 5- researchAssistant
     public boolean assignTask(Integer academicianId, Integer  taskId){
 
         // TODO : Add assign task
@@ -119,6 +119,9 @@ public class AcademicianService {
                 break;
             case 4:
                 academician.setAcademic(true);
+                break;
+            case 5:
+                academician.setResearchAssistant(true);
                 break;
             default:
                 logger.error("Invalid task id. Task id: " + taskId);

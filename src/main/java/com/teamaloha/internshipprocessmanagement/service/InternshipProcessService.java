@@ -594,7 +594,7 @@ public class InternshipProcessService {
         }
     }
 
-    private InternshipProcess getInternshipProcessIfExistsOrThrowException(Integer processId) {
+    public InternshipProcess getInternshipProcessIfExistsOrThrowException(Integer processId) {
         InternshipProcess internshipProcess = internshipProcessDao.findInternshipProcessById(processId);
         if (internshipProcess == null) {
             logger.error("InternshipProcess with ID " + processId + " not found for update.");
@@ -641,7 +641,7 @@ public class InternshipProcessService {
         }
     }
 
-    private void checkIfStudentIdAndInternshipProcessMatchesOrThrowException(Integer userId, Integer processId) {
+    public void checkIfStudentIdAndInternshipProcessMatchesOrThrowException(Integer userId, Integer processId) {
         if (!userId.equals(processId)) {
             logger.error("The internshipProcess id given does not belong to the student. Student id: "
                     + userId);

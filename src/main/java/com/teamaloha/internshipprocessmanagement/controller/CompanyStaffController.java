@@ -35,7 +35,7 @@ public class CompanyStaffController {
 
     @GetMapping("/getAllByCompany")
     @ResponseStatus(HttpStatus.OK)
-    public CompanyStaffGetAllResponse getAllByCompany(@RequestBody @Valid CompanyStaffGetAllByCompanyRequest getAllByCompanyRequest) {
-        return companyStaffService.getAllByCompanyId(getAllByCompanyRequest.getCompanyId());
+    public CompanyStaffGetAllResponse getAllByCompany(@RequestParam @Valid Integer companyId ) {
+        return companyStaffService.getAllByCompanyId(companyId);
     }
 }

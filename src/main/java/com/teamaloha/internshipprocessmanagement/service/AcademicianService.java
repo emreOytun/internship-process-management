@@ -133,7 +133,10 @@ public class AcademicianService {
 
         // TODO : Add assign task
         Academician academician = getAcademicianIfExistsOrThrowException(academicianId);
-
+        academician.setInternshipCommittee(false);
+        academician.setDepartmentChair(false);
+        academician.setExecutive(false);
+        academician.setAcademic(false);
         for (Integer id : taskId) {
             switch(id){
                 case 1:

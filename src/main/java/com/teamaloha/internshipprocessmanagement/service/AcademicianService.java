@@ -133,7 +133,11 @@ public class AcademicianService {
 
         // TODO : Add assign task
         Academician academician = getAcademicianIfExistsOrThrowException(academicianId);
-
+        academician.setInternshipCommittee(false);
+        academician.setDepartmentChair(false);
+        academician.setExecutive(false);
+        academician.setAcademic(false);
+        academician.setResearchAssistant(false);
         for (Integer id : taskId) {
             switch(id){
                 case 1:
@@ -147,6 +151,9 @@ public class AcademicianService {
                     break;
                 case 4:
                     academician.setAcademic(true);
+                    break;
+                case 5:
+                    academician.setResearchAssistant(true);
                     break;
                 default:
                     logger.error("Invalid task id. Task id: " + id);

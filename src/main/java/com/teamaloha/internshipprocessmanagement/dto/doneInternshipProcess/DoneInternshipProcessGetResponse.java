@@ -12,6 +12,8 @@ import java.util.Date;
 @NoArgsConstructor
 public class DoneInternshipProcessGetResponse {
 
+    private Integer studentId;
+
     private String fullName;
 
     private Date updateDate;

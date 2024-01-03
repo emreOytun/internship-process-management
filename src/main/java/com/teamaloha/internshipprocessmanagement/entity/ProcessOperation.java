@@ -30,7 +30,7 @@ public class ProcessOperation {
     @Column(name = "user_id", nullable = false)
     private Integer userId;
 
-    @Column(name = "old_status", nullable = false)
+    @Column(name = "old_status", nullable = true)
     @Enumerated(EnumType.STRING)
     private ProcessStatusEnum oldStatus;
 

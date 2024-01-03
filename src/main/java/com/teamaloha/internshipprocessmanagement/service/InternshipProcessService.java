@@ -483,7 +483,7 @@ public class InternshipProcessService {
                 } else {
                     // If the process is Done, save it as DoneInternshipProcess
                     if (internshipProcess.getProcessStatus() == ProcessStatusEnum.REPORT2) {
-                        processOperation = prepareProcessOperation(internshipProcess, null, ProcessOperationType.REJECTION,
+                        processOperation = prepareProcessOperation(internshipProcess, null, ProcessOperationType.APPROVAL,
                                 internshipProcessEvaluateRequest.getComment(), now);
                         self.saveAsDoneInternshipProcess(internshipProcess, processOperation, ProcessStatusEnum.FAIL);
                         savedAsDone = true;

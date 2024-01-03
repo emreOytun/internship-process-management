@@ -265,6 +265,9 @@ public class InternshipProcessService {
 
         InternshipProcess internshipProcess = internshipProcessDao.findInternshipProcessById(processId);
         if (internshipProcess.getEditable()) {
+            // Delete assignees
+            processAssigneeService.deleteByProcess(internshipProcess);
+
             internshipProcessDao.deleteById(processId);
             logger.info("Deleted InternshipProcess with ID: " + processId);
         } else {
@@ -521,6 +524,10 @@ public class InternshipProcessService {
     @Transactional
     public void saveAsDoneInternshipProcess(InternshipProcess internshipProcess, ProcessOperation processOperation,
                                             ProcessStatusEnum processStatus) {
+        // Delete assignees
+        processAssigneeService.deleteByProcess(internshipProcess);
+
+        // Save as DoneInternshipProcess and delete from InternshipProcess
         DoneInternshipProcess doneInternshipProcess = new DoneInternshipProcess();
         BeanUtils.copyProperties(internshipProcess, doneInternshipProcess);
         doneInternshipProcess.setLogDates(LogDates.builder().createDate(new Date()).updateDate(new Date()).build());

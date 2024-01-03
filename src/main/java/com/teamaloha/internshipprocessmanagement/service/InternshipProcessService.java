@@ -146,10 +146,15 @@ public class InternshipProcessService {
     }
 
     public AcademicsGetStudentAllProcessResponse getAllActiveProcesses() {
-        List<InternshipProcess> processList = internshipProcessDao.findAll();
+        List<InternshipProcess> processList = internshipProcessDao.findAllByProcessStatusIn(List.of(ProcessStatusEnum.IN1, ProcessStatusEnum.IN2));
         List<InternshipProcessGetResponse> processGetResponseList = createInternshipProcessGetAllResponse(processList).getInternshipProcessList();
 
         return new AcademicsGetStudentAllProcessResponse(processGetResponseList);
+    }
+
+    public InternshipProcessGetAllResponse getAllInternshipProcessByCompany(Integer companyId) {
+        List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllByCompany_Id(companyId);
+        return createInternshipProcessGetAllResponse(internshipProcessList);
     }
 
     public InternshipProcessGetAllResponse getAssignedInternshipProcess(Integer assigneeId,
@@ -406,6 +411,13 @@ public class InternshipProcessService {
         List<ProcessAssignee> assigneeList = null;
         if ((edit != null && edit)) {
             // Edit request for report
+
+            if(internshipProcessEvaluateRequest.getReportEditDays() == null || internshipProcessEvaluateRequest.getReportEditDays() <= 0) {
+                logger.error("Report edit request without given day number. AcademicianId: " + academicianId +
+                        " ProcessId: " + processId);
+                throw new CustomException(HttpStatus.BAD_REQUEST);
+            }
+
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(now);
             calendar.add(Calendar.DAY_OF_MONTH, internshipProcessEvaluateRequest.getReportEditDays());
@@ -471,7 +483,7 @@ public class InternshipProcessService {
                 } else {
                     // If the process is Done, save it as DoneInternshipProcess
                     if (internshipProcess.getProcessStatus() == ProcessStatusEnum.REPORT2) {
-                        processOperation = prepareProcessOperation(internshipProcess, oldStatus, ProcessOperationType.REJECTION,
+                        processOperation = prepareProcessOperation(internshipProcess, null, ProcessOperationType.REJECTION,
                                 internshipProcessEvaluateRequest.getComment(), now);
                         self.saveAsDoneInternshipProcess(internshipProcess, processOperation, ProcessStatusEnum.FAIL);
                         savedAsDone = true;

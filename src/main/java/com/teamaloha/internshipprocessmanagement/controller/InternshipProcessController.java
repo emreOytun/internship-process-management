@@ -124,6 +124,12 @@ public class InternshipProcessController {
         internshipProcessService.makePost(internshipProcessID);
     }
 
+    @GetMapping("/get-all-by-company")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
+    public InternshipProcessGetAllResponse getAllInternshipProcessByCompany(@RequestParam("companyId") Integer companyId) {
+        return internshipProcessService.getAllInternshipProcessByCompany(companyId);
+    }
 
     @PostMapping("/get-assigned-process")
     @ResponseStatus(HttpStatus.OK)

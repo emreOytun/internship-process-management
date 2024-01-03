@@ -38,7 +38,7 @@ public class ProcessOperation {
     @Enumerated(EnumType.STRING)
     private ProcessStatusEnum newStatus;
 
-    @Column(name = "operation_type")
+    @Column(name = "operation_type", nullable = true)
     @Enumerated(EnumType.STRING)
     private ProcessOperationType operationType;
 

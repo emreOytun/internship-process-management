@@ -249,7 +249,7 @@ public class InternshipProcessService {
 
         InternshipProcess updatedInternshipProcess = internshipProcessDao.save(internshipProcess);
 
-        processOperation = prepareProcessOperation(internshipProcess, oldStatus, ProcessOperationType.SUBMIT, null, now);
+        processOperation = prepareProcessOperation(internshipProcess, oldStatus, null, null, now);
         self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, processOperation, updatedInternshipProcess);
 
         logger.info("Report sent for InternshipProcess with ID: " + updatedInternshipProcess.getId());
@@ -283,7 +283,7 @@ public class InternshipProcessService {
         internshipProcess.setAssignerId(studentId);
 
         // Save the process with Assignee list
-        processOperation = prepareProcessOperation(internshipProcess, oldStatus, ProcessOperationType.SUBMIT, null, now);
+        processOperation = prepareProcessOperation(internshipProcess, oldStatus, null, null, now);
         self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, processOperation, internshipProcess);
     }
 
@@ -304,7 +304,7 @@ public class InternshipProcessService {
         internshipProcess.getLogDates().setUpdateDate(now);
 
         // Save the process with Assignee list
-        processOperation = prepareProcessOperation(internshipProcess, oldStatus, ProcessOperationType.SUBMIT, null, now);
+        processOperation = prepareProcessOperation(internshipProcess, oldStatus, null, null, now);
         self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, processOperation, internshipProcess);
     }
 
@@ -381,6 +381,7 @@ public class InternshipProcessService {
         Integer processId = internshipProcessEvaluateRequest.getProcessId();
         Integer academicianId = internshipProcessEvaluateRequest.getAcademicianId();
         Boolean edit = internshipProcessEvaluateRequest.getReportEditRequest();
+        ProcessOperationType processOperationType = null;
 
         // If the request is edit request or rejection request, check if the comment is given
         if ((!internshipProcessEvaluateRequest.getApprove() || (edit != null && edit)) &&
@@ -420,6 +421,7 @@ public class InternshipProcessService {
             internshipProcess.getLogDates().setUpdateDate(now);
             internshipProcess.setReportLastEditDate(calendar.getTime());
             nextStatus = ProcessStatusEnum.DEN1;
+            processOperationType = ProcessOperationType.REJECTION;
         } else {
             if (!internshipProcessEvaluateRequest.getApprove()) {
                 // Rejection
@@ -449,6 +451,7 @@ public class InternshipProcessService {
                     internshipProcess.setEditable(true);
                     nextStatus = internshipProcess.getProcessStatus();
                 }
+                processOperationType = ProcessOperationType.REJECTION;
             } else {
                 // Approval
                 assigneeList = prepareProcessAssigneeList(internshipProcess, now);
@@ -475,12 +478,13 @@ public class InternshipProcessService {
                     }
                     nextStatus = ProcessStatusEnum.findNextStatus(internshipProcess.getProcessStatus());
                 }
+                processOperationType = ProcessOperationType.APPROVAL;
             }
         }
 
         // If the process is not cancelled, update the process status
         if (!savedAsDone) {
-            processOperation = prepareProcessOperation(internshipProcess, oldStatus, ProcessOperationType.REJECTION,
+            processOperation = prepareProcessOperation(internshipProcess, oldStatus, processOperationType,
                     internshipProcessEvaluateRequest.getComment(), now);
             internshipProcess.setProcessStatus(nextStatus);
             self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, processOperation, internshipProcess);
@@ -687,11 +691,10 @@ public class InternshipProcessService {
                     academicianService.findAcademiciansIdsByInternshipCommitteeAndDepartment(true, department.getId());
             case PRE1 -> academicianService.findAcademicianIdsByDepartmentChairAndDepartment(true, department.getId());
             case PRE2 -> academicianService.findAcademicianIdsByExecutiveAndDepartment(true, department.getId());
-            case PRE3 -> academicianService.findAcademicianIdsByAcademicAndDepartment(true, department.getId());
+            case PRE3, REPORT1 -> academicianService.findAcademicianIdsByAcademicAndDepartment(true, department.getId());
             /*case PRE4 -> academicianService.findAcademicianIdsByDeanAndDepartment(true, department.getId());*/
             case POST, DEN1 ->
                     academicianService.findAcademicianIdsByResearchAssistantAndDepartment(true, department.getId());
-            case REPORT1 -> academicianService.findAcademicianIdsByAcademicAndDepartment(true, department.getId());
             case PRE4, CANCEL, EXTEND, REPORT2 -> {
                 List<Integer> assigneIdList = new ArrayList<>();
                 assigneIdList.add(studentId);

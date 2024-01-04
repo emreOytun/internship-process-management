@@ -7,6 +7,7 @@ import com.teamaloha.internshipprocessmanagement.dto.doneInternshipProcess.DoneI
 import com.teamaloha.internshipprocessmanagement.entity.Company;
 import com.teamaloha.internshipprocessmanagement.entity.DoneInternshipProcess;
 import com.teamaloha.internshipprocessmanagement.entity.Student;
+import com.teamaloha.internshipprocessmanagement.enums.ProcessStatusEnum;
 import com.teamaloha.internshipprocessmanagement.exceptions.CustomException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -285,12 +286,8 @@ public class DoneInternshipProcessService {
         }
     }
 
-    //public DoneInternshipProcessGetAllResponse getAllDoneInternshipProcessByCompanyId(Integer companyId) {
-    //    Company company = new Company();
-    //    company.setId(companyId);
-//
-    //    List<DoneInternshipProcess> internshipProcessList = doneInternshipProcessDao.findAllByCompany(company);
-    //    return createDoneInternshipProcessGetAllResponse(internshipProcessList);
-    //}
+    public Integer countDoneInternshipProcessByStudentIdAndProcessStatus(Integer studentId, ProcessStatusEnum processStatus) {
+        return doneInternshipProcessDao.countByStudentIdAndProcessStatus(studentId, processStatus);
+    }
 }
 

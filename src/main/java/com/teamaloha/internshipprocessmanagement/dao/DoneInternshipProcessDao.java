@@ -3,6 +3,7 @@ package com.teamaloha.internshipprocessmanagement.dao;
 import com.teamaloha.internshipprocessmanagement.entity.DoneInternshipProcess;
 import com.teamaloha.internshipprocessmanagement.entity.InternshipProcess;
 import com.teamaloha.internshipprocessmanagement.entity.Student;
+import com.teamaloha.internshipprocessmanagement.enums.ProcessStatusEnum;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -32,4 +33,6 @@ public interface DoneInternshipProcessDao extends JpaRepository<DoneInternshipPr
                     "department"
             })
     DoneInternshipProcess findDoneInternshipProcessById(Integer processId);
+
+    Integer countByStudentIdAndProcessStatus(Integer studentId, ProcessStatusEnum processStatus);
 }

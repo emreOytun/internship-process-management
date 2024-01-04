@@ -1,7 +1,6 @@
 package com.teamaloha.internshipprocessmanagement.dto.InternshipProcess;
 
 import com.teamaloha.internshipprocessmanagement.enums.ProcessStatusEnum;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

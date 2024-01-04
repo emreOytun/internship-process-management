@@ -252,6 +252,7 @@ public class InternshipProcessService {
         Date now = new Date();
         List<ProcessAssignee> assigneeList = prepareProcessAssigneeList(internshipProcess, now);
         internshipProcess.setProcessStatus(ProcessStatusEnum.REPORT1);
+        internshipProcess.setRejected(false);
 
         InternshipProcess updatedInternshipProcess = internshipProcessDao.save(internshipProcess);
 

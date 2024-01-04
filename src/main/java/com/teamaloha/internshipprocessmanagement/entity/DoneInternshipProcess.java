@@ -18,7 +18,6 @@ import java.util.Date;
 @Setter
 public class DoneInternshipProcess {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id")
     private Integer id;
 
@@ -56,6 +55,9 @@ public class DoneInternshipProcess {
     @Column(name = "end_date", nullable = true)
     private Date endDate;
 
+    @Column(name = "requested_end_date", nullable = true)
+    private Date requestedEndDate;
+
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.DETACH}, fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "company_id")
     private Company company;
@@ -70,19 +72,57 @@ public class DoneInternshipProcess {
     @Column(name = "engineer_name", nullable = true)
     private String engineerName;
 
+    @Column(name = "choice_reason", nullable = true)
+    private String choiceReason;
+
+    @Column(name = "sgk_entry", nullable = true)
+    private Boolean sgkEntry;
+
+    @Column(name = "gss_entry", nullable = true)
+    private Boolean gssEntry;
+
+    @Column(name = "assigner_id", nullable = true)
+    private Integer assignerId;
+
+    @Column(name = "mustehaklik_belgesi_path", nullable = true)
+    private String mustehaklikBelgesiPath;
+
+    @Column(name = "staj_yeri_formu_path", nullable = true)
+    private String stajYeriFormuPath;
+
     @Column(name = "donem_ici", nullable = true)
     private Boolean donem_ici;
 
     @Column(name = "mufredat_durumu_path", nullable = true)
     private String mufredatDurumuPath;
 
+    @Column(name = "transkript_path", nullable = true)
+    private String transkriptPath;
+
+    @Column(name = "ders_programı_path", nullable = true)
+    private String dersProgramıPath;
+
     @Column(name = "staj_raporu_path", nullable = true)
     private String stajRaporuPath;
-
-    @Column(name = "transkript path", nullable = true)
-    private String transkriptPath;
 
     @Column(name = "process_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ProcessStatusEnum processStatus;
+
+    // TODO: Nullable = false yap
+    @Column(name = "editable")
+    private Boolean editable;
+
+    @Column(name = "comment", nullable = true)
+    private String comment;
+
+    @Column(name = "comment_owner", nullable = true)
+    private String commentOwner;
+
+    @Column(name = "report_last_edit_date", nullable = true)
+    private Date reportLastEditDate;
+
+    @Column(name = "rejected")
+    private Boolean rejected;
+
 }

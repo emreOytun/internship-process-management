@@ -101,9 +101,9 @@ public class AcademicianService {
         return authenticationResponse;
     }
 
-    // TODO : abi burada admin id kontrolü felan lazım ama yapmadım
     // task id 1- internshipCommittee 2- departmentChair  3-  executive 4- academic 5- researchAssistant
-    public boolean assignTask(Integer academicianId, Integer  taskId){
+    public boolean assignTask(Integer academicianId, Integer  taskId, Integer adminId){
+        checkIfAcademicianIsAdminOrThrowException(adminId);
 
         // TODO : Add assign task
         Academician academician = getAcademicianIfExistsOrThrowException(academicianId);
@@ -132,7 +132,8 @@ public class AcademicianService {
         return true;
     }
 
-    public boolean assignTask(Integer academicianId, List<Integer> taskId){
+    public boolean assignTask(Integer academicianId, List<Integer> taskId, Integer adminId){
+        checkIfAcademicianIsAdminOrThrowException(adminId);
 
         // TODO : Add assign task
         Academician academician = getAcademicianIfExistsOrThrowException(academicianId);
@@ -206,12 +207,16 @@ public class AcademicianService {
         return academicianDao.findAcademicianIdsByAcademicAndDepartment(academic, departmentId);
     }
 
-    public AcademicsGetAllResponse getAllAcademics(AcademicianSearchDto academicianSearchDto) {
+    public AcademicsGetAllResponse getAllAcademics(AcademicianSearchDto academicianSearchDto, Integer adminId) {
+        checkIfAcademicianIsAdminOrThrowException(adminId);
+
         List<Academician> academicianList = academicianDao.findAll(prepareAcademicianSpecification(academicianSearchDto),
                 SearchByPageDto.getPageable(academicianSearchDto.getSearchByPageDto())).toList();
         return createAcademicianGetAllResponse(academicianList);
     }
-    public AcademicsGetAllResponse getAllAcademics() {
+    public AcademicsGetAllResponse getAllAcademics(Integer adminId) {
+        checkIfAcademicianIsAdminOrThrowException(adminId);
+
         List<Academician> academicianList = academicianDao.findAllAcademicians();
         return createAcademicianGetAllResponse(academicianList);
     }
@@ -253,7 +258,7 @@ public class AcademicianService {
     }
 
     public void validateAcademician(Integer academecianId, Integer adminId) {
-        // TODO : Add if user is admin if not throw expection
+        checkIfAcademicianIsAdminOrThrowException(adminId);
 
         Academician academician = getAcademicianIfExistsOrThrowException(academecianId);
         academician.setValidated(true);
@@ -263,7 +268,7 @@ public class AcademicianService {
     }
 
     public void assignDepartmentToAcademician(Integer academicianId, Integer departmentId, Integer adminId) {
-        // TODO : Add if user is admin if not throw expection
+        checkIfAcademicianIsAdminOrThrowException(adminId);
 
         Academician academician = getAcademicianIfExistsOrThrowException(academicianId);
         Department department = departmentService.getDepartmentIfExistsOrThrowException(departmentId);
@@ -305,6 +310,15 @@ public class AcademicianService {
         academician.setIs_admin(false);
         academician.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());
         return academician;
+    }
+
+    public void checkIfAcademicianIsAdminOrThrowException(Integer academicianId) {
+        Academician academician = academicianDao.findAcademicianById(academicianId);
+        if (!academician.getIs_admin()) {
+            logger.error("The academician id given does not exist. Academician id: "
+                    + academicianId);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

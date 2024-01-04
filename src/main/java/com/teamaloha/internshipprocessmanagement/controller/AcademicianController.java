@@ -41,18 +41,18 @@ public class AcademicianController {
     @GetMapping("/get-all")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
-    public AcademicsGetAllResponse getAllAcademics(@RequestBody AcademicianSearchDto academicianSearchDto) {
-        return academicianService.getAllAcademics(academicianSearchDto);
+    public AcademicsGetAllResponse getAllAcademics(@RequestBody AcademicianSearchDto academicianSearchDto, @CurrentUserId Integer adminId) {
+        return academicianService.getAllAcademics(academicianSearchDto, adminId);
     }
 
     // TODO: ADD ADMIN ROLE CONTROL INSTEAD ACADEMICIAN
     @GetMapping("/get-all-not-pageable")
     @ResponseStatus(HttpStatus.OK)
-    public AcademicsGetAllResponse getAllAcademics() {
-        return academicianService.getAllAcademics();
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
+    public AcademicsGetAllResponse getAllAcademics(@CurrentUserId Integer adminId) {
+        return academicianService.getAllAcademics(adminId);
     }
 
-    // TODO : change Authority to admin if it is possible
     @PutMapping("/validate")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
@@ -60,7 +60,6 @@ public class AcademicianController {
         academicianService.validateAcademician(academicianId, adminId);
     }
 
-    // TODO : change Authority to admin if it is possible
     @PutMapping("/assign-department")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
@@ -70,14 +69,14 @@ public class AcademicianController {
 
     @PostMapping("/assignTaskOnly")
     @ResponseStatus(HttpStatus.OK)
-    public boolean assignTaskOnly(@RequestParam("academicianId") Integer academicianId, @RequestParam("taskId") Integer taskId) {
-        return academicianService.assignTask(academicianId, taskId);
+    public boolean assignTaskOnly(@RequestParam("academicianId") Integer academicianId, @RequestParam("taskId") Integer taskId, @CurrentUserId Integer adminId) {
+        return academicianService.assignTask(academicianId, taskId, adminId);
     }
 
     @PostMapping("/assignTask")
     @ResponseStatus(HttpStatus.OK)
-    public boolean assignTask(@RequestParam("academicianId") Integer academicianId, @RequestParam("taskId") List<Integer> taskId) {
+    public boolean assignTask(@RequestParam("academicianId") Integer academicianId, @RequestParam("taskId") List<Integer> taskId, @CurrentUserId Integer adminId) {
         System.out.println(taskId);
-        return academicianService.assignTask(academicianId, taskId);
+        return academicianService.assignTask(academicianId, taskId, adminId);
     }
 }

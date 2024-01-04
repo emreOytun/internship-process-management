@@ -292,7 +292,7 @@ public class InternshipProcessService {
         internshipProcess.setAssignerId(studentId);
 
         // Save the process with Assignee list
-        processOperation = prepareProcessOperation(internshipProcess, oldStatus, null, null, now);
+        processOperation = prepareProcessOperation(internshipProcess, oldStatus, ProcessOperationType.SUBMIT, null, now);
         self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, processOperation, internshipProcess);
     }
 
@@ -313,7 +313,7 @@ public class InternshipProcessService {
         internshipProcess.getLogDates().setUpdateDate(now);
 
         // Save the process with Assignee list
-        processOperation = prepareProcessOperation(internshipProcess, oldStatus, null, null, now);
+        processOperation = prepareProcessOperation(internshipProcess, oldStatus, ProcessOperationType.SUBMIT, null, now);
         self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, processOperation, internshipProcess);
     }
 
@@ -352,7 +352,7 @@ public class InternshipProcessService {
         internshipProcess.setAssignerId(studentId);
         internshipProcess.getLogDates().setUpdateDate(now);
 
-        processOperation = prepareProcessOperation(internshipProcess, oldStatus, ProcessOperationType.APPROVAL, null, now);
+        processOperation = prepareProcessOperation(internshipProcess, oldStatus, ProcessOperationType.SUBMIT, null, now);
         self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, processOperation, internshipProcess);
 
         List<Integer> assigneeIds = assigneeList.stream().map(ProcessAssignee::getAssigneeId).toList();
@@ -457,6 +457,7 @@ public class InternshipProcessService {
                     internshipProcess.setRequestedEndDate(null);
                     nextStatus = ProcessStatusEnum.IN1;
                 } else if (internshipProcess.getProcessStatus() == ProcessStatusEnum.REPORT2) {
+                    internshipProcess.setProcessStatus(ProcessStatusEnum.FAIL);
                     processOperation = prepareProcessOperation(internshipProcess, oldStatus, ProcessOperationType.REJECTION,
                             internshipProcessEvaluateRequest.getComment(), now);
                     self.saveAsDoneInternshipProcess(internshipProcess, processOperation, ProcessStatusEnum.FAIL);
@@ -472,9 +473,10 @@ public class InternshipProcessService {
                 assigneeList = prepareProcessAssigneeList(internshipProcess, now);
                 if (internshipProcess.getProcessStatus() == ProcessStatusEnum.CANCEL) {
                     // If the process is cancelled, save as done saveAsDoneInternshipProcess with CANCEL status
-                    processOperation = prepareProcessOperation(internshipProcess, oldStatus, ProcessOperationType.REJECTION,
+                    internshipProcess.setProcessStatus(ProcessStatusEnum.CANCEL);
+                    processOperation = prepareProcessOperation(internshipProcess, oldStatus, ProcessOperationType.APPROVAL,
                             internshipProcessEvaluateRequest.getComment(), now);
-                    self.saveAsDoneInternshipProcess(internshipProcess, processOperation, ProcessStatusEnum.FAIL);
+                    self.saveAsDoneInternshipProcess(internshipProcess, processOperation, ProcessStatusEnum.CANCEL);
                     savedAsDone = true;
                 } else if (internshipProcess.getProcessStatus() == ProcessStatusEnum.EXTEND) {
                     internshipProcess.setEndDate(internshipProcess.getRequestedEndDate());
@@ -483,7 +485,8 @@ public class InternshipProcessService {
                 } else {
                     // If the process is Done, save it as DoneInternshipProcess
                     if (internshipProcess.getProcessStatus() == ProcessStatusEnum.REPORT2) {
-                        processOperation = prepareProcessOperation(internshipProcess, ProcessStatusEnum.FORM, ProcessOperationType.APPROVAL,
+                        internshipProcess.setProcessStatus(ProcessStatusEnum.DONE);
+                        processOperation = prepareProcessOperation(internshipProcess, oldStatus, ProcessOperationType.APPROVAL,
                                 internshipProcessEvaluateRequest.getComment(), now);
                         self.saveAsDoneInternshipProcess(internshipProcess, processOperation, ProcessStatusEnum.DONE);
                         savedAsDone = true;

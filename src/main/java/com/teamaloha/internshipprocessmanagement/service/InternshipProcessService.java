@@ -239,13 +239,14 @@ public class InternshipProcessService {
         ProcessOperation processOperation = null;
         ProcessStatusEnum oldStatus = internshipProcess.getProcessStatus();
 
-        // Check if internship process is in POST or DEN1 status
-        checkIfProcessStatusesMatchesOrThrowException(List.of(ProcessStatusEnum.POST, ProcessStatusEnum.DEN1),
+        // Check if internship process is in POST status
+        checkIfProcessStatusesMatchesOrThrowException(List.of(ProcessStatusEnum.POST),
                 internshipProcess.getProcessStatus());
 
         checkIfStudentIdAndInternshipProcessMatchesOrThrowException(studentId, internshipProcess.getStudent().getId());
 
         internshipProcess.setStajRaporuPath(loadReportRequest.getStajRaporuPath());
+        internshipProcess.setReportLastEditDate(null);
         internshipProcess.setAssignerId(studentId);
 
         Date now = new Date();
@@ -254,7 +255,7 @@ public class InternshipProcessService {
 
         InternshipProcess updatedInternshipProcess = internshipProcessDao.save(internshipProcess);
 
-        processOperation = prepareProcessOperation(internshipProcess, oldStatus, null, null, now);
+        processOperation = prepareProcessOperation(internshipProcess, oldStatus, ProcessOperationType.SUBMIT, null, now);
         self.insertProcessAssigneesAndUpdateProcessStatus(assigneeList, processOperation, updatedInternshipProcess);
 
         logger.info("Report sent for InternshipProcess with ID: " + updatedInternshipProcess.getId());
@@ -344,7 +345,7 @@ public class InternshipProcessService {
         List<ProcessAssignee> assigneeList = prepareProcessAssigneeList(internshipProcess, now);
 
         // Set updated process status field
-        ProcessStatusEnum nextStatus = ProcessStatusEnum.findNextStatus(internshipProcess.getProcessStatus());
+        ProcessStatusEnum nextStatus = ProcessStatusEnum.PRE1;
         internshipProcess.setProcessStatus(nextStatus);
         internshipProcess.setEditable(false);
         internshipProcess.setRejected(false);
@@ -436,7 +437,8 @@ public class InternshipProcessService {
             }
             assigneeList = prepareProcessAssigneeList(internshipProcess, now);
             internshipProcess.setReportLastEditDate(calendar.getTime());
-            nextStatus = ProcessStatusEnum.DEN1;
+            internshipProcess.setRejected(true);
+            nextStatus = ProcessStatusEnum.POST;
             processOperationType = ProcessOperationType.REJECTION;
         } else {
             if (!internshipProcessEvaluateRequest.getApprove()) {
@@ -535,9 +537,11 @@ public class InternshipProcessService {
 
     public void checkReportEditLastDates() {
         Date now = new Date();
-        List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllByProcessStatus(ProcessStatusEnum.DEN1);
+        List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllByProcessStatus(ProcessStatusEnum.POST);
         for (InternshipProcess internshipProcess : internshipProcessList) {
-            if (internshipProcess.getReportLastEditDate().after(now)) {
+            Date reportLastEditDate = internshipProcess.getReportLastEditDate();
+            if (reportLastEditDate != null && reportLastEditDate.after(now)) {
+                internshipProcess.setReportLastEditDate(null);
                 internshipProcess.setProcessStatus(ProcessStatusEnum.REPORT1);
                 internshipProcessDao.save(internshipProcess);
             }
@@ -708,7 +712,7 @@ public class InternshipProcessService {
             case PRE2 -> academicianService.findAcademicianIdsByExecutiveAndDepartment(true, department.getId());
             case PRE3, REPORT1 -> academicianService.findAcademicianIdsByAcademicAndDepartment(true, department.getId());
             /*case PRE4 -> academicianService.findAcademicianIdsByDeanAndDepartment(true, department.getId());*/
-            case POST, DEN1 ->
+            case POST ->
                     academicianService.findAcademicianIdsByResearchAssistantAndDepartment(true, department.getId());
             case PRE4, CANCEL, EXTEND, REPORT2 -> {
                 List<Integer> assigneIdList = new ArrayList<>();

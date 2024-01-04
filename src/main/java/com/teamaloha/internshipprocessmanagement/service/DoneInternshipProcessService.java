@@ -263,6 +263,7 @@ public class DoneInternshipProcessService {
             doneInternshipProcessGetResponse.setDepartmentId(doneInternshipProcess.getDepartment().getId());
         }
 
+        doneInternshipProcessGetResponse.setStudentId(doneInternshipProcess.getStudent().getId());
         doneInternshipProcessGetResponse.setFullName(doneInternshipProcess.getStudent().getFirstName() + " " + doneInternshipProcess.getStudent().getLastName());
         doneInternshipProcessGetResponse.setUpdateDate(doneInternshipProcess.getLogDates().getUpdateDate());
     }

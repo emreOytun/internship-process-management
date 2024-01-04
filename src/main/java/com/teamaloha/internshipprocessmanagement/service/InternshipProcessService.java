@@ -186,11 +186,7 @@ public class InternshipProcessService {
             internshipProcessGetResponseList.add(internshipProcessGetResponse);
         }
         if (doneInternshipProcessList != null) {
-            for (DoneInternshipProcessGetResponse doneInternshipProcessGetResponse : doneInternshipProcessList) {
-                InternshipProcessGetResponse internshipProcessGetResponse = new InternshipProcessGetResponse();
-                BeanUtils.copyProperties(doneInternshipProcessGetResponse, internshipProcessGetResponse);
-                internshipProcessGetResponseList.add(internshipProcessGetResponse);
-            }
+            internshipProcessGetResponseList.addAll(doneInternshipProcessList);
         }
         return new InternshipProcessGetAllResponse(internshipProcessGetResponseList);
     }

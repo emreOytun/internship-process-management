@@ -2,10 +2,12 @@ package com.teamaloha.internshipprocessmanagement.service;
 
 import com.teamaloha.internshipprocessmanagement.dao.DoneInternshipProcessDao;
 import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.ExportRequest;
+import com.teamaloha.internshipprocessmanagement.dto.InternshipProcess.InternshipProcessGetResponse;
 import com.teamaloha.internshipprocessmanagement.dto.doneInternshipProcess.DoneInternshipProcessGetAllResponse;
 import com.teamaloha.internshipprocessmanagement.dto.doneInternshipProcess.DoneInternshipProcessGetResponse;
 import com.teamaloha.internshipprocessmanagement.entity.Company;
 import com.teamaloha.internshipprocessmanagement.entity.DoneInternshipProcess;
+import com.teamaloha.internshipprocessmanagement.entity.InternshipProcess;
 import com.teamaloha.internshipprocessmanagement.entity.Student;
 import com.teamaloha.internshipprocessmanagement.enums.ProcessStatusEnum;
 import com.teamaloha.internshipprocessmanagement.exceptions.CustomException;
@@ -253,11 +255,12 @@ public class DoneInternshipProcessService {
         return new DoneInternshipProcessGetAllResponse(doneInternshipProcessGetResponseList);
     }
 
-    private void copyEntityToDto(DoneInternshipProcess doneInternshipProcess, DoneInternshipProcessGetResponse doneInternshipProcessGetResponse) {
+    void copyEntityToDto(DoneInternshipProcess doneInternshipProcess, DoneInternshipProcessGetResponse doneInternshipProcessGetResponse) {
         BeanUtils.copyProperties(doneInternshipProcess, doneInternshipProcessGetResponse);
 
         if (doneInternshipProcess.getCompany() != null) {
             doneInternshipProcessGetResponse.setCompanyId(doneInternshipProcess.getCompany().getId());
+            doneInternshipProcessGetResponse.setCompanyName(doneInternshipProcess.getCompany().getCompanyName());
         }
 
         if (doneInternshipProcess.getDepartment() != null) {

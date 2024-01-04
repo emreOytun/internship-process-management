@@ -121,7 +121,7 @@ public class InternshipProcessService {
             internshipProcessList = internshipProcessDao.findAllByStudent(student);
         }
 
-        return createInternshipProcessGetAllResponse(internshipProcessList, doneInternshipProcessService.getAllDoneInternshipProcess(studentId).getInternshipProcessList());
+        return createInternshipProcessGetAllResponse(internshipProcessList, doneInternshipProcessService.getAllDoneInternshipProcess(studentId).getInternshipProcessList(), false);
     }
 
     public InternshipProcessGetResponse getInternshipProcess(Integer internshipProcessID, Integer studentId) {
@@ -143,27 +143,26 @@ public class InternshipProcessService {
         academicianService.getAcademicianIfExistsOrThrowException(academicianId);
         List<InternshipProcessGetResponse> processList = getAllInternshipProcess(studentId, ProcessStatusEnum.FORM).getInternshipProcessList();
 
-
         return new AcademicsGetStudentAllProcessResponse(processList);
     }
 
     public AcademicsGetStudentAllProcessResponse getAllActiveProcesses() {
         List<InternshipProcess> processList = internshipProcessDao.findAllByProcessStatusIn(List.of(ProcessStatusEnum.IN1, ProcessStatusEnum.IN2));
-        List<InternshipProcessGetResponse> processGetResponseList = createInternshipProcessGetAllResponse(processList).getInternshipProcessList();
+        List<InternshipProcessGetResponse> processGetResponseList = createInternshipProcessGetAllResponse(processList, true).getInternshipProcessList();
 
         return new AcademicsGetStudentAllProcessResponse(processGetResponseList);
     }
 
     public InternshipProcessGetAllResponse getAllInternshipProcessByCompany(Integer companyId) {
         List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllByCompany_Id(companyId);
-        return createInternshipProcessGetAllResponse(internshipProcessList);
+        return createInternshipProcessGetAllResponse(internshipProcessList, true);
     }
 
     public InternshipProcessGetAllResponse getAssignedInternshipProcess(Integer assigneeId,
                                                                         InternshipProcessSearchDto internshipProcessSearchDto) {
         List<InternshipProcess> internshipProcessList = internshipProcessDao.findAll(prepereInternshipProcessSearchSpecification(assigneeId, internshipProcessSearchDto),
                 SearchByPageDto.getPageable(internshipProcessSearchDto.getSearchByPageDto())).toList();
-        return createInternshipProcessGetAllResponse(internshipProcessList);
+        return createInternshipProcessGetAllResponse(internshipProcessList, true);
     }
 
     public InternshipProcessGetAllResponse getAssignedInternshipProcess(Integer assigneeId) {
@@ -171,26 +170,24 @@ public class InternshipProcessService {
         List<Integer> processIdList = processAssigneeService.findAllProcessIdByAssigneeId(assigneeId);
         // TODO: Bu kisimda assigneeId'ye gore processleri getirirken, process statusu da kontrol edilecek.
         List<InternshipProcess> internshipProcessList = internshipProcessDao.findAllById(processIdList);
-        return createInternshipProcessGetAllResponse(internshipProcessList);
+        return createInternshipProcessGetAllResponse(internshipProcessList, true);
     }
 
-    private InternshipProcessGetAllResponse createInternshipProcessGetAllResponse(List<InternshipProcess> internshipProcessList) {
-        return createInternshipProcessGetAllResponse(internshipProcessList, null);
+    private InternshipProcessGetAllResponse createInternshipProcessGetAllResponse(List<InternshipProcess> internshipProcessList, boolean academicianResponse) {
+        return createInternshipProcessGetAllResponse(internshipProcessList, null, academicianResponse);
     }
 
-    private InternshipProcessGetAllResponse createInternshipProcessGetAllResponse(List<InternshipProcess> internshipProcessList, List<DoneInternshipProcessGetResponse> doneInternshipProcessList) {
+    private InternshipProcessGetAllResponse createInternshipProcessGetAllResponse(List<InternshipProcess> internshipProcessList,
+                                                                                  List<DoneInternshipProcessGetResponse> doneInternshipProcessList,
+                                                                                  boolean academicianResponse) {
         List<InternshipProcessGetResponse> internshipProcessGetResponseList = new ArrayList<>();
         for (InternshipProcess internshipProcess : internshipProcessList) {
-            InternshipProcessGetResponse internshipProcessGetResponse = new InternshipProcessGetResponse();
+            InternshipProcessGetResponse internshipProcessGetResponse = academicianResponse ? new InternshipProcessAcademicianGetResponse() : new InternshipProcessGetResponse();
             copyEntityToDto(internshipProcess, internshipProcessGetResponse);
             internshipProcessGetResponseList.add(internshipProcessGetResponse);
         }
         if (doneInternshipProcessList != null) {
-            for (DoneInternshipProcessGetResponse doneInternshipProcessGetResponse : doneInternshipProcessList) {
-                InternshipProcessGetResponse internshipProcessGetResponse = new InternshipProcessGetResponse();
-                BeanUtils.copyProperties(doneInternshipProcessGetResponse, internshipProcessGetResponse);
-                internshipProcessGetResponseList.add(internshipProcessGetResponse);
-            }
+            internshipProcessGetResponseList.addAll(doneInternshipProcessList);
         }
         return new InternshipProcessGetAllResponse(internshipProcessGetResponseList);
     }
@@ -414,6 +411,7 @@ public class InternshipProcessService {
         internshipProcess.setComment(internshipProcessEvaluateRequest.getComment());
         internshipProcess.getLogDates().setUpdateDate(now);
         internshipProcess.setAssignerId(academicianId);
+        internshipProcess.setCommentOwner(academicianService.getAcademicianNameById(academicianId));
 
         ProcessOperation processOperation = null;
         ProcessStatusEnum oldStatus = internshipProcess.getProcessStatus();
@@ -752,6 +750,7 @@ public class InternshipProcessService {
         excludedFields.add("stajRaporuPath");
         excludedFields.add("comment");
         excludedFields.add("reportLastEditDate");
+        excludedFields.add("commentOwner");
 
         Field[] fields = InternshipProcess.class.getDeclaredFields();
 
@@ -826,7 +825,8 @@ public class InternshipProcessService {
         internshipProcess.setProcessStatus(ProcessStatusEnum.FORM);
     }
 
-    private void copyEntityToDto(InternshipProcess internshipProcess, InternshipProcessGetResponse internshipProcessGetResponse) {
+    private void copyEntityToDto(InternshipProcess internshipProcess,
+                                 InternshipProcessGetResponse internshipProcessGetResponse) {
         BeanUtils.copyProperties(internshipProcess, internshipProcessGetResponse);
 
         if (internshipProcess.getCompany() != null) {

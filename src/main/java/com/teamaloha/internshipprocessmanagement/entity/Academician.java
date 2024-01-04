@@ -44,4 +44,9 @@ public class Academician extends User{
     @Column(name = "is_admin")
     private Boolean is_admin;
 
+    public Academician(String firstName, String lastName) {
+        setFirstName(firstName);
+        setLastName(lastName);
+    }
+
 }

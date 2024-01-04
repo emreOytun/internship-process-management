@@ -118,6 +118,9 @@ public class InternshipProcess {
     @Column(name = "comment", nullable = true)
     private String comment;
 
+    @Column(name = "comment_owner", nullable = true)
+    private String commentOwner;
+
     @Column(name = "report_last_edit_date", nullable = true)
     private Date reportLastEditDate;
 

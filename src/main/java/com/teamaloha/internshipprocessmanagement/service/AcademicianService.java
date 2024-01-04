@@ -17,6 +17,7 @@ import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ErrorCodeEnum;
 import com.teamaloha.internshipprocessmanagement.enums.RoleEnum;
 import com.teamaloha.internshipprocessmanagement.exceptions.CustomException;
+import io.micrometer.common.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -99,6 +100,21 @@ public class AcademicianService {
                         .build();
         authenticationResponse.setId(academician.getId());
         return authenticationResponse;
+    }
+
+    public String getAcademicianNameById(Integer id) {
+        Academician academician = academicianDao.fetchAcademicianNameById(id);
+        StringBuilder sb = new StringBuilder();
+        if (academician != null) {
+            if (StringUtils.isNotBlank(academician.getFirstName())) {
+                sb.append(academician.getFirstName());
+                sb.append(" ");
+            }
+            if (StringUtils.isNotBlank(academician.getLastName())) {
+                sb.append(academician.getLastName());
+            }
+        }
+        return sb.toString();
     }
 
     // task id 1- internshipCommittee 2- departmentChair  3-  executive 4- academic 5- researchAssistant
@@ -217,7 +233,7 @@ public class AcademicianService {
     public AcademicsGetAllResponse getAllAcademics(Integer adminId) {
         //checkIfAcademicianIsAdminOrThrowException(adminId);
 
-        List<Academician> academicianList = academicianDao.findAllAcademicians();
+        List<Academician> academicianList = academicianDao.findAll();
         return createAcademicianGetAllResponse(academicianList);
     }
     private AcademicsGetAllResponse createAcademicianGetAllResponse(List<Academician> academicianList) {

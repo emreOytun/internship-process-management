@@ -405,11 +405,15 @@ public class InternshipProcessService {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
+        Date now = new Date();
         InternshipProcess internshipProcess = getInternshipProcessIfExistsOrThrowException(processId);
+        internshipProcess.setComment(internshipProcessEvaluateRequest.getComment());
+        internshipProcess.getLogDates().setUpdateDate(now);
+        internshipProcess.setAssignerId(academicianId);
+
         ProcessOperation processOperation = null;
         ProcessStatusEnum oldStatus = internshipProcess.getProcessStatus();
 
-        Date now = new Date();
         ProcessStatusEnum nextStatus = null;
         List<ProcessAssignee> assigneeList = null;
         if ((edit != null && edit)) {
@@ -430,10 +434,7 @@ public class InternshipProcessService {
                         + internshipProcess.getProcessStatus());
                 throw new CustomException(HttpStatus.BAD_REQUEST);
             }
-            internshipProcess.setAssignerId(academicianId);
             assigneeList = prepareProcessAssigneeList(internshipProcess, now);
-            internshipProcess.setComment(internshipProcessEvaluateRequest.getComment());
-            internshipProcess.getLogDates().setUpdateDate(now);
             internshipProcess.setReportLastEditDate(calendar.getTime());
             nextStatus = ProcessStatusEnum.DEN1;
             processOperationType = ProcessOperationType.REJECTION;
@@ -447,9 +448,6 @@ public class InternshipProcessService {
                 }
 
                 assigneeList = new ArrayList<>();
-                internshipProcess.setAssignerId(academicianId);
-                internshipProcess.getLogDates().setUpdateDate(now);
-                internshipProcess.setComment(internshipProcessEvaluateRequest.getComment());
 
                 if (internshipProcess.getProcessStatus() == ProcessStatusEnum.CANCEL) {
                     nextStatus = ProcessStatusEnum.IN1;
@@ -470,9 +468,6 @@ public class InternshipProcessService {
             } else {
                 // Approval
                 assigneeList = prepareProcessAssigneeList(internshipProcess, now);
-                internshipProcess.setAssignerId(academicianId);
-                internshipProcess.getLogDates().setUpdateDate(now);
-                internshipProcess.setComment(internshipProcessEvaluateRequest.getComment());
                 if (internshipProcess.getProcessStatus() == ProcessStatusEnum.CANCEL) {
                     // If the process is cancelled, save as done saveAsDoneInternshipProcess with CANCEL status
                     processOperation = prepareProcessOperation(internshipProcess, oldStatus, ProcessOperationType.REJECTION,
@@ -513,8 +508,8 @@ public class InternshipProcessService {
         ProcessOperation processOperation = new ProcessOperation();
         processOperation.setProcessId(internshipProcess.getId());
         processOperation.setUserId(internshipProcess.getAssignerId());
-        processOperation.setOldStatus(internshipProcess.getProcessStatus());
-        processOperation.setNewStatus(oldStatus);
+        processOperation.setOldStatus(oldStatus);
+        processOperation.setNewStatus(internshipProcess.getProcessStatus());
         processOperation.setOperationType(processOperationType);
         processOperation.setComment(comment);
         processOperation.setLogDates(LogDates.builder().createDate(now).updateDate(now).build());

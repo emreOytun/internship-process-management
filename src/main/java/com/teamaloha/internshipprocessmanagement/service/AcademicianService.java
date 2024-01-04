@@ -103,7 +103,7 @@ public class AcademicianService {
 
     // task id 1- internshipCommittee 2- departmentChair  3-  executive 4- academic 5- researchAssistant
     public boolean assignTask(Integer academicianId, Integer  taskId, Integer adminId){
-        checkIfAcademicianIsAdminOrThrowException(adminId);
+        //checkIfAcademicianIsAdminOrThrowException(adminId);
 
         // TODO : Add assign task
         Academician academician = getAcademicianIfExistsOrThrowException(academicianId);
@@ -133,7 +133,7 @@ public class AcademicianService {
     }
 
     public boolean assignTask(Integer academicianId, List<Integer> taskId, Integer adminId){
-        checkIfAcademicianIsAdminOrThrowException(adminId);
+        //checkIfAcademicianIsAdminOrThrowException(adminId);
 
         // TODO : Add assign task
         Academician academician = getAcademicianIfExistsOrThrowException(academicianId);
@@ -208,14 +208,14 @@ public class AcademicianService {
     }
 
     public AcademicsGetAllResponse getAllAcademics(AcademicianSearchDto academicianSearchDto, Integer adminId) {
-        checkIfAcademicianIsAdminOrThrowException(adminId);
+        //checkIfAcademicianIsAdminOrThrowException(adminId);
 
         List<Academician> academicianList = academicianDao.findAll(prepareAcademicianSpecification(academicianSearchDto),
                 SearchByPageDto.getPageable(academicianSearchDto.getSearchByPageDto())).toList();
         return createAcademicianGetAllResponse(academicianList);
     }
     public AcademicsGetAllResponse getAllAcademics(Integer adminId) {
-        checkIfAcademicianIsAdminOrThrowException(adminId);
+        //checkIfAcademicianIsAdminOrThrowException(adminId);
 
         List<Academician> academicianList = academicianDao.findAllAcademicians();
         return createAcademicianGetAllResponse(academicianList);
@@ -258,7 +258,7 @@ public class AcademicianService {
     }
 
     public void validateAcademician(Integer academecianId, Integer adminId) {
-        checkIfAcademicianIsAdminOrThrowException(adminId);
+        //checkIfAcademicianIsAdminOrThrowException(adminId);
 
         Academician academician = getAcademicianIfExistsOrThrowException(academecianId);
         academician.setValidated(true);
@@ -268,7 +268,7 @@ public class AcademicianService {
     }
 
     public void assignDepartmentToAcademician(Integer academicianId, Integer departmentId, Integer adminId) {
-        checkIfAcademicianIsAdminOrThrowException(adminId);
+        //checkIfAcademicianIsAdminOrThrowException(adminId);
 
         Academician academician = getAcademicianIfExistsOrThrowException(academicianId);
         Department department = departmentService.getDepartmentIfExistsOrThrowException(departmentId);

@@ -7,6 +7,7 @@ import com.teamaloha.internshipprocessmanagement.dto.department.DepartmentUpdate
 import com.teamaloha.internshipprocessmanagement.service.DepartmentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -33,8 +34,7 @@ public class DepartmentController {
 
     @PostMapping("/updateDepartment")
     @ResponseStatus(HttpStatus.OK)
-    // test ten sonra ekleyelim
-    // @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name()) || hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name()) || hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
     public DepartmentUpdateResponse updateFaculty(@RequestBody @Valid DepartmentUpdateRequest departmentUpdateRequest) {
         return departmentService.update(departmentUpdateRequest);
     }

@@ -5,6 +5,7 @@ import com.teamaloha.internshipprocessmanagement.service.CompanyService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,24 +20,21 @@ public class CompanyController {
     }
     @PostMapping("/addCompany")
     @ResponseStatus(HttpStatus.OK)
-    // test ten sonra ekleyelim
-    // @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name()) || hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name()) || hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
     public CompanyAddResponse addCompany(@RequestBody @Valid CompanyAddRequest companyAddRequest) {
         return companyService.add(companyAddRequest);
     }
 
     @PostMapping("/updateCompany")
     @ResponseStatus(HttpStatus.OK)
-    // test ten sonra ekleyelim
-    // @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name()) || hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name()) || hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
     public CompanyUpdateResponse updateCompany(@RequestBody @Valid CompanyUpdateRequest companyUpdateRequest) {
         return companyService.update(companyUpdateRequest);
     }
 
     @GetMapping("/getCompany")
     @ResponseStatus(HttpStatus.OK)
-    // test ten sonra ekleyelim
-    // @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name()) || hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name()) || hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
     public CompanyGetResponse updateCompany(@RequestBody @Valid CompanyGetRequest companyGetRequest) {
         return companyService.get(companyGetRequest);
     }

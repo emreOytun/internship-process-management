@@ -488,7 +488,7 @@ public class InternshipProcessService {
                     if (internshipProcess.getProcessStatus() == ProcessStatusEnum.REPORT2) {
                         processOperation = prepareProcessOperation(internshipProcess, ProcessStatusEnum.FORM, ProcessOperationType.APPROVAL,
                                 internshipProcessEvaluateRequest.getComment(), now);
-                        self.saveAsDoneInternshipProcess(internshipProcess, processOperation, ProcessStatusEnum.FAIL);
+                        self.saveAsDoneInternshipProcess(internshipProcess, processOperation, ProcessStatusEnum.DONE);
                         savedAsDone = true;
                     }
                     nextStatus = ProcessStatusEnum.findNextStatus(internshipProcess.getProcessStatus());
@@ -530,6 +530,7 @@ public class InternshipProcessService {
         // Save as DoneInternshipProcess and delete from InternshipProcess
         DoneInternshipProcess doneInternshipProcess = new DoneInternshipProcess();
         BeanUtils.copyProperties(internshipProcess, doneInternshipProcess);
+        doneInternshipProcess.setStudent(internshipProcess.getStudent());
         doneInternshipProcess.setLogDates(LogDates.builder().createDate(new Date()).updateDate(new Date()).build());
         doneInternshipProcess.setProcessStatus(processStatus);
         internshipProcessDao.delete(internshipProcess);

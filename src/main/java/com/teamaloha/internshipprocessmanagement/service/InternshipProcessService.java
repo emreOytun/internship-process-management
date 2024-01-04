@@ -84,8 +84,9 @@ public class InternshipProcessService {
         student.setId(studentId);
 
         // Check if there is more than 2 active process
+        Integer maxProcessNumber = 2;
         Integer count = internshipProcessDao.countByStudentId(studentId);
-        if (count >= 2) {
+        if (count >= maxProcessNumber) {
             logger.error("Process cannot creatable for this student (2 or more active process). Student id: " + studentId);
             throw new CustomException(ErrorCodeEnum.INTERNSHIP_MAX_NUMBER.getErrorCode(), HttpStatus.BAD_REQUEST);
         }
@@ -436,7 +437,7 @@ public class InternshipProcessService {
                         + internshipProcess.getProcessStatus());
                 throw new CustomException(HttpStatus.BAD_REQUEST);
             }
-            assigneeList = prepareProcessAssigneeList(internshipProcess, now);
+            assigneeList = new ArrayList<>();
             internshipProcess.setReportLastEditDate(calendar.getTime());
             internshipProcess.setRejected(true);
             nextStatus = ProcessStatusEnum.POST;

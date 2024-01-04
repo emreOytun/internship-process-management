@@ -284,5 +284,13 @@ public class DoneInternshipProcessService {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
     }
+
+    //public DoneInternshipProcessGetAllResponse getAllDoneInternshipProcessByCompanyId(Integer companyId) {
+    //    Company company = new Company();
+    //    company.setId(companyId);
+//
+    //    List<DoneInternshipProcess> internshipProcessList = doneInternshipProcessDao.findAllByCompany(company);
+    //    return createDoneInternshipProcessGetAllResponse(internshipProcessList);
+    //}
 }
 

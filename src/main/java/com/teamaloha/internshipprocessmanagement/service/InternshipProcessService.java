@@ -106,10 +106,11 @@ public class InternshipProcessService {
     }
 
     public InternshipProcessGetAllResponse getAllInternshipProcess(Integer studentId) {
-        return getAllInternshipProcess(studentId, null);
+        return getAllInternshipProcess(studentId, null, false);
     }
 
-    public InternshipProcessGetAllResponse getAllInternshipProcess(Integer studentId, ProcessStatusEnum processStatus) {
+    public InternshipProcessGetAllResponse getAllInternshipProcess(Integer studentId, ProcessStatusEnum processStatus,
+                                                                   boolean academicianResponse) {
         Student student = new Student();
         student.setId(studentId);
         List<InternshipProcess> internshipProcessList = null;
@@ -121,7 +122,10 @@ public class InternshipProcessService {
             internshipProcessList = internshipProcessDao.findAllByStudent(student);
         }
 
-        return createInternshipProcessGetAllResponse(internshipProcessList, doneInternshipProcessService.getAllDoneInternshipProcess(studentId).getInternshipProcessList(), false);
+        return createInternshipProcessGetAllResponse(
+                internshipProcessList,
+                doneInternshipProcessService.getAllDoneInternshipProcess(studentId).getInternshipProcessList(),
+                academicianResponse);
     }
 
     public InternshipProcessGetResponse getInternshipProcess(Integer internshipProcessID, Integer studentId) {
@@ -141,7 +145,7 @@ public class InternshipProcessService {
 
     public AcademicsGetStudentAllProcessResponse getStudentAllProcess(Integer studentId, Integer academicianId) {
         academicianService.getAcademicianIfExistsOrThrowException(academicianId);
-        List<InternshipProcessGetResponse> processList = getAllInternshipProcess(studentId, ProcessStatusEnum.FORM).getInternshipProcessList();
+        List<InternshipProcessGetResponse> processList = getAllInternshipProcess(studentId, ProcessStatusEnum.FORM, true).getInternshipProcessList();
 
         return new AcademicsGetStudentAllProcessResponse(processList);
     }

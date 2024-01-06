@@ -24,6 +24,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
@@ -248,7 +249,7 @@ public class InternshipProcessService {
 
         checkIfStudentIdAndInternshipProcessMatchesOrThrowException(studentId, internshipProcess.getStudent().getId());
 
-        internshipProcess.setStajRaporuPath(loadReportRequest.getStajRaporuPath());
+        /*internshipProcess.setStajRaporuPath(loadReportRequest.getStajRaporuPath());*/
         internshipProcess.setReportLastEditDate(null);
         internshipProcess.setAssignerId(studentId);
 
@@ -766,22 +767,25 @@ public class InternshipProcessService {
         excludedFields.add("requestedEndDate");
 
         // TODO: BU ALANLAR KONTROL EDILECEK. SIMDILIK UPDATE'TE OLMADIGI ICIN SELIM'IN TESTLERI ICIN BOYLE YAPILDI.
-        excludedFields.add("mufredatDurumuPath");
-        excludedFields.add("transkriptPath");
-        excludedFields.add("dersProgramıPath");
-        excludedFields.add("stajRaporuPath");
+        excludedFields.add("mufredatDurumuID");
+        excludedFields.add("transkriptID");
+        excludedFields.add("dersProgramiID");
+        excludedFields.add("stajRaporuID");
         excludedFields.add("comment");
         excludedFields.add("reportLastEditDate");
         excludedFields.add("commentOwner");
+        excludedFields.add("mustehaklikBelgesiID");
+        excludedFields.add("stajYeriFormuID");
 
         Field[] fields = InternshipProcess.class.getDeclaredFields();
-
+/*
         for (Field field : fields) {
             String fieldName = field.getName();
             if (!excludedFields.contains(fieldName)) {
                 field.setAccessible(true);
                 try {
                     if (field.get(internshipProcess) == null) {
+                        logger.info("Field " + field.getName() + " is not entered.");
                         return false;  // If any non-excluded field is null, return false
                     }
                 } catch (IllegalAccessException e) {
@@ -790,6 +794,7 @@ public class InternshipProcessService {
                 }
             }
         }
+       */
         return true;
     }
 
@@ -872,4 +877,37 @@ public class InternshipProcessService {
         internshipProcessDao.save(internshipProcess);
     }
 
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    public Integer updateFileId(Integer processId, Integer newLocationId, String type) {
+        InternshipProcess internshipProcess = internshipProcessDao.findInternshipProcessById(processId);
+        Integer oldLocationId = null;
+
+        if(type.equals("mufredatDurumuID")){
+            oldLocationId = internshipProcess.getMufredatDurumuID();
+            internshipProcess.setMufredatDurumuID(newLocationId);
+        }
+        else if(type.equals("transkriptID")){
+            oldLocationId = internshipProcess.getTranskriptID();
+            internshipProcess.setTranskriptID(newLocationId);
+        }
+        else if(type.equals("dersProgramıID")){
+            oldLocationId = internshipProcess.getDersProgramiID();
+            internshipProcess.setDersProgramiID(newLocationId);
+        }
+        else if(type.equals("stajRaporuID")){
+            oldLocationId = internshipProcess.getStajRaporuID();
+            internshipProcess.setStajRaporuID(newLocationId);
+        }
+        else if(type.equals("mustehaklikBelgesiID")){
+            oldLocationId = internshipProcess.getMustehaklikBelgesiID();
+            internshipProcess.setMustehaklikBelgesiID(newLocationId);
+        }
+        else if(type.equals("stajYeriFormuId")){
+            oldLocationId = internshipProcess.getStajYeriFormuID();
+            internshipProcess.setStajYeriFormuID(newLocationId);
+        }
+
+        internshipProcessDao.save(internshipProcess);
+        return oldLocationId;
+    }
 }

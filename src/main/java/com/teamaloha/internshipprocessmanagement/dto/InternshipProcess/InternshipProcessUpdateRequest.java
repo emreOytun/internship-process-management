@@ -49,25 +49,19 @@ public class InternshipProcessUpdateRequest {
 
     private Boolean gssEntry;
 
-    private String mustehaklikBelgesiPath;
+    private Integer mustehaklikBelgesiID;
 
-    private String stajYeriFormuPath;
+    private Integer stajYeriFormuID;
 
-    private String mufredatDurumuPath;
+    private Integer mufredatDurumuID;
 
-    private String transkriptPath;
+    private Integer transkriptID;
 
-    private String dersProgramıPath;
+    private Integer dersProgramıID;
 
     private Boolean donem_ici;
 
     private MultipartFile mustehaklikBelgesi;
 
     private MultipartFile stajYeriFormu;
-
-    private MultipartFile mufredatDurumu;
-
-    private MultipartFile transkript;
-
-    private MultipartFile dersProgramı;
 }

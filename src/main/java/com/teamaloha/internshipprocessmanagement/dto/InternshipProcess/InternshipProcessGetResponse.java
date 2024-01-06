@@ -54,17 +54,19 @@ public class InternshipProcessGetResponse {
 
     private Boolean editable;
 
-    private String stajYeriFormuPath;
-
     private Boolean donem_ici;
 
-    private String mufredatDurumuPath;
+    private Integer stajRaporuId;
 
-    private String transkriptPath;
+    private Integer mufredatDurumuId;
 
-    private String dersProgramıPath;
+    private Integer transkriptId;
 
-    private String stajRaporuPath;
+    private Integer dersProgramıId;
+
+    private Integer stajYeriFormuId;
+
+    private Integer mustehaklikBelgesiID;
 
     // @Enumerated(EnumType.STRING)
     private ProcessStatusEnum processStatus;

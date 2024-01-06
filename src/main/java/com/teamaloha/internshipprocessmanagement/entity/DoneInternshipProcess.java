@@ -84,26 +84,26 @@ public class DoneInternshipProcess {
     @Column(name = "assigner_id", nullable = true)
     private Integer assignerId;
 
-    @Column(name = "mustehaklik_belgesi_path", nullable = true)
-    private String mustehaklikBelgesiPath;
+    @Column(name = "mustehaklik_belgesi_id", nullable = true)
+    private Integer mustehaklikBelgesiID;
 
-    @Column(name = "staj_yeri_formu_path", nullable = true)
-    private String stajYeriFormuPath;
+    @Column(name = "staj_yeri_formu_id", nullable = true)
+    private Integer stajYeriFormuID;
 
     @Column(name = "donem_ici", nullable = true)
     private Boolean donem_ici;
 
-    @Column(name = "mufredat_durumu_path", nullable = true)
-    private String mufredatDurumuPath;
+    @Column(name = "mufredat_durumu_id", nullable = true)
+    private Integer mufredatDurumuID;
 
-    @Column(name = "transkript_path", nullable = true)
-    private String transkriptPath;
+    @Column(name = "transkript_id", nullable = true)
+    private Integer transkriptID;
 
-    @Column(name = "ders_programı_path", nullable = true)
-    private String dersProgramıPath;
+    @Column(name = "ders_programı_id", nullable = true)
+    private Integer dersProgramiID;
 
-    @Column(name = "staj_raporu_path", nullable = true)
-    private String stajRaporuPath;
+    @Column(name = "staj_raporu_id", nullable = true)
+    private Integer stajRaporuID;
 
     @Column(name = "process_status", nullable = false)
     @Enumerated(EnumType.STRING)

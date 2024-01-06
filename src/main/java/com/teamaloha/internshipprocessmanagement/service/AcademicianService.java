@@ -72,6 +72,16 @@ public class AcademicianService {
 
         // Convert given request dto to Academician entity.
         Academician academician = convertDtoToEntity(academicianRegisterRequest, department);
+        academician.setVerifiedMail(false);
+        // create 6 digit verification code
+        Random random = new Random();
+        int code = random.nextInt(999999);
+        academician.setVerificationCode(String.format("%06d", code));
+        mailService.sendMail(
+                Arrays.asList(academician.getMail()),
+                null,
+                "Akademisyen Kaydı",
+                "Akademisyen kaydınızı tamamlamak için aşağıdaki linke tıklayınız ve "+academician.getVerificationCode()+" kodunu Giriniz"+": http://localhost:3000/onayla/auth");
         academicianDao.save(academician);
 
         // Create token and return it.
@@ -96,6 +106,11 @@ public class AcademicianService {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
+        if(!academician.getVerifiedMail()){
+            logger.error("Mail is not verified.");
+            throw new CustomException(ErrorCodeEnum.MAIL_NOT_VERIFIED.getErrorCode(), HttpStatus.BAD_REQUEST);
+        }
+
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(academician, userDto);
         String jwtToken = authenticationService.createJwtToken(userDto);
@@ -108,6 +123,21 @@ public class AcademicianService {
         return authenticationResponse;
     }
 
+    public boolean verify(String code, String mail) {
+        Academician academician = academicianDao.findByMail(mail);
+        if (academician == null) {
+            logger.error("Invalid mail. mail: " + mail);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        String verificationCode = academician.getVerificationCode();
+        if(!verificationCode.equals(code)){
+            logger.error("Invalid code. code: " + code);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        academician.setVerifiedMail(true);
+        academicianDao.save(academician);
+        return true;
+    }
     public String getAcademicianNameById(Integer id) {
         Academician academician = academicianDao.fetchAcademicianNameById(id);
         StringBuilder sb = new StringBuilder();

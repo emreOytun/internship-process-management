@@ -42,4 +42,10 @@ public class StudentController {
     public void resetPassword(@RequestParam @Valid String token, @RequestParam @Valid String newPassword) {
         studentService.resetPassword(token, newPassword);
     }
+
+    @PostMapping("/auth/verify")
+    @ResponseStatus(HttpStatus.OK)
+    public boolean verify(@RequestParam @Valid String code, @RequestParam @Valid String mail) {
+        return studentService.verify(code, mail);
+    }
 }

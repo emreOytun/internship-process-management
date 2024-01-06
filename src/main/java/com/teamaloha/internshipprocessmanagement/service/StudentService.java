@@ -5,6 +5,7 @@ import com.teamaloha.internshipprocessmanagement.dto.authentication.Authenticati
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AuthenticationResponse;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.StudentRegisterRequest;
 import com.teamaloha.internshipprocessmanagement.dto.user.UserDto;
+import com.teamaloha.internshipprocessmanagement.entity.Academician;
 import com.teamaloha.internshipprocessmanagement.entity.Student;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ErrorCodeEnum;
@@ -18,9 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class StudentService {
@@ -51,6 +50,16 @@ public class StudentService {
 
         // Convert given request dto to Academician entity.
         Student student = convertDtoToEntity(studentRegisterRequest);
+        student.setVerifiedMail(false);
+        // create 6 digit verification code
+        Random random = new Random();
+        int code = random.nextInt(999999);
+        student.setVerificationCode(String.format("%06d", code));
+        mailService.sendMail(
+                Arrays.asList(student.getMail()),
+                null,
+                "Öğrenci Kaydı",
+                "Öğrenci kaydınızı tamamlamak için aşağıdaki linke tıklayınız ve "+student.getVerificationCode()+" kodunu Giriniz"+": http://localhost:3000/onayla/auth");
         studentDao.save(student);
 
         // Create token and return it.
@@ -86,6 +95,11 @@ public class StudentService {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
+        if(!student.getVerifiedMail()){
+            logger.error("Mail is not verified.");
+            throw new CustomException(ErrorCodeEnum.MAIL_NOT_VERIFIED.getErrorCode(), HttpStatus.BAD_REQUEST);
+        }
+
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(student, userDto);
         String jwtToken = authenticationService.createJwtToken(userDto);
@@ -96,7 +110,21 @@ public class StudentService {
         authenticationResponse.setId(student.getId());
         return authenticationResponse;
     }
-
+    public boolean verify(String code, String mail) {
+        Student student = studentDao.findByMail(mail);
+        if (student == null) {
+            logger.error("Invalid mail. mail: " + mail);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        String verificationCode = student.getVerificationCode();
+        if(!verificationCode.equals(code)){
+            logger.error("Invalid code. code: " + code);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        student.setVerifiedMail(true);
+        studentDao.save(student);
+        return true;
+    }
     public void forgotPassword(String email) {
         Student student = studentDao.findByMail(email);
         if (student == null) {

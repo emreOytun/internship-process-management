@@ -91,4 +91,10 @@ public class AcademicianController {
     public void resetPassword(@RequestParam @Valid String token, @RequestParam @Valid String newPassword) {
         academicianService.resetPassword(token, newPassword);
     }
+
+    @PostMapping("/auth/verify")
+    @ResponseStatus(HttpStatus.OK)
+    public boolean verify(@RequestParam @Valid String code, @RequestParam @Valid String mail) {
+        return academicianService.verify(code, mail);
+    }
 }

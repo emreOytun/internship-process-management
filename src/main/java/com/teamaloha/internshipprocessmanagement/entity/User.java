@@ -43,4 +43,10 @@ public class User {
 
     @Column(name = "password_reset_token")
     private String passwordResetToken;
+
+    @Column(name = "verified_mail")
+    private Boolean verifiedMail;
+
+    @Column(name = "verification_code")
+    private String verificationCode;
 }

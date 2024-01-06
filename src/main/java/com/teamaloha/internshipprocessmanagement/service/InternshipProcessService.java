@@ -440,6 +440,12 @@ public class InternshipProcessService {
                         + internshipProcess.getProcessStatus());
                 throw new CustomException(HttpStatus.BAD_REQUEST);
             }
+            mailService.sendMail(
+                    List.of(internshipProcess.getStudent().getMail()),
+                    null,
+                    "Staj Raporu Düzenleme İsteği",
+                    "Staj Raporunuzun düzenlenmesi için istekte bulunuldu. Bu link üzerinden detayları inceleyebilirsiniz." +
+                            "http://localhost:3000/internship-process/" + internshipProcess.getId());
             assigneeList = new ArrayList<>();
             internshipProcess.setReportLastEditDate(calendar.getTime());
             internshipProcess.setRejected(true);
@@ -473,6 +479,12 @@ public class InternshipProcessService {
                     nextStatus = internshipProcess.getProcessStatus();
                 }
                 processOperationType = ProcessOperationType.REJECTION;
+                mailService.sendMail(
+                        List.of(internshipProcess.getStudent().getMail()),
+                        null,
+                        "Staj Başvurusu Reddedildi",
+                        "Staj Başvurunuz reddedildi. Bu link üzerinden detayları inceleyebilirsiniz." +
+                                "http://localhost:3000/internship-process/" + internshipProcess.getId());
             } else {
                 // Approval
                 assigneeList = prepareProcessAssigneeList(internshipProcess, now);
@@ -499,6 +511,12 @@ public class InternshipProcessService {
                     nextStatus = ProcessStatusEnum.findNextStatus(internshipProcess.getProcessStatus());
                 }
                 processOperationType = ProcessOperationType.APPROVAL;
+                mailService.sendMail(
+                        List.of(internshipProcess.getStudent().getMail()),
+                        null,
+                        "Staj Başvurusu Onaylandı",
+                        "Staj Başvurunuz onaylandı. Bu link üzerinden detayları inceleyebilirsiniz." +
+                                "http://localhost:3000/internship-process/" + internshipProcess.getId());
             }
         }
 

@@ -23,6 +23,6 @@ public class PDFData {
     private String type;
 
     @Lob
-    @Column(name = "pdf_data")
+    @Column(name = "pdf_data", columnDefinition = "LONGBLOB")
     private byte[] data;
 }

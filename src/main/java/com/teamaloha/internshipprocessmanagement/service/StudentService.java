@@ -116,7 +116,7 @@ public class StudentService {
                 to,
                 null,
                 "Şifre Sıfırlama",
-                "Şifrenizi sıfırlamak için aşağıdaki linke tıklayınız 50 dakika aktif olacaktır: http://localhost:8080/api/student/auth/resetPassword/"+token
+                "Şifrenizi sıfırlamak için aşağıdaki linke tıklayınız 50 dakika aktif olacaktır: http://localhost:3000/auth/resetPassword/"+token
         );
     }
 

@@ -13,10 +13,12 @@ import com.teamaloha.internshipprocessmanagement.dto.authentication.Authenticati
 import com.teamaloha.internshipprocessmanagement.dto.user.UserDto;
 import com.teamaloha.internshipprocessmanagement.entity.Academician;
 import com.teamaloha.internshipprocessmanagement.entity.Department;
+import com.teamaloha.internshipprocessmanagement.entity.Student;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ErrorCodeEnum;
 import com.teamaloha.internshipprocessmanagement.enums.RoleEnum;
 import com.teamaloha.internshipprocessmanagement.exceptions.CustomException;
+import com.teamaloha.internshipprocessmanagement.service.security.JwtService;
 import io.micrometer.common.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,16 +40,20 @@ public class AcademicianService {
     private final AuthenticationService authenticationService;
     private final DepartmentService departmentService;
     private final FiltersSpecification<Academician> filtersSpecification;
+    private final JwtService jwtService;
+    private final MailService mailService;
 
     @Autowired
     public AcademicianService(AcademicianDao academicianDao, UserService userService,
                               DepartmentService departmentService, AuthenticationService authenticationService,
-                              FiltersSpecification filtersSpecification) {
+                              FiltersSpecification filtersSpecification, MailService mailService, JwtService jwtService) {
         this.academicianDao = academicianDao;
         this.userService = userService;
         this.departmentService = departmentService;
         this.authenticationService = authenticationService;
         this.filtersSpecification = filtersSpecification;
+        this.mailService = mailService;
+        this.jwtService = jwtService;
     }
 
     public AuthenticationResponse register(AcademicianRegisterRequest academicianRegisterRequest) {
@@ -337,4 +343,45 @@ public class AcademicianService {
         }
     }
 
+    public void forgotPassword(String email) {
+        Academician academician = academicianDao.findByMail(email);
+        if (academician == null) {
+            logger.error("Invalid mail. mail: " + email);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        List<String> to = new ArrayList<>();
+        to.add(academician.getMail());
+
+        UserDto userDto = new UserDto();
+        BeanUtils.copyProperties(academician, userDto);
+        String token = authenticationService.createJwtToken(userDto);
+        academician.setPasswordResetToken(token);
+        academicianDao.save(academician);
+
+        this.mailService.sendMail(
+                to,
+                null,
+                "Şifre Sıfırlama",
+                "Şifrenizi sıfırlamak için aşağıdaki linke tıklayınız 50 dakika aktif olacaktır: http://localhost:3000/auth/resetPassword/"+token
+        );
+    }
+
+    public void resetPassword(String token, String password) {
+        Academician academician = academicianDao.findByPasswordResetToken(token);
+        if (academician == null) {
+            logger.error("Invalid token. token: " + token);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+
+        if(jwtService.isTokenValid(academician.getPasswordResetToken())){
+            academician.setPassword(authenticationService.hashPassword(password));
+        }else{
+            logger.error("Invalid token. token: " + token);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+
+        academician.setPassword(authenticationService.hashPassword(password));
+        academician.setPasswordResetToken(null);
+        academicianDao.save(academician);
+    }
 }

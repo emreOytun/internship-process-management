@@ -79,4 +79,16 @@ public class AcademicianController {
         System.out.println(taskId);
         return academicianService.assignTask(academicianId, taskId, adminId);
     }
+
+    @PostMapping("/auth/forgotPassword")
+    @ResponseStatus(HttpStatus.OK)
+    public void forgotPassword(@RequestParam @Valid String email) {
+        academicianService.forgotPassword(email);
+    }
+
+    @PostMapping("/auth/resetPassword")
+    @ResponseStatus(HttpStatus.OK)
+    public void resetPassword(@RequestParam @Valid String token, @RequestParam @Valid String newPassword) {
+        academicianService.resetPassword(token, newPassword);
+    }
 }

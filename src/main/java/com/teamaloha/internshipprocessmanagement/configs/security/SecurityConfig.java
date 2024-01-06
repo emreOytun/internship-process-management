@@ -66,6 +66,8 @@ public class SecurityConfig {
             "/api/internshipTypes/**",
             // intership process
             "/api/internship-process/**",
+            //
+            "/api/file/**",
     };
 
     @Autowired

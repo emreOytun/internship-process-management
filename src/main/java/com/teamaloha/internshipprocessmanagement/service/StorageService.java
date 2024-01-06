@@ -18,12 +18,12 @@ public class StorageService {
         this.storageDao = storageDao;
     }
 
-    public String uploadFile(MultipartFile file){
+    public String uploadFile(MultipartFile file, Integer id){
         String message = "";
         try {
 
             storageDao.save(PDFData.builder()
-                    .name(file.getOriginalFilename())
+                    .name(id+"_"+file.getOriginalFilename())
                     .type(file.getContentType())
                     .data(PDFUtils.compressPDF(file.getBytes()))
                     .build());

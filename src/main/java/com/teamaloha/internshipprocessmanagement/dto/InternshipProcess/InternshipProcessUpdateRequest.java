@@ -49,16 +49,6 @@ public class InternshipProcessUpdateRequest {
 
     private Boolean gssEntry;
 
-    private Integer mustehaklikBelgesiID;
-
-    private Integer stajYeriFormuID;
-
-    private Integer mufredatDurumuID;
-
-    private Integer transkriptID;
-
-    private Integer dersProgramıID;
-
     private Boolean donem_ici;
 
     private MultipartFile mustehaklikBelgesi;

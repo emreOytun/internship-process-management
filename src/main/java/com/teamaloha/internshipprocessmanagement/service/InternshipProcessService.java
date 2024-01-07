@@ -906,7 +906,7 @@ public class InternshipProcessService {
             oldLocationId = internshipProcess.getMustehaklikBelgesiID();
             internshipProcess.setMustehaklikBelgesiID(newLocationId);
         }
-        else if(type.equals("stajYeriFormuId")){
+        else if(type.equals("stajYeriFormuID")){
             oldLocationId = internshipProcess.getStajYeriFormuID();
             internshipProcess.setStajYeriFormuID(newLocationId);
         }

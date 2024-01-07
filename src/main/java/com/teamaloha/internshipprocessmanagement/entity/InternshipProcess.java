@@ -127,6 +127,10 @@ public class InternshipProcess {
     @Column(name = "rejected")
     private Boolean rejected;
 
+    @Column(name = "rejected_status")
+    @Enumerated(EnumType.STRING)
+    private ProcessStatusEnum rejectedStatus;
+
     @OneToMany(mappedBy = "internshipProcess", cascade = {CascadeType.DETACH, CascadeType.REFRESH}, fetch = FetchType.LAZY)
     private Set<ProcessAssignee> processAssignees;
 }

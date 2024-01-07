@@ -56,15 +56,15 @@ public class InternshipProcessGetResponse {
 
     private Boolean donem_ici;
 
-    private Integer stajRaporuId;
+    private Integer stajRaporuID;
 
-    private Integer mufredatDurumuId;
+    private Integer mufredatDurumuID;
 
-    private Integer transkriptId;
+    private Integer transkriptID;
 
-    private Integer dersProgramıId;
+    private Integer dersProgramıID;
 
-    private Integer stajYeriFormuId;
+    private Integer stajYeriFormuID;
 
     private Integer mustehaklikBelgesiID;
 

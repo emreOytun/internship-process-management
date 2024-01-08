@@ -100,6 +100,7 @@ public class InternshipProcessService {
         emptyProcess.setProcessStatus(ProcessStatusEnum.FORM);
         emptyProcess.setEditable(true);
         emptyProcess.setRejected(false);
+        emptyProcess.setRejectedStatus(null);
         InternshipProcess savedProcess = internshipProcessDao.save(emptyProcess);
 
         logger.info("Created InternshipProcess with ID: " + savedProcess.getId());
@@ -257,6 +258,8 @@ public class InternshipProcessService {
         List<ProcessAssignee> assigneeList = prepareProcessAssigneeList(internshipProcess, now);
         internshipProcess.setProcessStatus(ProcessStatusEnum.REPORT1);
         internshipProcess.setRejected(false);
+        internshipProcess.setRejectedStatus(null);
+        internshipProcess.getLogDates().setUpdateDate(now);
 
         InternshipProcess updatedInternshipProcess = internshipProcessDao.save(internshipProcess);
 
@@ -451,6 +454,7 @@ public class InternshipProcessService {
             internshipProcess.setReportLastEditDate(calendar.getTime());
             internshipProcess.setRejected(true);
             nextStatus = ProcessStatusEnum.POST;
+            internshipProcess.setRejectedStatus(internshipProcess.getProcessStatus());
             processOperationType = ProcessOperationType.REJECTION;
         } else {
             if (!internshipProcessEvaluateRequest.getApprove()) {

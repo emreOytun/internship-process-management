@@ -73,6 +73,8 @@ public class InternshipProcessGetResponse {
 
     private Boolean rejected;
 
+    private ProcessStatusEnum rejectedStatus;
+
     private String comment;
 
     private String companyName;

@@ -1,5 +1,6 @@
 package com.teamaloha.internshipprocessmanagement.entity;
 
+import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,6 +16,9 @@ public class PDFData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
+
+    @Embedded
+    LogDates logDates;
 
     @Column(name = "name")
     private String name;

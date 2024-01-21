@@ -13,7 +13,6 @@ import com.teamaloha.internshipprocessmanagement.dto.authentication.Authenticati
 import com.teamaloha.internshipprocessmanagement.dto.user.UserDto;
 import com.teamaloha.internshipprocessmanagement.entity.Academician;
 import com.teamaloha.internshipprocessmanagement.entity.Department;
-import com.teamaloha.internshipprocessmanagement.entity.Student;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ErrorCodeEnum;
 import com.teamaloha.internshipprocessmanagement.enums.RoleEnum;
@@ -28,6 +27,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.*;
 
 
@@ -384,7 +384,7 @@ public class AcademicianService {
 
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(academician, userDto);
-        String token = authenticationService.createJwtToken(userDto);
+        String token = generateRandomString();
         academician.setPasswordResetToken(token);
         academicianDao.save(academician);
 
@@ -394,6 +394,19 @@ public class AcademicianService {
                 "Şifre Sıfırlama",
                 "Şifrenizi sıfırlamak için aşağıdaki linke tıklayınız 50 dakika aktif olacaktır: http://localhost:3000/auth/resetPassword/"+token
         );
+    }
+
+    private static String generateRandomString() {
+        String characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        StringBuilder randomString = new StringBuilder();
+
+        SecureRandom secureRandom = new SecureRandom();
+        for (int i = 0; i < 10; i++) {
+            int randomIndex = secureRandom.nextInt(characters.length());
+            randomString.append(characters.charAt(randomIndex));
+        }
+
+        return randomString.toString();
     }
 
     public void resetPassword(String token, String password) {

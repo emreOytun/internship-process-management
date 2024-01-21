@@ -37,9 +37,15 @@ public class StorageController {
         return ResponseEntity.status(HttpStatus.OK).body("File uploaded successfully");
     }
 
-    @GetMapping("/download")
-    public ResponseEntity<?> downloadFile(@RequestParam Integer fileId) {
-        byte[] downloadedFile = storageService.downloadFile(fileId);
+    @GetMapping("/downloadAcademician")
+    public ResponseEntity<?> downloadFileAcademician(@RequestParam Integer fileId, @CurrentUserId Integer userId) {
+        byte[] downloadedFile = storageService.downloadFileAcademician(fileId, userId);
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf("application/pdf")).body(downloadedFile);
+    }
+
+    @GetMapping("/downloadStudent")
+    public ResponseEntity<?> downloadFileStudent(@RequestParam Integer fileId, @CurrentUserId Integer userId) {
+        byte[] downloadedFile = storageService.downloadFileStudent(fileId, userId);
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf("application/pdf")).body(downloadedFile);
     }
 }

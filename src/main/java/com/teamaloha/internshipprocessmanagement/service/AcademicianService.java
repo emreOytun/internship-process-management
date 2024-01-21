@@ -228,12 +228,8 @@ public class AcademicianService {
         return true;
     }
 
-    public List<String> getAcademiciansMail(List<Integer> ids){
-        List<String> mails = new ArrayList<>();
-        for (Integer id : ids) {
-            mails.add(getAcademicianIfExistsOrThrowException(id).getMail());
-        }
-        return mails;
+    public List<String> getAcademiciansMail(List<Integer> ids) {
+        return userService.findMailsByUserIds(ids);
     }
 
     public List<Integer> findAcademiciansIdsByInternshipCommitteeAndDepartment(Boolean internshipCommittee, Integer departmentId) {
@@ -345,7 +341,6 @@ public class AcademicianService {
         }
         return academician;
     }
-
 
     private String getFullName(Academician academician) {
         return academician.getFirstName() + " " + academician.getLastName();

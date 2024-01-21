@@ -43,6 +43,10 @@ public class StudentService {
     }
 
     public AuthenticationResponse register(StudentRegisterRequest studentRegisterRequest) {
+        if (UtilityService.checkMailIsValid(studentRegisterRequest.getMail())) {
+            logger.error("Invalid mail. Mail: " + studentRegisterRequest.getMail());
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
         boolean isMailExistsBefore = userService.existsByMail(studentRegisterRequest.getMail());
         if (isMailExistsBefore) {
             logger.error("Given mail exists before. Mail: " + studentRegisterRequest.getMail());

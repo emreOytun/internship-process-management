@@ -7,6 +7,7 @@ import com.teamaloha.internshipprocessmanagement.entity.Student;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.exceptions.CustomException;
 import com.teamaloha.internshipprocessmanagement.utilities.PDFUtils;
+import io.micrometer.common.util.StringUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,7 +41,7 @@ public class StorageService {
 
     @Transactional
     public void uploadFile(MultipartFile file, String type, Integer processId, Integer userId) throws IOException {
-        if (file.getContentType() != "application/pdf") {
+        if (!("application/pdf".equals(file.getContentType()))) {
             logger.error("File type is not PDF. processId: " + processId + " type: " + file.getContentType());
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }

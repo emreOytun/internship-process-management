@@ -29,6 +29,8 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 @Service
@@ -57,6 +59,10 @@ public class AcademicianService {
     }
 
     public AuthenticationResponse register(AcademicianRegisterRequest academicianRegisterRequest) {
+        if (UtilityService.checkMailIsValid(academicianRegisterRequest.getMail())) {
+            logger.error("Invalid mail. Mail: " + academicianRegisterRequest.getMail());
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
         boolean isMailExistsBefore = userService.existsByMail(academicianRegisterRequest.getMail());
         if (isMailExistsBefore) {
             logger.error("Given mail exists before. Mail: " + academicianRegisterRequest.getMail());

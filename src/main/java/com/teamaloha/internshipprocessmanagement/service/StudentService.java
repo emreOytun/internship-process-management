@@ -137,7 +137,7 @@ public class StudentService {
 
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(student, userDto);
-        String token = generateRandomString();
+        String token = UtilityService.generateRandomString();
         student.setPasswordResetToken(token);
         studentDao.save(student);
 
@@ -166,19 +166,6 @@ public class StudentService {
         student.setPassword(authenticationService.hashPassword(password));
         student.setPasswordResetToken(null);
         studentDao.save(student);
-    }
-
-    private static String generateRandomString() {
-        String characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        StringBuilder randomString = new StringBuilder();
-
-        SecureRandom secureRandom = new SecureRandom();
-        for (int i = 0; i < 10; i++) {
-            int randomIndex = secureRandom.nextInt(characters.length());
-            randomString.append(characters.charAt(randomIndex));
-        }
-
-        return randomString.toString();
     }
 
     public Student findStudentById(Integer id) {

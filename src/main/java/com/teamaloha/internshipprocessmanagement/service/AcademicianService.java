@@ -384,7 +384,7 @@ public class AcademicianService {
 
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(academician, userDto);
-        String token = generateRandomString();
+        String token = UtilityService.generateRandomString();
         academician.setPasswordResetToken(token);
         academicianDao.save(academician);
 
@@ -394,19 +394,6 @@ public class AcademicianService {
                 "Şifre Sıfırlama",
                 "Şifrenizi sıfırlamak için aşağıdaki linke tıklayınız 50 dakika aktif olacaktır: http://localhost:3000/auth/resetPassword/"+token
         );
-    }
-
-    private static String generateRandomString() {
-        String characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        StringBuilder randomString = new StringBuilder();
-
-        SecureRandom secureRandom = new SecureRandom();
-        for (int i = 0; i < 10; i++) {
-            int randomIndex = secureRandom.nextInt(characters.length());
-            randomString.append(characters.charAt(randomIndex));
-        }
-
-        return randomString.toString();
     }
 
     public void resetPassword(String token, String password) {

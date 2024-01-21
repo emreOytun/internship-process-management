@@ -366,7 +366,7 @@ public class InternshipProcessService {
         List<Integer> assigneeIds = assigneeList.stream().map(ProcessAssignee::getAssigneeId).toList();
         List<String> to = academicianService.getAcademiciansMail(assigneeIds);
 
-        mailService.sendMail(
+        mailService.sendMailAsync(
                 to,
                 null,
                 "Staj Başvurusu",
@@ -444,7 +444,7 @@ public class InternshipProcessService {
                         + internshipProcess.getProcessStatus());
                 throw new CustomException(HttpStatus.BAD_REQUEST);
             }
-            mailService.sendMail(
+            mailService.sendMailAsync(
                     List.of(internshipProcess.getStudent().getMail()),
                     null,
                     "Staj Raporu Düzenleme İsteği",
@@ -484,7 +484,7 @@ public class InternshipProcessService {
                     nextStatus = internshipProcess.getProcessStatus();
                 }
                 processOperationType = ProcessOperationType.REJECTION;
-                mailService.sendMail(
+                mailService.sendMailAsync(
                         List.of(internshipProcess.getStudent().getMail()),
                         null,
                         "Staj Başvurusu Reddedildi",
@@ -516,7 +516,7 @@ public class InternshipProcessService {
                     nextStatus = ProcessStatusEnum.findNextStatus(internshipProcess.getProcessStatus());
                 }
                 processOperationType = ProcessOperationType.APPROVAL;
-                mailService.sendMail(
+                mailService.sendMailAsync(
                         List.of(internshipProcess.getStudent().getMail()),
                         null,
                         "Staj Başvurusu Onaylandı",

@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.*;
 
 @Service
@@ -136,7 +137,7 @@ public class StudentService {
 
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(student, userDto);
-        String token = authenticationService.createJwtToken(userDto);
+        String token = UtilityService.generateRandomString();
         student.setPasswordResetToken(token);
         studentDao.save(student);
 

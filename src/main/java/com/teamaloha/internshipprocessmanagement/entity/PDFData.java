@@ -22,6 +22,9 @@ public class PDFData {
     @Column(name = "type")
     private String type;
 
+    @Column(name = "fileOwner")
+    private Integer fileOwnerId;
+
     @Lob
     @Column(name = "pdf_data", columnDefinition = "LONGBLOB")
     private byte[] data;

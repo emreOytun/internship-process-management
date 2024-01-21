@@ -13,7 +13,6 @@ import com.teamaloha.internshipprocessmanagement.dto.authentication.Authenticati
 import com.teamaloha.internshipprocessmanagement.dto.user.UserDto;
 import com.teamaloha.internshipprocessmanagement.entity.Academician;
 import com.teamaloha.internshipprocessmanagement.entity.Department;
-import com.teamaloha.internshipprocessmanagement.entity.Student;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ErrorCodeEnum;
 import com.teamaloha.internshipprocessmanagement.enums.RoleEnum;
@@ -28,6 +27,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.*;
 
 
@@ -384,7 +384,7 @@ public class AcademicianService {
 
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(academician, userDto);
-        String token = authenticationService.createJwtToken(userDto);
+        String token = UtilityService.generateRandomString();
         academician.setPasswordResetToken(token);
         academicianDao.save(academician);
 

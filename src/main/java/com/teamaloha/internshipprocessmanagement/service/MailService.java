@@ -56,4 +56,13 @@ public class MailService {
         logger.info("Mail sent to: " + to);
     }
 
+    public void sendMailAsync(List<String> to, List<String> cc, String subject, String text) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                sendMail(to, cc, subject, text);
+            }
+        }).start();
+    }
+
 }

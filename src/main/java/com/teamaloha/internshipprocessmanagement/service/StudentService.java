@@ -41,10 +41,10 @@ public class StudentService {
     }
 
     public AuthenticationResponse register(StudentRegisterRequest studentRegisterRequest) {
-        if (!UtilityService.checkMailIsValid(studentRegisterRequest.getMail())) {
-            logger.error("Invalid mail. Mail: " + studentRegisterRequest.getMail());
-            throw new CustomException(ErrorCodeEnum.MAIL_FORMAT_NOT_VALID.getErrorCode(), HttpStatus.BAD_REQUEST);
-        }
+        //if (!UtilityService.checkMailIsValid(studentRegisterRequest.getMail())) {
+        //    logger.error("Invalid mail. Mail: " + studentRegisterRequest.getMail());
+        //    throw new CustomException(ErrorCodeEnum.MAIL_FORMAT_NOT_VALID.getErrorCode(), HttpStatus.BAD_REQUEST);
+        //}
         if (!UtilityService.checkPasswordValid(studentRegisterRequest.getPassword())) {
             logger.error("Invalid password. Password: " + studentRegisterRequest.getPassword());
             throw new CustomException(ErrorCodeEnum.PASSWORD_FORMAT_NOT_VALID.getErrorCode(), HttpStatus.BAD_REQUEST);

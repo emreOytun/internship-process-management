@@ -56,10 +56,10 @@ public class AcademicianService {
     }
 
     public AuthenticationResponse register(AcademicianRegisterRequest academicianRegisterRequest) {
-        if (!UtilityService.checkMailIsValid(academicianRegisterRequest.getMail())) {
-            logger.error("Invalid mail. Mail: " + academicianRegisterRequest.getMail());
-            throw new CustomException(ErrorCodeEnum.MAIL_FORMAT_NOT_VALID.getErrorCode(), HttpStatus.BAD_REQUEST);
-        }
+        //if (!UtilityService.checkMailIsValid(academicianRegisterRequest.getMail())) {
+        //    logger.error("Invalid mail. Mail: " + academicianRegisterRequest.getMail());
+        //    throw new CustomException(ErrorCodeEnum.MAIL_FORMAT_NOT_VALID.getErrorCode(), HttpStatus.BAD_REQUEST);
+        //}
         if (!UtilityService.checkPasswordValid(academicianRegisterRequest.getPassword())) {
             logger.error("Invalid password. Password: " + academicianRegisterRequest.getPassword());
             throw new CustomException(ErrorCodeEnum.PASSWORD_FORMAT_NOT_VALID.getErrorCode(), HttpStatus.BAD_REQUEST);

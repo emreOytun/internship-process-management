@@ -5,9 +5,11 @@ import com.teamaloha.internshipprocessmanagement.dao.StorageDao;
 import com.teamaloha.internshipprocessmanagement.entity.PDFData;
 import com.teamaloha.internshipprocessmanagement.entity.Student;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
+import com.teamaloha.internshipprocessmanagement.exceptions.CustomException;
 import com.teamaloha.internshipprocessmanagement.utilities.PDFUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,13 +39,18 @@ public class StorageService {
     }
 
     @Transactional
-    public void uploadFile(MultipartFile file, String type, Integer processId) throws IOException {
+    public void uploadFile(MultipartFile file, String type, Integer processId, Integer userId) throws IOException {
+        if (file.getContentType() != "application/pdf") {
+            logger.error("File type is not PDF. processId: " + processId + " type: " + file.getContentType());
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
         Date now = new Date();
         PDFData pdfData = storageDao.save(PDFData.builder()
                 .logDates(LogDates.builder().createDate(now).updateDate(now).build())
                 .name(processId+"_"+file.getOriginalFilename())
                 .type(file.getContentType())
                 .data(PDFUtils.compressPDF(file.getBytes()))
+                .fileOwnerId(userId)
                 .build());
 
         // delete older

@@ -32,18 +32,20 @@ public class StorageController {
 
     @PostMapping("/upload")
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
-    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file, String type , Integer processId) throws IOException {
-        storageService.uploadFile(file, type, processId);
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file, String type , Integer processId, @CurrentUserId Integer userId) throws IOException {
+        storageService.uploadFile(file, type, processId, userId);
         return ResponseEntity.status(HttpStatus.OK).body("File uploaded successfully");
     }
 
     @GetMapping("/downloadAcademician")
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
     public ResponseEntity<?> downloadFileAcademician(@RequestParam Integer fileId, @CurrentUserId Integer userId) {
         byte[] downloadedFile = storageService.downloadFileAcademician(fileId, userId);
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf("application/pdf")).body(downloadedFile);
     }
 
     @GetMapping("/downloadStudent")
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
     public ResponseEntity<?> downloadFileStudent(@RequestParam Integer fileId, @CurrentUserId Integer userId) {
         byte[] downloadedFile = storageService.downloadFileStudent(fileId, userId);
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf("application/pdf")).body(downloadedFile);

@@ -5,7 +5,6 @@ import com.teamaloha.internshipprocessmanagement.dto.authentication.Authenticati
 import com.teamaloha.internshipprocessmanagement.dto.authentication.AuthenticationResponse;
 import com.teamaloha.internshipprocessmanagement.dto.authentication.StudentRegisterRequest;
 import com.teamaloha.internshipprocessmanagement.dto.user.UserDto;
-import com.teamaloha.internshipprocessmanagement.entity.Academician;
 import com.teamaloha.internshipprocessmanagement.entity.Student;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.enums.ErrorCodeEnum;
@@ -19,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.security.SecureRandom;
 import java.util.*;
 
 @Service
@@ -43,10 +41,15 @@ public class StudentService {
     }
 
     public AuthenticationResponse register(StudentRegisterRequest studentRegisterRequest) {
-        if (UtilityService.checkMailIsValid(studentRegisterRequest.getMail())) {
+        if (!UtilityService.checkMailIsValid(studentRegisterRequest.getMail())) {
             logger.error("Invalid mail. Mail: " + studentRegisterRequest.getMail());
-            throw new CustomException(HttpStatus.BAD_REQUEST);
+            throw new CustomException(ErrorCodeEnum.MAIL_FORMAT_NOT_VALID.getErrorCode(), HttpStatus.BAD_REQUEST);
         }
+        if (!UtilityService.checkPasswordValid(studentRegisterRequest.getPassword())) {
+            logger.error("Invalid password. Password: " + studentRegisterRequest.getPassword());
+            throw new CustomException(ErrorCodeEnum.PASSWORD_FORMAT_NOT_VALID.getErrorCode(), HttpStatus.BAD_REQUEST);
+        }
+
         boolean isMailExistsBefore = userService.existsByMail(studentRegisterRequest.getMail());
         if (isMailExistsBefore) {
             logger.error("Given mail exists before. Mail: " + studentRegisterRequest.getMail());
@@ -100,8 +103,19 @@ public class StudentService {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
-        if(!student.getVerifiedMail()){
-            logger.error("Mail is not verified.");
+        if(!student.getVerifiedMail()) {
+            // create 6 digit verification code
+            Random random = new Random();
+            int code = random.nextInt(999999);
+            student.setVerificationCode(String.format("%06d", code));
+            mailService.sendMail(
+                    Arrays.asList(student.getMail()),
+                    null,
+                    "Öğrenci Kaydı",
+                    "Öğrenci kaydınızı tamamlamak için aşağıdaki linke tıklayınız ve "+student.getVerificationCode()+" kodunu Giriniz"+": http://localhost:3000/onayla/auth");
+            studentDao.save(student);
+
+            logger.error("Mail is not verified. UserId: " + student.getId());
             throw new CustomException(ErrorCodeEnum.MAIL_NOT_VERIFIED.getErrorCode(), HttpStatus.BAD_REQUEST);
         }
 

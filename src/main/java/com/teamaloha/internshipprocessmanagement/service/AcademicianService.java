@@ -27,10 +27,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.security.SecureRandom;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 @Service
@@ -59,10 +56,15 @@ public class AcademicianService {
     }
 
     public AuthenticationResponse register(AcademicianRegisterRequest academicianRegisterRequest) {
-        if (UtilityService.checkMailIsValid(academicianRegisterRequest.getMail())) {
+        if (!UtilityService.checkMailIsValid(academicianRegisterRequest.getMail())) {
             logger.error("Invalid mail. Mail: " + academicianRegisterRequest.getMail());
-            throw new CustomException(HttpStatus.BAD_REQUEST);
+            throw new CustomException(ErrorCodeEnum.MAIL_FORMAT_NOT_VALID.getErrorCode(), HttpStatus.BAD_REQUEST);
         }
+        if (!UtilityService.checkPasswordValid(academicianRegisterRequest.getPassword())) {
+            logger.error("Invalid password. Password: " + academicianRegisterRequest.getPassword());
+            throw new CustomException(ErrorCodeEnum.PASSWORD_FORMAT_NOT_VALID.getErrorCode(), HttpStatus.BAD_REQUEST);
+        }
+
         boolean isMailExistsBefore = userService.existsByMail(academicianRegisterRequest.getMail());
         if (isMailExistsBefore) {
             logger.error("Given mail exists before. Mail: " + academicianRegisterRequest.getMail());
@@ -112,8 +114,19 @@ public class AcademicianService {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
-        if(!academician.getVerifiedMail()){
-            logger.error("Mail is not verified.");
+        if(!academician.getVerifiedMail()) {
+            // create 6 digit verification code
+            Random random = new Random();
+            int code = random.nextInt(999999);
+            academician.setVerificationCode(String.format("%06d", code));
+            mailService.sendMail(
+                    Arrays.asList(academician.getMail()),
+                    null,
+                    "Akademisyen Kaydı",
+                    "Akademisyen kaydınızı tamamlamak için aşağıdaki linke tıklayınız ve "+academician.getVerificationCode()+" kodunu Giriniz"+": http://localhost:3000/onayla/auth");
+            academicianDao.save(academician);
+
+            logger.error("Mail is not verified. UserId: " + academician.getId());
             throw new CustomException(ErrorCodeEnum.MAIL_NOT_VERIFIED.getErrorCode(), HttpStatus.BAD_REQUEST);
         }
 

@@ -821,11 +821,10 @@ public class InternshipProcessService {
         excludedFields.add("comment");
         excludedFields.add("reportLastEditDate");
         excludedFields.add("commentOwner");
-        excludedFields.add("mustehaklikBelgesiID");
-        excludedFields.add("stajYeriFormuID");
+//        excludedFields.add("mustehaklikBelgesiID");
+//        excludedFields.add("stajYeriFormuID");
 
         Field[] fields = InternshipProcess.class.getDeclaredFields();
-/*
         for (Field field : fields) {
             String fieldName = field.getName();
             if (!excludedFields.contains(fieldName)) {
@@ -841,7 +840,6 @@ public class InternshipProcessService {
                 }
             }
         }
-       */
         return true;
     }
 

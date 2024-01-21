@@ -14,7 +14,9 @@ public enum ErrorCodeEnum {
     INTERNSHIP_DOES_NOT_EXISTS_BEFORE("19"),
     INTERNSHIP_MAX_NUMBER("20"),
     MAIL_NOT_EXISTS_BEFORE("21"),
-    MAIL_NOT_VERIFIED("22");
+    MAIL_NOT_VERIFIED("22"),
+    MAIL_FORMAT_NOT_VALID("23"),
+    PASSWORD_FORMAT_NOT_VALID("24");
 
     private final String errorCode;
 

@@ -60,7 +60,7 @@ public class UtilityService {
         return uppercaseFound && lowercaseFound && digitFound && specialCharacterFound;
     }
 
-    public static final String format1 = "dd-MM-yyyy HH:mm:ss";
+    public static final String format1 = "dd-MM-yyyy";
 
     public static String convertDate(Date date, String format) {
         DateFormat outputFormat = new SimpleDateFormat(format);

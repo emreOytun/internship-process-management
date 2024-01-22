@@ -80,7 +80,7 @@ public class SecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("http://localhost:4200");
+                registry.addMapping("/**").allowedOrigins("http://localhost:3000");
                 registry.addMapping("/**").allowedOrigins("https://subtle-scone-3209de.netlify.app");
             }
         };
@@ -115,6 +115,7 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedOrigins(Arrays.asList("https://subtle-scone-3209de.netlify.app"));
+        //corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
         /*corsConfiguration.setAllowedOrigins(Arrays.asList("https://precious-tartufo-8ee83d.netlify.app"));*/
         corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         corsConfiguration.setAllowedHeaders(Arrays.asList("authorization", "content-type"));

@@ -414,7 +414,7 @@ public class InternshipProcessService {
                 null,
                 "Staj Başvurusu",
                 "Staj Başvurusu Yapıldı bu link üzerinden detayları inceleyebilirsiniz." +
-                        "http://localhost:3000/internship-process/" + internshipProcess.getId()
+                        "https://subtle-scone-3209de.netlify.app/internship-process/" + internshipProcess.getId()
         );
     }
 
@@ -492,7 +492,7 @@ public class InternshipProcessService {
                     null,
                     "Staj Raporu Düzenleme İsteği",
                     "Staj Raporunuzun düzenlenmesi için istekte bulunuldu. Bu link üzerinden detayları inceleyebilirsiniz." +
-                            "http://localhost:3000/internship-process/" + internshipProcess.getId());
+                            "https://subtle-scone-3209de.netlify.app/internship-process/" + internshipProcess.getId());
             assigneeList = new ArrayList<>();
             internshipProcess.setReportLastEditDate(calendar.getTime());
             internshipProcess.setRejected(true);
@@ -532,7 +532,7 @@ public class InternshipProcessService {
                         null,
                         "Staj Başvurusu Reddedildi",
                         "Staj Başvurunuz reddedildi. Bu link üzerinden detayları inceleyebilirsiniz." +
-                                "http://localhost:3000/internship-process/" + internshipProcess.getId());
+                                "https://subtle-scone-3209de.netlify.app/internship-process/" + internshipProcess.getId());
             } else {
                 // Approval
                 assigneeList = prepareProcessAssigneeList(internshipProcess, now);
@@ -564,7 +564,7 @@ public class InternshipProcessService {
                         null,
                         "Staj Başvurusu Onaylandı",
                         "Staj Başvurunuz onaylandı. Bu link üzerinden detayları inceleyebilirsiniz." +
-                                "http://localhost:3000/internship-process/" + internshipProcess.getId());
+                                "https://subtle-scone-3209de.netlify.app/internship-process/" + internshipProcess.getId());
             }
         }
 
@@ -673,7 +673,7 @@ public class InternshipProcessService {
                         "Sevgili Öğrencimiz,\n" +
                                 "\n  Stajınızın ilk haftası içinde sizi denetleyen mühendisin iletişim bilgilerini ve " +
                                 "stajını gerçekleştirmekte olduğunuz pozisyon bilgisini girmeniz gerekmektedir. " +
-                                "Bu link üzerinden detayları inceleyebilirsiniz. http://localhost:3000/internship-process/" + internshipProcess.getId()
+                                "Bu link üzerinden detayları inceleyebilirsiniz. https://subtle-scone-3209de.netlify.app/internship-process/" + internshipProcess.getId()
                 );
             }
             calendar.add(Calendar.DAY_OF_MONTH, 4);
@@ -685,7 +685,7 @@ public class InternshipProcessService {
                         "Sevgili Öğrencimiz,\n" +
                                 "\n  Yarın sizi denetleyen mühendisin iletişim bilgilerini stajını gerçekleştirmekte olduğunuz " +
                                 "pozisyon bilgisini girmeniz için verilen sürenin son günü olduğunu hatırlatır iyi günler dileriz. " +
-                                "Bu link üzerinden detayları inceleyebilirsiniz. http://localhost:3000/internship-process/" + internshipProcess.getId()
+                                "Bu link üzerinden detayları inceleyebilirsiniz. https://subtle-scone-3209de.netlify.app/internship-process/" + internshipProcess.getId()
                 );
             }
         }
@@ -821,6 +821,10 @@ public class InternshipProcessService {
         excludedFields.add("comment");
         excludedFields.add("reportLastEditDate");
         excludedFields.add("commentOwner");
+        excludedFields.add("donem_ici");
+        excludedFields.add("rejected");
+        excludedFields.add("rejectedStatus");
+        excludedFields.add("processStatus");
 //        excludedFields.add("mustehaklikBelgesiID");
 //        excludedFields.add("stajYeriFormuID");
 

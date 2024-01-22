@@ -89,7 +89,7 @@ public class AcademicianService {
                 Arrays.asList(academician.getMail()),
                 null,
                 "Akademisyen Kaydı",
-                "Akademisyen kaydınızı tamamlamak için aşağıdaki linke tıklayınız ve "+academician.getVerificationCode()+" kodunu Giriniz"+": http://localhost:3000/onayla/auth");
+                "Akademisyen kaydınızı tamamlamak için aşağıdaki linke tıklayınız ve "+academician.getVerificationCode()+" kodunu Giriniz"+": https://subtle-scone-3209de.netlify.app/onayla/auth");
         academicianDao.save(academician);
 
         // Create token and return it.
@@ -123,7 +123,7 @@ public class AcademicianService {
                     Arrays.asList(academician.getMail()),
                     null,
                     "Akademisyen Kaydı",
-                    "Akademisyen kaydınızı tamamlamak için aşağıdaki linke tıklayınız ve "+academician.getVerificationCode()+" kodunu Giriniz"+": http://localhost:3000/onayla/auth");
+                    "Akademisyen kaydınızı tamamlamak için aşağıdaki linke tıklayınız ve "+academician.getVerificationCode()+" kodunu Giriniz"+": https://subtle-scone-3209de.netlify.app/onayla/auth");
             academicianDao.save(academician);
 
             logger.error("Mail is not verified. UserId: " + academician.getId());
@@ -298,6 +298,7 @@ public class AcademicianService {
     private AcademicianGetResponse convertEntityToDto(Academician academician) {
         AcademicianGetResponse academicianGetResponse = new AcademicianGetResponse();
         BeanUtils.copyProperties(academician, academicianGetResponse);
+        BeanUtils.copyProperties(academician, academicianGetResponse);
         if (academician.getDepartment() != null) {
             academicianGetResponse.setDepartmentName(academician.getDepartment().getDepartmentName());
         }
@@ -406,7 +407,7 @@ public class AcademicianService {
                 to,
                 null,
                 "Şifre Sıfırlama",
-                "Şifrenizi sıfırlamak için aşağıdaki linke tıklayınız 50 dakika aktif olacaktır: http://localhost:3000/auth/resetPassword/"+token
+                "Şifrenizi sıfırlamak için aşağıdaki linke tıklayınız 50 dakika aktif olacaktır: https://subtle-scone-3209de.netlify.app/auth/resetPassword/"+token
         );
     }
 
@@ -417,14 +418,14 @@ public class AcademicianService {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
-        if(jwtService.isTokenValid(academician.getPasswordResetToken())){
+        if(academician.getPasswordResetToken().equals(token)){
             academician.setPassword(authenticationService.hashPassword(password));
         }else{
             logger.error("Invalid token. token: " + token);
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
-        academician.setPassword(authenticationService.hashPassword(password));
+        /*academician.setPassword(authenticationService.hashPassword(password));*/
         academician.setPasswordResetToken(null);
         academicianDao.save(academician);
     }

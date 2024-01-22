@@ -67,7 +67,7 @@ public class StudentService {
                 Arrays.asList(student.getMail()),
                 null,
                 "Öğrenci Kaydı",
-                "Öğrenci kaydınızı tamamlamak için aşağıdaki linke tıklayınız ve "+student.getVerificationCode()+" kodunu Giriniz"+": http://localhost:3000/onayla/auth");
+                "Öğrenci kaydınızı tamamlamak için aşağıdaki linke tıklayınız ve "+student.getVerificationCode()+" kodunu Giriniz"+": https://subtle-scone-3209de.netlify.app/onayla/auth");
         studentDao.save(student);
 
         // Create token and return it.
@@ -112,7 +112,7 @@ public class StudentService {
                     Arrays.asList(student.getMail()),
                     null,
                     "Öğrenci Kaydı",
-                    "Öğrenci kaydınızı tamamlamak için aşağıdaki linke tıklayınız ve "+student.getVerificationCode()+" kodunu Giriniz"+": http://localhost:3000/onayla/auth");
+                    "Öğrenci kaydınızı tamamlamak için aşağıdaki linke tıklayınız ve "+student.getVerificationCode()+" kodunu Giriniz"+": https://subtle-scone-3209de.netlify.app/onayla/auth");
             studentDao.save(student);
 
             logger.error("Mail is not verified. UserId: " + student.getId());
@@ -163,7 +163,7 @@ public class StudentService {
                 to,
                 null,
                 "Şifre Sıfırlama",
-                "Şifrenizi sıfırlamak için aşağıdaki linke tıklayınız 50 dakika aktif olacaktır: http://localhost:3000/auth/resetPassword/"+token
+                "Şifrenizi sıfırlamak için aşağıdaki linke tıklayınız 50 dakika aktif olacaktır: https://subtle-scone-3209de.netlify.app/auth/resetPassword/"+token
         );
     }
 
@@ -174,14 +174,14 @@ public class StudentService {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
-        if(jwtService.isTokenValid(student.getPasswordResetToken())){
+        if(student.getPasswordResetToken().equals(token)){
             student.setPassword(authenticationService.hashPassword(password));
         }else{
             logger.error("Invalid token. token: " + token);
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
-        student.setPassword(authenticationService.hashPassword(password));
+        /*student.setPassword(authenticationService.hashPassword(password));*/
         student.setPasswordResetToken(null);
         studentDao.save(student);
     }

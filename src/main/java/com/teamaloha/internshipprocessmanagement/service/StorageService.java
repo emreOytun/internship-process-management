@@ -45,6 +45,7 @@ public class StorageService {
             logger.error("File type is not PDF. processId: " + processId + " type: " + file.getContentType());
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
+
         Date now = new Date();
         PDFData pdfData = storageDao.save(PDFData.builder()
                 .logDates(LogDates.builder().createDate(now).updateDate(now).build())
@@ -102,4 +103,13 @@ public class StorageService {
         }
     }
 
+    public void deleteFile(Integer processId, Integer fileId, Integer userId) {
+        internshipProcessService.updateFileId(processId, null, "null");
+        PDFData pdfData = storageDao.findByIdAndFileOwnerId(fileId, userId);
+        if (pdfData == null) {
+            logger.info("PDF is not found for given fileId: " + fileId + " and userId: " + userId);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        storageDao.deleteById(fileId);
+    }
 }

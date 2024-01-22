@@ -50,4 +50,11 @@ public class StorageController {
         byte[] downloadedFile = storageService.downloadFileStudent(fileId, userId);
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf("application/pdf")).body(downloadedFile);
     }
+
+    @GetMapping("/deleteFile")
+    @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteFile(@RequestParam Integer fileId, @CurrentUserId Integer userId) {
+        storageService.deleteFile(fileId, userId);
+    }
 }

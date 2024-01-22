@@ -39,6 +39,15 @@ public class StorageService {
         this.studentService = studentService;
     }
 
+    public void deleteFile(Integer fileId, Integer userId) {
+        PDFData pdfData = storageDao.findByIdAndFileOwnerId(fileId, userId);
+        if (pdfData == null) {
+            logger.info("PDF is not found for given fileId: " + fileId + " and userId: " + userId);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        storageDao.deleteById(fileId);
+    }
+
     @Transactional
     public void uploadFile(MultipartFile file, String type, Integer processId, Integer userId) throws IOException {
         if (!("application/pdf".equals(file.getContentType()))) {

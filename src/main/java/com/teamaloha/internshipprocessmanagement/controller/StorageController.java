@@ -54,7 +54,7 @@ public class StorageController {
     @GetMapping("/deleteFile")
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteFile(@RequestParam Integer fileId, @RequestParam Integer processId, @CurrentUserId Integer userId) {
-        storageService.deleteFile(processId, fileId, userId);
+    public void deleteFile(@RequestParam Integer fileId, @CurrentUserId Integer userId) {
+        storageService.deleteFile(fileId, userId);
     }
 }

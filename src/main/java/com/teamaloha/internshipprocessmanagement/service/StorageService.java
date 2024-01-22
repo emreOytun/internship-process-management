@@ -82,7 +82,7 @@ public class StorageService {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
-        String fileName = internshipProcess.getStudentNumber() + "_" + type.substring(0, type.length() - 2);
+        String fileName = type.substring(0, type.length() - 2);
         Date now = new Date();
         PDFData pdfData = storageDao.save(PDFData.builder()
                 .logDates(LogDates.builder().createDate(now).updateDate(now).build())

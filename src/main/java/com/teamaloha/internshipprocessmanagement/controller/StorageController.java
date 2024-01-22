@@ -1,14 +1,11 @@
 package com.teamaloha.internshipprocessmanagement.controller;
 
 import com.teamaloha.internshipprocessmanagement.annotations.CurrentUserId;
+import com.teamaloha.internshipprocessmanagement.dto.PDFDataGetResponse;
 import com.teamaloha.internshipprocessmanagement.service.StorageService;
-import com.teamaloha.internshipprocessmanagement.service.StudentService;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 @RestController
 @RequestMapping("/api/file")
@@ -42,14 +36,14 @@ public class StorageController {
     @GetMapping("/downloadAcademician")
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
     public ResponseEntity<?> downloadFileAcademician(@RequestParam Integer fileId, @CurrentUserId Integer userId) {
-        byte[] downloadedFile = storageService.downloadFileAcademician(fileId, userId);
+        PDFDataGetResponse downloadedFile = storageService.downloadFileAcademician(fileId, userId);
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf("application/pdf")).body(downloadedFile);
     }
 
     @GetMapping("/downloadStudent")
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
     public ResponseEntity<?> downloadFileStudent(@RequestParam @NotNull Integer fileId, @CurrentUserId Integer userId) {
-        byte[] downloadedFile = storageService.downloadFileStudent(fileId, userId);
+        PDFDataGetResponse downloadedFile = storageService.downloadFileStudent(fileId, userId);
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf("application/pdf")).body(downloadedFile);
     }
 

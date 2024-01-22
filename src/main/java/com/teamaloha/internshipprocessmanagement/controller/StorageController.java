@@ -36,14 +36,14 @@ public class StorageController {
     @GetMapping("/downloadAcademician")
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).ACADEMICIAN.name())")
     public ResponseEntity<?> downloadFileAcademician(@RequestParam Integer fileId, @CurrentUserId Integer userId) {
-        PDFDataGetResponse downloadedFile = storageService.downloadFileAcademician(fileId, userId);
+        byte[] downloadedFile = storageService.downloadFileAcademician(fileId, userId);
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf("application/pdf")).body(downloadedFile);
     }
 
     @GetMapping("/downloadStudent")
     @PreAuthorize("hasAuthority(T(com.teamaloha.internshipprocessmanagement.enums.RoleEnum).STUDENT.name())")
     public ResponseEntity<?> downloadFileStudent(@RequestParam @NotNull Integer fileId, @CurrentUserId Integer userId) {
-        PDFDataGetResponse downloadedFile = storageService.downloadFileStudent(fileId, userId);
+        byte[] downloadedFile = storageService.downloadFileStudent(fileId, userId);
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf("application/pdf")).body(downloadedFile);
     }
 

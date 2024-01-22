@@ -1,6 +1,7 @@
 package com.teamaloha.internshipprocessmanagement.dto.InternshipProcess;
 
 import com.teamaloha.internshipprocessmanagement.enums.ProcessStatusEnum;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -69,6 +70,18 @@ public class InternshipProcessGetResponse {
     private Integer stajYeriFormuID;
 
     private Integer mustehaklikBelgesiID;
+
+    private String mustehaklikBelgesiName;
+
+    private String stajYeriFormuName;
+
+    private String mufredatDurumuName;
+
+    private String transkriptName;
+
+    private String dersProgramiName;
+
+    private String stajRaporuName;
 
     // @Enumerated(EnumType.STRING)
     private ProcessStatusEnum processStatus;

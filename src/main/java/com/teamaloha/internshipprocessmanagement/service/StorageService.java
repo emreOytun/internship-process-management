@@ -93,7 +93,7 @@ public class StorageService {
                 .build());
 
         // delete older
-        Integer oldPdfId = internshipProcessService.updateFileId(internshipProcess, pdfData.getId(), type);
+        Integer oldPdfId = internshipProcessService.updateFileIdAndName(internshipProcess, pdfData.getId(), pdfData.getName(), type);
 
         if(oldPdfId != null){
             storageDao.deleteById(oldPdfId);
@@ -102,17 +102,15 @@ public class StorageService {
         logger.info("File uploaded successfully with id: " + pdfData.getId());
     }
 
-    public PDFDataGetResponse downloadFileAcademician(Integer fileId, Integer userId) {
+    public byte[] downloadFileAcademician(Integer fileId, Integer userId) {
         PDFData pdfData = storageDao.findPDFDataByById(fileId);
-
-//            return dbPdfData.map(pdfData -> PDFUtils.decompressPDF(pdfData.getData())).orElse(null);
         if (pdfData != null) {
-            return PDFDataGetResponse.builder().pdfName(pdfData.getName()).pdfData(PDFUtils.decompressPDF(pdfData.getData())).build();
+            return PDFUtils.decompressPDF(pdfData.getData());
         }
         return null;
     }
 
-    public PDFDataGetResponse downloadFileStudent(Integer fileId, Integer userId) {
+    public byte[] downloadFileStudent(Integer fileId, Integer userId) {
             PDFData pdfData = storageDao.findPDFDataByById(fileId);
             if (pdfData != null && !pdfData.getFileOwnerId().equals(userId)) {
                 logger.error("User ID and PDFData Owner Id does not match. userId: " + userId + " PDFData Owner Id: " + pdfData.getFileOwnerId());
@@ -120,8 +118,7 @@ public class StorageService {
             }
 
             if(pdfData != null) {
-//                return PDFUtils.decompressPDF(pdfData.getData());
-                return PDFDataGetResponse.builder().pdfName(pdfData.getName()).pdfData(PDFUtils.decompressPDF(pdfData.getData())).build();
+                return PDFUtils.decompressPDF(pdfData.getData());
             }
             return null;
     }

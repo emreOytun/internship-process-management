@@ -107,6 +107,24 @@ public class InternshipProcess {
     @Column(name = "staj_raporu_id", nullable = true)
     private Integer stajRaporuID;
 
+    @Column(name = "mustehaklik_belgesi_name", nullable = true)
+    private String mustehaklikBelgesiName;
+
+    @Column(name = "staj_yeri_formu_name", nullable = true)
+    private String stajYeriFormuName;
+
+    @Column(name = "mufredat_durumu_name", nullable = true)
+    private String mufredatDurumuName;
+
+    @Column(name = "transkript_name", nullable = true)
+    private String transkriptName;
+
+    @Column(name = "ders_programı_name", nullable = true)
+    private String dersProgramiName;
+
+    @Column(name = "staj_raporu_name", nullable = true)
+    private String stajRaporuName;
+
     @Column(name = "process_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ProcessStatusEnum processStatus;

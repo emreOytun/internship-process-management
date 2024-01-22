@@ -937,32 +937,38 @@ public class InternshipProcessService {
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public Integer updateFileId(InternshipProcess internshipProcess, Integer newLocationId, String type) {
+    public Integer updateFileIdAndName(InternshipProcess internshipProcess, Integer newLocationId, String fileName, String type) {
         Integer oldLocationId = null;
 
         if(type.equals("mufredatDurumuID")){
             oldLocationId = internshipProcess.getMufredatDurumuID();
             internshipProcess.setMufredatDurumuID(newLocationId);
+            internshipProcess.setMufredatDurumuName(fileName);
         }
         else if(type.equals("transkriptID")){
             oldLocationId = internshipProcess.getTranskriptID();
             internshipProcess.setTranskriptID(newLocationId);
+            internshipProcess.setTranskriptName(fileName);
         }
         else if(type.equals("dersProgramıID")){
             oldLocationId = internshipProcess.getDersProgramiID();
             internshipProcess.setDersProgramiID(newLocationId);
+            internshipProcess.setDersProgramiName(fileName);
         }
         else if(type.equals("stajRaporuID")){
             oldLocationId = internshipProcess.getStajRaporuID();
             internshipProcess.setStajRaporuID(newLocationId);
+            internshipProcess.setStajRaporuName(fileName);
         }
         else if(type.equals("mustehaklikBelgesiID")){
             oldLocationId = internshipProcess.getMustehaklikBelgesiID();
             internshipProcess.setMustehaklikBelgesiID(newLocationId);
+            internshipProcess.setMustehaklikBelgesiName(fileName);
         }
         else if(type.equals("stajYeriFormuID")){
             oldLocationId = internshipProcess.getStajYeriFormuID();
             internshipProcess.setStajYeriFormuID(newLocationId);
+            internshipProcess.setStajYeriFormuName(fileName);
         }
         else {
             logger.error("Invalid type. Type: " + type);

@@ -2,12 +2,12 @@ package com.teamaloha.internshipprocessmanagement.service;
 
 
 import com.teamaloha.internshipprocessmanagement.dao.StorageDao;
+import com.teamaloha.internshipprocessmanagement.entity.InternshipProcess;
 import com.teamaloha.internshipprocessmanagement.entity.PDFData;
 import com.teamaloha.internshipprocessmanagement.entity.Student;
 import com.teamaloha.internshipprocessmanagement.entity.embeddable.LogDates;
 import com.teamaloha.internshipprocessmanagement.exceptions.CustomException;
 import com.teamaloha.internshipprocessmanagement.utilities.PDFUtils;
-import io.micrometer.common.util.StringUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,13 +39,27 @@ public class StorageService {
         this.studentService = studentService;
     }
 
-    public void deleteFile(Integer fileId, Integer userId) {
+    @Transactional
+    public void deleteFile(Integer fileId, String type, Integer processId, Integer userId) {
+        InternshipProcess internshipProcess = internshipProcessService.findById(processId);
+        if (internshipProcess == null) {
+            logger.error("Internship process is not found.");
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        if (!internshipProcess.getStudent().getId().equals(userId)) {
+            logger.error("Internship process student id: " + internshipProcess.getStudent().getId() + " is not equal " +
+                    "to given student id: " + userId);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+
         PDFData pdfData = storageDao.findByIdAndFileOwnerId(fileId, userId);
         if (pdfData == null) {
             logger.info("PDF is not found for given fileId: " + fileId + " and userId: " + userId);
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
+
         storageDao.deleteById(fileId);
+        internshipProcessService.deleteFileId(internshipProcess, type);
     }
 
     @Transactional
@@ -55,17 +69,33 @@ public class StorageService {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
+        InternshipProcess internshipProcess = internshipProcessService.findById(processId);
+        if (internshipProcess == null) {
+            logger.error("Internship process is not found.");
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        if (!internshipProcess.getStudent().getId().equals(userId)) {
+            logger.error("Internship process student id: " + internshipProcess.getStudent().getId() + " is not equal " +
+                    "to given student id: " + userId);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        if (type == null || type.length() < 5) {
+            logger.error("Invalid type. type: " + type);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+
+        String fileName = internshipProcess.getStudentNumber() + "_" + type.substring(0, type.length() - 2);
         Date now = new Date();
         PDFData pdfData = storageDao.save(PDFData.builder()
                 .logDates(LogDates.builder().createDate(now).updateDate(now).build())
-                .name(processId+"_"+file.getOriginalFilename())
+                .name(fileName)
                 .type(file.getContentType())
                 .data(PDFUtils.compressPDF(file.getBytes()))
                 .fileOwnerId(userId)
                 .build());
 
         // delete older
-        Integer oldPdfId = internshipProcessService.updateFileId(processId, pdfData.getId(), type);
+        Integer oldPdfId = internshipProcessService.updateFileId(internshipProcess, pdfData.getId(), type);
 
         if(oldPdfId != null){
             storageDao.deleteById(oldPdfId);
@@ -112,13 +142,4 @@ public class StorageService {
         }
     }
 
-    public void deleteFile(Integer processId, Integer fileId, Integer userId) {
-        internshipProcessService.updateFileId(processId, null, "null");
-        PDFData pdfData = storageDao.findByIdAndFileOwnerId(fileId, userId);
-        if (pdfData == null) {
-            logger.info("PDF is not found for given fileId: " + fileId + " and userId: " + userId);
-            throw new CustomException(HttpStatus.BAD_REQUEST);
-        }
-        storageDao.deleteById(fileId);
-    }
 }

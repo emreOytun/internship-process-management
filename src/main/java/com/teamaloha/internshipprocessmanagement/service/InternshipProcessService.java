@@ -937,8 +937,7 @@ public class InternshipProcessService {
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public Integer updateFileId(Integer processId, Integer newLocationId, String type) {
-        InternshipProcess internshipProcess = internshipProcessDao.findInternshipProcessById(processId);
+    public Integer updateFileId(InternshipProcess internshipProcess, Integer newLocationId, String type) {
         Integer oldLocationId = null;
 
         if(type.equals("mufredatDurumuID")){
@@ -965,8 +964,53 @@ public class InternshipProcessService {
             oldLocationId = internshipProcess.getStajYeriFormuID();
             internshipProcess.setStajYeriFormuID(newLocationId);
         }
+        else {
+            logger.error("Invalid type. Type: " + type);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
 
         internshipProcessDao.save(internshipProcess);
         return oldLocationId;
+    }
+
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    public Integer deleteFileId(InternshipProcess internshipProcess, String type) {
+        Integer oldLocationId = null;
+
+        if(type.equals("mufredatDurumuID")){
+            oldLocationId = internshipProcess.getMufredatDurumuID();
+            internshipProcess.setMufredatDurumuID(null);
+        }
+        else if(type.equals("transkriptID")){
+            oldLocationId = internshipProcess.getTranskriptID();
+            internshipProcess.setTranskriptID(null);
+        }
+        else if(type.equals("dersProgramıID")){
+            oldLocationId = internshipProcess.getDersProgramiID();
+            internshipProcess.setDersProgramiID(null);
+        }
+        else if(type.equals("stajRaporuID")){
+            oldLocationId = internshipProcess.getStajRaporuID();
+            internshipProcess.setStajRaporuID(null);
+        }
+        else if(type.equals("mustehaklikBelgesiID")){
+            oldLocationId = internshipProcess.getMustehaklikBelgesiID();
+            internshipProcess.setMustehaklikBelgesiID(null);
+        }
+        else if(type.equals("stajYeriFormuID")){
+            oldLocationId = internshipProcess.getStajYeriFormuID();
+            internshipProcess.setStajYeriFormuID(null);
+        }
+        else {
+            logger.error("Invalid type. Type: " + type);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+
+        internshipProcessDao.save(internshipProcess);
+        return oldLocationId;
+    }
+
+    public InternshipProcess findById(Integer processId) {
+        return internshipProcessDao.findInternshipProcessById(processId);
     }
 }

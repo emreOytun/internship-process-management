@@ -1,6 +1,9 @@
 package com.teamaloha.internshipprocessmanagement.service;
 
 import java.security.SecureRandom;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,6 +58,13 @@ public class UtilityService {
 
         // Check if all required features are present
         return uppercaseFound && lowercaseFound && digitFound && specialCharacterFound;
+    }
+
+    public static final String format1 = "dd-MM-yyyy HH:mm:ss";
+
+    public static String convertDate(Date date, String format) {
+        DateFormat outputFormat = new SimpleDateFormat(format);
+        return outputFormat.format(date);
     }
 
     public static void main(String[] args) {

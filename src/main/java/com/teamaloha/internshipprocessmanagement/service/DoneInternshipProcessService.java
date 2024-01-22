@@ -267,6 +267,16 @@ public class DoneInternshipProcessService {
             doneInternshipProcessGetResponse.setDepartmentId(doneInternshipProcess.getDepartment().getId());
         }
 
+        if (doneInternshipProcess.getStartDate() != null) {
+            doneInternshipProcessGetResponse.setStartDateStr(
+                    UtilityService.convertDate(doneInternshipProcess.getStartDate(), UtilityService.format1));
+        }
+
+        if (doneInternshipProcess.getEndDate() != null) {
+            doneInternshipProcessGetResponse.setEndDateStr(
+                    UtilityService.convertDate(doneInternshipProcess.getEndDate(), UtilityService.format1));
+        }
+
         doneInternshipProcessGetResponse.setStudentId(doneInternshipProcess.getStudent().getId());
         doneInternshipProcessGetResponse.setFullName(doneInternshipProcess.getStudent().getFirstName() + " " + doneInternshipProcess.getStudent().getLastName());
         doneInternshipProcessGetResponse.setUpdateDate(doneInternshipProcess.getLogDates().getUpdateDate());

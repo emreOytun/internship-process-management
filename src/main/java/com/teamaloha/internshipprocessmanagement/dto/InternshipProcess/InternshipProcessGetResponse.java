@@ -35,8 +35,10 @@ public class InternshipProcessGetResponse {
     private Integer internshipNumber;
 
     private Date startDate;
+    private String startDateStr;
 
     private Date endDate;
+    private String endDateStr;
 
     private Integer companyId;
 

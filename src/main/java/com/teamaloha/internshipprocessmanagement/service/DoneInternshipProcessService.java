@@ -265,6 +265,7 @@ public class DoneInternshipProcessService {
 
         if (doneInternshipProcess.getDepartment() != null) {
             doneInternshipProcessGetResponse.setDepartmentId(doneInternshipProcess.getDepartment().getId());
+            doneInternshipProcessGetResponse.setDepartmentName(doneInternshipProcess.getDepartment().getDepartmentName());
         }
 
         if (doneInternshipProcess.getStartDate() != null) {

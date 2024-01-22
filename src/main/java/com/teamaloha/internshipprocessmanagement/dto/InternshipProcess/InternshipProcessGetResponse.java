@@ -44,6 +44,7 @@ public class InternshipProcessGetResponse {
     private Integer companyId;
 
     private Integer departmentId;
+    private String departmentName;
 
     private String engineerMail;
 

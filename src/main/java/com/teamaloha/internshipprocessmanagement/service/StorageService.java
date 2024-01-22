@@ -103,7 +103,7 @@ public class StorageService {
     }
 
     public byte[] downloadFileAcademician(Integer fileId, Integer userId) {
-        PDFData pdfData = storageDao.findPDFDataByById(fileId);
+        PDFData pdfData = storageDao.findPDFDataById(fileId);
         if (pdfData != null) {
             return PDFUtils.decompressPDF(pdfData.getData());
         }
@@ -111,7 +111,7 @@ public class StorageService {
     }
 
     public byte[] downloadFileStudent(Integer fileId, Integer userId) {
-            PDFData pdfData = storageDao.findPDFDataByById(fileId);
+            PDFData pdfData = storageDao.findPDFDataById(fileId);
             if (pdfData != null && !pdfData.getFileOwnerId().equals(userId)) {
                 logger.error("User ID and PDFData Owner Id does not match. userId: " + userId + " PDFData Owner Id: " + pdfData.getFileOwnerId());
                 throw new CustomException(HttpStatus.BAD_REQUEST);

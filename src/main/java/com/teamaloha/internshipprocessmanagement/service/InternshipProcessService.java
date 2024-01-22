@@ -986,26 +986,32 @@ public class InternshipProcessService {
         if(type.equals("mufredatDurumuID")){
             oldLocationId = internshipProcess.getMufredatDurumuID();
             internshipProcess.setMufredatDurumuID(null);
+            internshipProcess.setMufredatDurumuName(null);
         }
         else if(type.equals("transkriptID")){
             oldLocationId = internshipProcess.getTranskriptID();
             internshipProcess.setTranskriptID(null);
+            internshipProcess.setTranskriptName(null);
         }
         else if(type.equals("dersProgramıID")){
             oldLocationId = internshipProcess.getDersProgramiID();
             internshipProcess.setDersProgramiID(null);
+            internshipProcess.setDersProgramiName(null);
         }
         else if(type.equals("stajRaporuID")){
             oldLocationId = internshipProcess.getStajRaporuID();
             internshipProcess.setStajRaporuID(null);
+            internshipProcess.setStajRaporuName(null);
         }
         else if(type.equals("mustehaklikBelgesiID")){
             oldLocationId = internshipProcess.getMustehaklikBelgesiID();
             internshipProcess.setMustehaklikBelgesiID(null);
+            internshipProcess.setMustehaklikBelgesiName(null);
         }
         else if(type.equals("stajYeriFormuID")){
             oldLocationId = internshipProcess.getStajYeriFormuID();
             internshipProcess.setStajYeriFormuID(null);
+            internshipProcess.setStajYeriFormuName(null);
         }
         else {
             logger.error("Invalid type. Type: " + type);

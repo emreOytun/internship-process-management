@@ -3,19 +3,25 @@ package com.teamaloha.internshipprocessmanagement;
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @SpringBootApplication
 @EnableCaching
 @EnableScheduling
 @EnableTransactionManagement
 @EnableEncryptableProperties
-public class InternshipProcessManagementApplication {
+public class InternshipProcessManagementApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
 		SpringApplication.run(InternshipProcessManagementApplication.class, args);
 	}
 
+	@Override
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+		return builder.sources(InternshipProcessManagementApplication.class);
+	}
 }

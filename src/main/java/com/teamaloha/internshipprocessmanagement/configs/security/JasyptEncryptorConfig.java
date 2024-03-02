@@ -35,7 +35,7 @@ public class JasyptEncryptorConfig {
         config.setStringOutputType("base64");
         encryptor.setConfig(config);
 
-        String plainText = "66556A586E3272357538782F4125442A472D4B6150645367566B597033733676";
+        String plainText = "Proje41!!41";
         String encryptedPassword = encryptor.encrypt(plainText);
         System.out.println("encryptedPassword : " + encryptedPassword);
 

@@ -12,7 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDto {
-    private int id;
+    private Integer id;
     private Date createDate;
     private Date updateDate;
     private String mail;

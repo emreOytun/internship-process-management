@@ -12,6 +12,12 @@
 - Java 17
 - Spring 3.X.X
 - MySQL
+- JWT Authentication
+- Role-based Authorization
+- Lombok
+- Jasypt Encryptor
+- PDF compress/decompress
+- Spring Mail
 
 # Documents
 - [Project Report](https://drive.google.com/file/d/1hsQ3_cPigN1rvOFg8rwPc0HqqAjjy_yA/view?usp=sharing)

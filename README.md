@@ -11,6 +11,8 @@
 - React
 - Java 17
 - Spring 3.X.X
+- Spring Data JPA
+- Dynamic DB Filtering Using Specifications
 - MySQL
 - JWT Authentication
 - Role-based Authorization
